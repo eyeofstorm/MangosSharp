@@ -33,8 +33,8 @@ namespace Mangos.World.Player
     {
         public int CreateCharacter(string Account, string Name, byte Race, byte Classe, byte Gender, byte Skin, byte Face, byte HairStyle, byte HairColor, byte FacialHair, byte OutfitID)
         {
-            WS_PlayerData.CharacterObject Character = new WS_PlayerData.CharacterObject();
-            DataTable MySQLQuery = new DataTable();
+            var Character = new WS_PlayerData.CharacterObject();
+            var MySQLQuery = new DataTable();
             Character.Name = WorldServiceLocator._Functions.CapitalizeName(ref Name);
             Character.Race = (Races)Race;
             Character.Classe = (Classes)Classe;
@@ -45,7 +45,7 @@ namespace Mangos.World.Player
             Character.HairColor = HairColor;
             Character.FacialHair = FacialHair;
             WorldServiceLocator._WorldServer.AccountDatabase.Query($"SELECT id, gmlevel FROM account WHERE username = \"{Account}\";", ref MySQLQuery);
-            int Account_ID = MySQLQuery.Rows[0].As<int>("id");
+            var Account_ID = MySQLQuery.Rows[0].As<int>("id");
             AccessLevel Account_Access = (Character.Access = (AccessLevel)MySQLQuery.Rows[0].As<byte>("gmlevel"));
             if (!WorldServiceLocator._Functions.ValidateName(Character.Name))
             {
@@ -63,7 +63,7 @@ namespace Mangos.World.Player
             catch (Exception projectError)
             {
                 ProjectData.SetProjectError(projectError);
-                int CreateCharacter = 48;
+                var CreateCharacter = 48;
                 ProjectData.ClearProjectError();
                 return CreateCharacter;
             }
@@ -105,9 +105,9 @@ namespace Mangos.World.Player
                 catch (Exception ex)
                 {
                     ProjectData.SetProjectError(ex);
-                    Exception err = ex;
+                    var err = ex;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Error initializing character! {0} {1}", Environment.NewLine, err.ToString());
-                    int CreateCharacter = 48;
+                    var CreateCharacter = 48;
                     ProjectData.ClearProjectError();
                     return CreateCharacter;
                 }
@@ -121,11 +121,11 @@ namespace Mangos.World.Player
 
         public void CreateCharacter(ref WS_PlayerData.CharacterObject objCharacter)
         {
-            DataTable CreateInfo = new DataTable();
-            DataTable CreateInfoBars = new DataTable();
-            DataTable CreateInfoSkills = new DataTable();
-            DataTable LevelStats = new DataTable();
-            DataTable ClassLevelStats = new DataTable();
+            var CreateInfo = new DataTable();
+            var CreateInfoBars = new DataTable();
+            var CreateInfoSkills = new DataTable();
+            var LevelStats = new DataTable();
+            var ClassLevelStats = new DataTable();
             WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM playercreateinfo WHERE race = {(int)objCharacter.Race} AND class = {(int)objCharacter.Classe};", ref CreateInfo);
             if (CreateInfo.Rows.Count <= 0)
             {
@@ -208,7 +208,7 @@ namespace Mangos.World.Player
                     enumerator = CreateInfoSkills.Rows.GetEnumerator();
                     while (enumerator.MoveNext())
                     {
-                        DataRow row = (DataRow)enumerator.Current;
+                        var row = (DataRow)enumerator.Current;
                         objCharacter.LearnSkill(row.As<int>("Skill"), row.As<short>("SkillMin"), row.As<short>("SkillMax"));
                     }
                 }
@@ -219,7 +219,7 @@ namespace Mangos.World.Player
                         (enumerator as IDisposable).Dispose();
                     }
                 }
-                int i = 0;
+                var i = 0;
                 do
                 {
                     if ((WorldServiceLocator._WS_DBCDatabase.CharRaces[(int)objCharacter.Race].TaxiMask & (1 << i)) != 0)
@@ -235,10 +235,10 @@ namespace Mangos.World.Player
                     enumerator2 = CreateInfoBars.Rows.GetEnumerator();
                     while (enumerator2.MoveNext())
                     {
-                        DataRow row = (DataRow)enumerator2.Current;
+                        var row = (DataRow)enumerator2.Current;
                         if (Operators.ConditionalCompareObjectGreater(row["action"], 0, TextCompare: false))
                         {
-                            int ButtonPos = row.As<int>("button");
+                            var ButtonPos = row.As<int>("button");
                             objCharacter.ActionButtons[(byte)ButtonPos] = new WS_PlayerHelper.TActionButton(row.As<int>("action"), row.As<byte>("type"), 0);
                         }
                     }
@@ -255,7 +255,7 @@ namespace Mangos.World.Player
 
         public void CreateCharacterSpells(ref WS_PlayerData.CharacterObject objCharacter)
         {
-            DataTable CreateInfoSpells = new DataTable();
+            var CreateInfoSpells = new DataTable();
             WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM playercreateinfo_spell WHERE race = {(int)objCharacter.Race} AND class = {(int)objCharacter.Classe};", ref CreateInfoSpells);
             if (CreateInfoSpells.Rows.Count <= 0)
             {
@@ -267,7 +267,7 @@ namespace Mangos.World.Player
                 enumerator = CreateInfoSpells.Rows.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    DataRow row = (DataRow)enumerator.Current;
+                    var row = (DataRow)enumerator.Current;
                     objCharacter.LearnSpell(row.As<int>("Spell"));
                 }
             }
@@ -282,21 +282,21 @@ namespace Mangos.World.Player
 
         public void CreateCharacterItems(ref WS_PlayerData.CharacterObject objCharacter)
         {
-            DataTable CreateInfoItems = new DataTable();
+            var CreateInfoItems = new DataTable();
             WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM playercreateinfo_item WHERE race = {(int)objCharacter.Race} AND class = {(int)objCharacter.Classe};", ref CreateInfoItems);
             if (CreateInfoItems.Rows.Count <= 0)
             {
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "No information found in playercreateinfo_item table for Race: {0}, Class: {1}", objCharacter.Race, objCharacter.Classe);
             }
-            Dictionary<int, int> Items = new Dictionary<int, int>();
-            List<int> Used = new List<int>();
+            var Items = new Dictionary<int, int>();
+            var Used = new List<int>();
             IEnumerator enumerator = default;
             try
             {
                 enumerator = CreateInfoItems.Rows.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    DataRow row = (DataRow)enumerator.Current;
+                    var row = (DataRow)enumerator.Current;
                     Items.Add(row.As<int>("itemid"), row.As<int>("amount"));
                 }
             }
@@ -307,19 +307,19 @@ namespace Mangos.World.Player
                     (enumerator as IDisposable).Dispose();
                 }
             }
-            foreach (KeyValuePair<int, int> Item2 in Items)
+            foreach (var Item2 in Items)
             {
                 if (!WorldServiceLocator._WorldServer.ITEMDatabase.ContainsKey(Item2.Key))
                 {
-                    WS_Items.ItemInfo newItem = new WS_Items.ItemInfo(Item2.Key);
+                    var newItem = new WS_Items.ItemInfo(Item2.Key);
                 }
                 if (WorldServiceLocator._WorldServer.ITEMDatabase[Item2.Key].ContainerSlots <= 0)
                 {
                     continue;
                 }
-                byte[] Slots2 = WorldServiceLocator._WorldServer.ITEMDatabase[Item2.Key].GetSlots;
-                byte[] array = Slots2;
-                foreach (byte tmpSlot2 in array)
+                var Slots2 = WorldServiceLocator._WorldServer.ITEMDatabase[Item2.Key].GetSlots;
+                var array = Slots2;
+                foreach (var tmpSlot2 in array)
                 {
                     if (!objCharacter.Items.ContainsKey(tmpSlot2))
                     {
@@ -329,20 +329,20 @@ namespace Mangos.World.Player
                     }
                 }
             }
-            foreach (KeyValuePair<int, int> Item in Items)
+            foreach (var Item in Items)
             {
                 if (Used.Contains(Item.Key))
                 {
                     continue;
                 }
-                byte[] Slots = WorldServiceLocator._WorldServer.ITEMDatabase[Item.Key].GetSlots;
-                byte[] array2 = Slots;
-                int num = 0;
+                var Slots = WorldServiceLocator._WorldServer.ITEMDatabase[Item.Key].GetSlots;
+                var array2 = Slots;
+                var num = 0;
                 while (true)
                 {
                     if (num < array2.Length)
                     {
-                        byte tmpSlot = array2[num];
+                        var tmpSlot = array2[num];
                         if (!objCharacter.Items.ContainsKey(tmpSlot))
                         {
                             objCharacter.ItemADD(Item.Key, 0, tmpSlot, Item.Value);

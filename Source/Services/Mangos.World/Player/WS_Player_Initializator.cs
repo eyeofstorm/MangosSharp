@@ -70,7 +70,7 @@ namespace Mangos.World.Player
             int baseInt = objCharacter.Intellect.Base;
             int baseSpi = objCharacter.Spirit.Base;
             int baseAgi = objCharacter.Agility.Base;
-            int baseLife = objCharacter.Life.Maximum;
+            var baseLife = objCharacter.Life.Maximum;
             checked
             {
                 switch (objCharacter.Classe)
@@ -334,7 +334,7 @@ namespace Mangos.World.Player
                 };
                 checked
                 {
-                    foreach (KeyValuePair<int, WS_DBCDatabase.TFaction> tmpFactionInfo in WorldServiceLocator._WS_DBCDatabase.FactionInfo)
+                    foreach (var tmpFactionInfo in WorldServiceLocator._WS_DBCDatabase.FactionInfo)
                     {
                         if (tmpFactionInfo.Value.VisibleID != i)
                         {

@@ -252,9 +252,9 @@ namespace Mangos.Common.Legacy.Globals
             thisDatabase.Query("SELECT `version`,`structure`,`content` FROM db_version ORDER BY VERSION DESC, structure DESC, content DESC LIMIT 0,1", ref mySqlQuery);
             // Check database version against code version
 
-            int coreDbVersion = 0;
-            int coreDbStructure = 0;
-            int coreDbContent = 0;
+            var coreDbVersion = 0;
+            var coreDbStructure = 0;
+            var coreDbContent = 0;
             switch (thisServerDb)
             {
                 case ServerDb.Realm:
@@ -287,9 +287,9 @@ namespace Mangos.Common.Legacy.Globals
                 // For Each row As DataRow In mySqlQuery.Rows
                 // dtVersion = row.Item("column_name").ToString
                 // Next
-                int dbVersion = mySqlQuery.Rows[0].As<int>("version");
-                int dbStructure = mySqlQuery.Rows[0].As<int>("structure");
-                int dbContent = mySqlQuery.Rows[0].As<int>("content");
+                var dbVersion = mySqlQuery.Rows[0].As<int>("version");
+                var dbStructure = mySqlQuery.Rows[0].As<int>("structure");
+                var dbContent = mySqlQuery.Rows[0].As<int>("content");
 
                 // NOTES: Version or Structure mismatch is a hard error, Content mismatch as a warning
 

@@ -48,7 +48,7 @@ namespace Mangos.World.AntiCheat
 
         public static void MovementEvent(ref WS_Network.ClientClass client, float RunSpeed, float posX, float positionX, float posY, float positionY, float posZ, float positionZ, int sTime, int cTime)
         {
-            WS_PlayerData.CharacterObject character = client.Character;
+            var character = client.Character;
             SpeedHackViolation sData;
             if (!SpeedHacks.Exists(obj => obj.Character.Equals(character.Name)))
             {

@@ -71,7 +71,7 @@ namespace Mangos.Cluster.Network
                 throw new ApplicationException("socket doesn't exist!");
             if (clusterServiceLocator._WorldCluster.CLIENTs is null)
                 throw new ApplicationException("Clients doesn't exist!");
-            IPEndPoint remoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
+            var remoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
             IP = remoteEndPoint.Address.ToString();
             Port = (uint)remoteEndPoint.Port;
 
@@ -133,7 +133,7 @@ namespace Mangos.Cluster.Network
             if (clusterServiceLocator._WorldCluster.GetPacketHandlers() is null)
                 throw new ApplicationException("PacketHandler is empty!");
 
-            ClientClass _client = this;
+            var _client = this;
 
             if (clusterServiceLocator._WorldCluster.GetConfig().PacketLogging)
             {
@@ -242,7 +242,7 @@ namespace Mangos.Cluster.Network
                 return;
             try
             {
-                byte[] data = (byte[])packet.Data.Clone();
+                var data = (byte[])packet.Data.Clone();
                 if (clusterServiceLocator._WorldCluster.GetConfig().PacketLogging)
                 {
                     var argclient = this;
@@ -267,7 +267,7 @@ namespace Mangos.Cluster.Network
         {
             if (socket is object)
             {
-                int bytesSent = socket.EndSend(ar);
+                var bytesSent = socket.EndSend(ar);
                 Interlocked.Add(ref clusterServiceLocator._WC_Stats.DataTransferOut, bytesSent);
             }
         }
@@ -324,7 +324,7 @@ namespace Mangos.Cluster.Network
 
         public void Decode(byte[] data)
         {
-            for (int i = 0; i < 6; i++)
+            for (var i = 0; i < 6; i++)
             {
                 var tmp = data[i];
                 data[i] = (byte)(SS_Hash[Key[1]] ^ (256 + data[i] - Key[0]) % 256);
@@ -335,7 +335,7 @@ namespace Mangos.Cluster.Network
 
         public void Encode(byte[] data)
         {
-            for (int i = 0; i < 4; i++)
+            for (var i = 0; i < 4; i++)
             {
                 data[i] = (byte)(((SS_Hash[Key[3]] ^ data[i]) + Key[2]) % 256);
                 Key[2] = data[i];

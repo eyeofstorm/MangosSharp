@@ -44,13 +44,13 @@ namespace Mangos.World.AI
 
             public void ResetThreatTable()
             {
-                List<WS_Base.BaseUnit> tmpUnits = new List<WS_Base.BaseUnit>();
-                foreach (KeyValuePair<WS_Base.BaseUnit, int> item in aiHateTable)
+                var tmpUnits = new List<WS_Base.BaseUnit>();
+                foreach (var item in aiHateTable)
                 {
                     tmpUnits.Add(item.Key);
                 }
                 aiHateTable.Clear();
-                foreach (WS_Base.BaseUnit Victim in tmpUnits)
+                foreach (var Victim in tmpUnits)
                 {
                     aiHateTable.Add(Victim, 0);
                 }
@@ -58,7 +58,7 @@ namespace Mangos.World.AI
 
             public virtual bool IsMoving()
             {
-                AIState state = State;
+                var state = State;
                 if ((uint)(state - 2) <= 4u)
                 {
                     return true;

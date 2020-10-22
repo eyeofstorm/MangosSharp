@@ -119,7 +119,7 @@ namespace Mangos.World.Handlers
                 {
                     return;
                 }
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS_EXTENDED);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS_EXTENDED);
                 checked
                 {
                     try
@@ -129,14 +129,14 @@ namespace Mangos.World.Handlers
                         packet.AddInt32(7);
                         packet.AddUInt32(TargetGold);
                         packet.AddInt32(0);
-                        int i = 0;
+                        var i = 0;
                         do
                         {
                             packet.AddInt8((byte)i);
                             if (TargetSlots[i] > 0)
                             {
-                                byte mySlot = (byte)(TargetSlots[i] & 0xFF);
-                                byte myBag = (byte)(TargetSlots[i] >> 8);
+                                var mySlot = (byte)(TargetSlots[i] & 0xFF);
+                                var myBag = (byte)(TargetSlots[i] >> 8);
                                 ItemObject myItem = null;
                                 myItem = ((myBag != 0) ? Target.Items[myBag].Items[mySlot] : Target.Items[mySlot]);
                                 packet.AddInt32(myItem.ItemEntry);
@@ -162,7 +162,7 @@ namespace Mangos.World.Handlers
                             }
                             else
                             {
-                                int j = 0;
+                                var j = 0;
                                 do
                                 {
                                     packet.AddInt32(0);
@@ -188,7 +188,7 @@ namespace Mangos.World.Handlers
                 {
                     return;
                 }
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS_EXTENDED);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS_EXTENDED);
                 checked
                 {
                     try
@@ -198,14 +198,14 @@ namespace Mangos.World.Handlers
                         packet.AddInt32(7);
                         packet.AddUInt32(TraderGold);
                         packet.AddInt32(0);
-                        int i = 0;
+                        var i = 0;
                         do
                         {
                             packet.AddInt8((byte)i);
                             if (TraderSlots[i] > 0)
                             {
-                                byte mySlot = (byte)(TraderSlots[i] & 0xFF);
-                                byte myBag = (byte)(TraderSlots[i] >> 8);
+                                var mySlot = (byte)(TraderSlots[i] & 0xFF);
+                                var myBag = (byte)(TraderSlots[i] >> 8);
                                 ItemObject myItem = null;
                                 myItem = ((myBag != 0) ? Trader.Items[myBag].Items[mySlot] : Trader.Items[mySlot]);
                                 packet.AddInt32(myItem.ItemEntry);
@@ -231,7 +231,7 @@ namespace Mangos.World.Handlers
                             }
                             else
                             {
-                                int j = 0;
+                                var j = 0;
                                 do
                                 {
                                     packet.AddInt32(0);
@@ -253,7 +253,7 @@ namespace Mangos.World.Handlers
 
             public void DoTrade(ref WS_PlayerData.CharacterObject Who)
             {
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response.AddInt32(4);
@@ -303,7 +303,7 @@ namespace Mangos.World.Handlers
                 {
                     if (Target.ItemFREESLOTS() < TargetReqItems)
                     {
-                        Packets.PacketClass responseUnAccept2 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                        var responseUnAccept2 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                         try
                         {
                             responseUnAccept2.AddInt32(7);
@@ -316,7 +316,7 @@ namespace Mangos.World.Handlers
                         {
                             responseUnAccept2.Dispose();
                         }
-                        Packets.PacketClass responseNoSlot2 = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
+                        var responseNoSlot2 = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
                         try
                         {
                             responseNoSlot2.AddInt8(50);
@@ -333,7 +333,7 @@ namespace Mangos.World.Handlers
                     }
                     if (Trader.ItemFREESLOTS() < TraderReqItems)
                     {
-                        Packets.PacketClass responseUnAccept = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                        var responseUnAccept = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                         try
                         {
                             responseUnAccept.AddInt32(7);
@@ -346,7 +346,7 @@ namespace Mangos.World.Handlers
                         {
                             responseUnAccept.Dispose();
                         }
-                        Packets.PacketClass responseNoSlot = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
+                        var responseNoSlot = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
                         try
                         {
                             responseNoSlot.AddInt8(50);
@@ -380,8 +380,8 @@ namespace Mangos.World.Handlers
                             {
                                 if (TraderSlots[j] > 0)
                                 {
-                                    byte mySlot2 = (byte)(TraderSlots[j] & 0xFF);
-                                    byte myBag2 = (byte)(TraderSlots[j] >> 8);
+                                    var mySlot2 = (byte)(TraderSlots[j] & 0xFF);
+                                    var myBag2 = (byte)(TraderSlots[j] >> 8);
                                     ItemObject myItem2 = null;
                                     myItem2 = ((myBag2 != 0) ? Trader.Items[myBag2].Items[mySlot2] : Trader.Items[mySlot2]);
                                     if (myItem2.ItemInfo.ObjectClass != ITEM_CLASS.ITEM_CLASS_QUEST)
@@ -395,8 +395,8 @@ namespace Mangos.World.Handlers
                                 }
                                 if (TargetSlots[j] > 0)
                                 {
-                                    byte mySlot = (byte)(TargetSlots[j] & 0xFF);
-                                    byte myBag = (byte)(TargetSlots[j] >> 8);
+                                    var mySlot = (byte)(TargetSlots[j] & 0xFF);
+                                    var myBag = (byte)(TargetSlots[j] >> 8);
                                     ItemObject myItem = null;
                                     myItem = ((myBag != 0) ? Target.Items[myBag].Items[mySlot] : Target.Items[mySlot]);
                                     if (myItem.ItemInfo.ObjectClass != ITEM_CLASS.ITEM_CLASS_QUEST)
@@ -415,7 +415,7 @@ namespace Mangos.World.Handlers
                     }
                     Trader.SendCharacterUpdate();
                     Target.SendCharacterUpdate();
-                    Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                    var response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                     try
                     {
                         response.AddInt32(8);
@@ -431,7 +431,7 @@ namespace Mangos.World.Handlers
                 catch (Exception ex)
                 {
                     ProjectData.SetProjectError(ex);
-                    Exception e = ex;
+                    var e = ex;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Error doing trade: {0}{1}", Environment.NewLine, e.ToString());
                     ProjectData.ClearProjectError();
                 }
@@ -449,7 +449,7 @@ namespace Mangos.World.Handlers
             {
                 return;
             }
-            Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+            var response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
             try
             {
                 response.AddInt32(3);
@@ -472,7 +472,7 @@ namespace Mangos.World.Handlers
         public void On_CMSG_SET_TRADE_GOLD(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            uint gold = packet.GetUInt32();
+            var gold = packet.GetUInt32();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_TRADE_GOLD [gold={2}]", client.IP, client.Port, gold);
             if (client.Character.tradeInfo != null)
             {
@@ -492,9 +492,9 @@ namespace Mangos.World.Handlers
         public void On_CMSG_SET_TRADE_ITEM(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            byte slot = packet.GetInt8();
-            byte myBag = packet.GetInt8();
-            byte mySlot = packet.GetInt8();
+            var slot = packet.GetInt8();
+            var myBag = packet.GetInt8();
+            var mySlot = packet.GetInt8();
             if (myBag == byte.MaxValue)
             {
                 myBag = 0;
@@ -525,7 +525,7 @@ namespace Mangos.World.Handlers
         public void On_CMSG_CLEAR_TRADE_ITEM(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            byte slot = packet.GetInt8();
+            var slot = packet.GetInt8();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_CLEAR_TRADE_ITEM [slot={2}]", client.IP, client.Port, slot);
             if (client.Character.tradeInfo.Trader == client.Character)
             {
@@ -542,11 +542,11 @@ namespace Mangos.World.Handlers
         public void On_CMSG_INITIATE_TRADE(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            ulong targetGUID = packet.GetUInt64();
+            var targetGUID = packet.GetUInt64();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_INITIATE_TRADE [Trader={2} Target={3}]", client.IP, client.Port, client.Character.GUID, targetGUID);
             if (client.Character.DEAD)
             {
-                Packets.PacketClass response6 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response6 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response6.AddInt32(17);
@@ -560,7 +560,7 @@ namespace Mangos.World.Handlers
             }
             if (client.Character.LogoutTimer != null)
             {
-                Packets.PacketClass response8 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response8 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response8.AddInt32(19);
@@ -574,7 +574,7 @@ namespace Mangos.World.Handlers
             }
             if (((uint)client.Character.cUnitFlags & 0x40000u) != 0)
             {
-                Packets.PacketClass response10 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response10 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response10.AddInt32(15);
@@ -588,7 +588,7 @@ namespace Mangos.World.Handlers
             }
             if (!WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(targetGUID))
             {
-                Packets.PacketClass response12 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response12 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response12.AddInt32(6);
@@ -602,7 +602,7 @@ namespace Mangos.World.Handlers
             }
             if (WorldServiceLocator._WorldServer.CHARACTERs[targetGUID].DEAD)
             {
-                Packets.PacketClass response13 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response13 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response13.AddInt32(18);
@@ -616,7 +616,7 @@ namespace Mangos.World.Handlers
             }
             if (WorldServiceLocator._WorldServer.CHARACTERs[targetGUID].LogoutTimer != null)
             {
-                Packets.PacketClass response11 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response11 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response11.AddInt32(20);
@@ -630,7 +630,7 @@ namespace Mangos.World.Handlers
             }
             if (((uint)WorldServiceLocator._WorldServer.CHARACTERs[targetGUID].cUnitFlags & 0x40000u) != 0)
             {
-                Packets.PacketClass response9 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response9 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response9.AddInt32(15);
@@ -644,7 +644,7 @@ namespace Mangos.World.Handlers
             }
             if (client.Character.tradeInfo != null)
             {
-                Packets.PacketClass response7 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response7 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response7.AddInt32(0);
@@ -658,7 +658,7 @@ namespace Mangos.World.Handlers
             }
             if (WorldServiceLocator._WorldServer.CHARACTERs[targetGUID].tradeInfo != null)
             {
-                Packets.PacketClass response5 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response5 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response5.AddInt32(5);
@@ -672,7 +672,7 @@ namespace Mangos.World.Handlers
             }
             if (WorldServiceLocator._WorldServer.CHARACTERs[targetGUID].IsHorde != client.Character.IsHorde)
             {
-                Packets.PacketClass response4 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response4 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response4.AddInt32(11);
@@ -686,7 +686,7 @@ namespace Mangos.World.Handlers
             }
             if (WorldServiceLocator._WS_Combat.GetDistance(client.Character, WorldServiceLocator._WorldServer.CHARACTERs[targetGUID]) > 30f)
             {
-                Packets.PacketClass response3 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response3 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response3.AddInt32(10);
@@ -700,7 +700,7 @@ namespace Mangos.World.Handlers
             }
             if (client.Character.Access == AccessLevel.Trial)
             {
-                Packets.PacketClass response2 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response2 = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response2.AddInt32(21);
@@ -714,7 +714,7 @@ namespace Mangos.World.Handlers
             }
             if (WorldServiceLocator._WorldServer.CHARACTERs[targetGUID].Access == AccessLevel.Trial)
             {
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response.AddInt32(21);
@@ -726,13 +726,13 @@ namespace Mangos.World.Handlers
                 }
                 return;
             }
-            ref WS_PlayerData.CharacterObject character = ref client.Character;
+            ref var character = ref client.Character;
             Dictionary<ulong, WS_PlayerData.CharacterObject> cHARACTERs;
             ulong key;
-            WS_PlayerData.CharacterObject Target_ = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = targetGUID];
-            TTradeInfo tTradeInfo = new TTradeInfo(ref character, ref Target_);
+            var Target_ = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = targetGUID];
+            var tTradeInfo = new TTradeInfo(ref character, ref Target_);
             cHARACTERs[key] = Target_;
-            Packets.PacketClass response_ok = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+            var response_ok = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
             try
             {
                 response_ok.AddInt32(1);
@@ -751,7 +751,7 @@ namespace Mangos.World.Handlers
             checked
             {
                 client.Character.tradeInfo.ID++;
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+                var response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
                 try
                 {
                     response.AddInt32(2);
@@ -769,7 +769,7 @@ namespace Mangos.World.Handlers
         public void On_CMSG_UNACCEPT_TRADE(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_UNACCEPT_TRADE", client.IP, client.Port);
-            Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
+            var response = new Packets.PacketClass(Opcodes.SMSG_TRADE_STATUS);
             try
             {
                 response.AddInt32(7);

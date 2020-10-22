@@ -52,9 +52,9 @@ namespace Mangos.World.Loots
                 {
                     if (ExplicitlyChanced.Count > 0)
                     {
-                        float rollChance = (float)(WorldServiceLocator._WorldServer.Rnd.NextDouble() * 100.0);
-                        int num = ExplicitlyChanced.Count - 1;
-                        for (int i = 0; i <= num; i++)
+                        var rollChance = (float)(WorldServiceLocator._WorldServer.Rnd.NextDouble() * 100.0);
+                        var num = ExplicitlyChanced.Count - 1;
+                        for (var i = 0; i <= num; i++)
                         {
                             if (ExplicitlyChanced[i].Chance >= 100f)
                             {
@@ -77,7 +77,7 @@ namespace Mangos.World.Loots
 
             public void Process(ref LootObject Loot)
             {
-                LootStoreItem Item = Roll();
+                var Item = Roll();
                 if (Item != null)
                 {
                     Loot.Items.Add(new LootItem(ref Item));

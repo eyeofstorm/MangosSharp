@@ -40,7 +40,7 @@ namespace Mangos.Configuration.Xml
         {
             using var streamReader = new StreamReader(filePath);
             var xmlSerializer = new XmlSerializer(typeof(T));
-            T configuration = (T)xmlSerializer.Deserialize(streamReader);
+            var configuration = (T)xmlSerializer.Deserialize(streamReader);
             return configuration;
         }
 
@@ -50,7 +50,7 @@ namespace Mangos.Configuration.Xml
             {
                 using var streamReader = new StreamReader(filePath);
                 var xmlSerializer = new XmlSerializer(typeof(T));
-                T configuration = (T)xmlSerializer.Deserialize(streamReader);
+                var configuration = (T)xmlSerializer.Deserialize(streamReader);
                 logger.Debug("Get XML Configuration for {0}", typeof(T).FullName);
                 return new ValueTask<T>(configuration);
             }

@@ -44,9 +44,9 @@ namespace Mangos.World.Handlers
                     return;
                 }
                 packet.GetInt16();
-                ulong GUID = packet.GetUInt64();
+                var GUID = packet.GetUInt64();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_NAME_QUERY [GUID={2:X}]", client.IP, client.Port, GUID);
-                Packets.PacketClass SMSG_NAME_QUERY_RESPONSE = new Packets.PacketClass(Opcodes.SMSG_NAME_QUERY_RESPONSE);
+                var SMSG_NAME_QUERY_RESPONSE = new Packets.PacketClass(Opcodes.SMSG_NAME_QUERY_RESPONSE);
                 if (GUID == int.MaxValue)
                 {
                     try
@@ -82,7 +82,7 @@ namespace Mangos.World.Handlers
                         }
                         return;
                     }
-                    DataTable MySQLQuery = new DataTable();
+                    var MySQLQuery = new DataTable();
                     WorldServiceLocator._WorldServer.CharacterDatabase.Query($"SELECT char_name, char_race, char_class, char_gender FROM characters WHERE char_guid = \"{GUID}\";", ref MySQLQuery);
                     if (MySQLQuery.Rows.Count > 0)
                     {
@@ -137,7 +137,7 @@ namespace Mangos.World.Handlers
             catch (Exception ex)
             {
                 ProjectData.SetProjectError(ex);
-                Exception e = ex;
+                var e = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error at name query.{0}", Environment.NewLine + e);
                 ProjectData.ClearProjectError();
             }
@@ -150,7 +150,7 @@ namespace Mangos.World.Handlers
                 if (packet.Data.Length - 1 >= 9)
                 {
                     packet.GetInt16();
-                    int Flag = packet.GetInt32();
+                    var Flag = packet.GetInt32();
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_TUTORIAL_FLAG [flag={2}]", client.IP, client.Port, Flag);
                     client.Character.TutorialFlags[Flag / 8] = (byte)(client.Character.TutorialFlags[Flag / 8] + (1 << 7 - Flag % 8));
                     client.Character.SaveCharacter();
@@ -161,7 +161,7 @@ namespace Mangos.World.Handlers
         public void On_CMSG_TUTORIAL_CLEAR(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_TUTORIAL_CLEAR", client.IP, client.Port);
-            int i = 0;
+            var i = 0;
             do
             {
                 client.Character.TutorialFlags[i] = byte.MaxValue;
@@ -174,7 +174,7 @@ namespace Mangos.World.Handlers
         public void On_CMSG_TUTORIAL_RESET(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_TUTORIAL_RESET", client.IP, client.Port);
-            int i = 0;
+            var i = 0;
             do
             {
                 client.Character.TutorialFlags[i] = 0;
@@ -217,7 +217,7 @@ namespace Mangos.World.Handlers
         public void On_CMSG_SET_ACTIONBAR_TOGGLES(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            byte ActionBar = packet.GetInt8();
+            var ActionBar = packet.GetInt8();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_ACTIONBAR_TOGGLES [{2:X}]", client.IP, client.Port, ActionBar);
             client.Character.cPlayerFieldBytes = (client.Character.cPlayerFieldBytes & -983041) | (byte)(ActionBar << (0x10 & 7));
             client.Character.SetUpdateFlag(1222, client.Character.cPlayerFieldBytes);
@@ -227,7 +227,7 @@ namespace Mangos.World.Handlers
         public void On_CMSG_MOUNTSPECIAL_ANIM(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MOUNTSPECIAL_ANIM", client.IP, client.Port);
-            Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_MOUNTSPECIAL_ANIM);
+            var response = new Packets.PacketClass(Opcodes.SMSG_MOUNTSPECIAL_ANIM);
             try
             {
                 response.AddPackGUID(client.Character.GUID);
@@ -244,9 +244,9 @@ namespace Mangos.World.Handlers
             if (checked(packet.Data.Length - 1) >= 9)
             {
                 packet.GetInt16();
-                int emoteID = packet.GetInt32();
+                var emoteID = packet.GetInt32();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_EMOTE [{2}]", client.IP, client.Port, emoteID);
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_EMOTE);
+                var response = new Packets.PacketClass(Opcodes.SMSG_EMOTE);
                 try
                 {
                     response.AddInt32(emoteID);
@@ -269,17 +269,17 @@ namespace Mangos.World.Handlers
                     return;
                 }
                 packet.GetInt16();
-                int TextEmote = packet.GetInt32();
-                int Unk = packet.GetInt32();
-                ulong GUID = packet.GetUInt64();
+                var TextEmote = packet.GetInt32();
+                var Unk = packet.GetInt32();
+                var GUID = packet.GetUInt64();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_TEXT_EMOTE [TextEmote={2} Unk={3}]", client.IP, client.Port, TextEmote, Unk);
                 if (WorldServiceLocator._CommonGlobalFunctions.GuidIsCreature(GUID) && WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(GUID))
                 {
-                    WS_Quests aLLQUESTS = WorldServiceLocator._WorldServer.ALLQUESTS;
-                    ref WS_PlayerData.CharacterObject character = ref client.Character;
+                    var aLLQUESTS = WorldServiceLocator._WorldServer.ALLQUESTS;
+                    ref var character = ref client.Character;
                     Dictionary<ulong, WS_Creatures.CreatureObject> wORLD_CREATUREs;
                     ulong key;
-                    WS_Creatures.CreatureObject creature = (wORLD_CREATUREs = WorldServiceLocator._WorldServer.WORLD_CREATUREs)[key = GUID];
+                    var creature = (wORLD_CREATUREs = WorldServiceLocator._WorldServer.WORLD_CREATUREs)[key = GUID];
                     aLLQUESTS.OnQuestDoEmote(ref character, ref creature, TextEmote);
                     wORLD_CREATUREs[key] = creature;
                     if (WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].aiScript != null && WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].aiScript is WS_Creatures_AI.GuardAI)
@@ -300,7 +300,7 @@ namespace Mangos.World.Handlers
                         client.Character.SendCharacterUpdate();
                     }
                 }
-                string secondName = "";
+                var secondName = "";
                 if (decimal.Compare(new decimal(GUID), 0m) > 0)
                 {
                     if (WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(GUID))
@@ -312,7 +312,7 @@ namespace Mangos.World.Handlers
                         secondName = WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].Name;
                     }
                 }
-                Packets.PacketClass SMSG_TEXT_EMOTE = new Packets.PacketClass(Opcodes.SMSG_TEXT_EMOTE);
+                var SMSG_TEXT_EMOTE = new Packets.PacketClass(Opcodes.SMSG_TEXT_EMOTE);
                 try
                 {
                     SMSG_TEXT_EMOTE.AddUInt64(client.Character.GUID);
@@ -333,7 +333,7 @@ namespace Mangos.World.Handlers
         {
             if (decimal.Compare(new decimal(client.Character.corpseGUID), 0m) != 0)
             {
-                Packets.PacketClass MSG_CORPSE_QUERY = new Packets.PacketClass(Opcodes.MSG_CORPSE_QUERY);
+                var MSG_CORPSE_QUERY = new Packets.PacketClass(Opcodes.MSG_CORPSE_QUERY);
                 try
                 {
                     MSG_CORPSE_QUERY.AddInt8(1);
@@ -348,7 +348,7 @@ namespace Mangos.World.Handlers
                 {
                     MSG_CORPSE_QUERY.Dispose();
                 }
-                Packets.PacketClass MSG_MINIMAP_PING = new Packets.PacketClass(Opcodes.MSG_MINIMAP_PING);
+                var MSG_MINIMAP_PING = new Packets.PacketClass(Opcodes.MSG_MINIMAP_PING);
                 try
                 {
                     MSG_MINIMAP_PING.AddUInt64(client.Character.corpseGUID);
@@ -379,7 +379,7 @@ namespace Mangos.World.Handlers
             if (checked(packet.Data.Length - 1) >= 13)
             {
                 packet.GetInt16();
-                ulong GUID = packet.GetUInt64();
+                var GUID = packet.GetUInt64();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_RECLAIM_CORPSE [GUID={2:X}]", client.IP, client.Port, GUID);
                 CharacterResurrect(ref client.Character);
             }
@@ -389,7 +389,7 @@ namespace Mangos.World.Handlers
         {
             try
             {
-                WS_PlayerData.CharacterObject character = client.Character;
+                var character = client.Character;
                 character.Mana.Current = 0;
                 character.Rage.Current = 0;
                 character.Energy.Current = 0;
@@ -407,7 +407,7 @@ namespace Mangos.World.Handlers
                     client.Character.underWaterTimer.Dispose();
                     client.Character.underWaterTimer = null;
                 }
-                WS_Corpses.CorpseObject myCorpse = new WS_Corpses.CorpseObject(ref client.Character);
+                var myCorpse = new WS_Corpses.CorpseObject(ref client.Character);
                 myCorpse.Save();
                 myCorpse.AddToWorld();
                 client.Character.Invisibility = InvisibilityLevel.DEAD;
@@ -415,8 +415,8 @@ namespace Mangos.World.Handlers
                 WorldServiceLocator._WS_CharMovement.UpdateCell(ref client.Character);
                 checked
                 {
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (client.Character.ActiveSpells[i] != null)
                         {
@@ -446,7 +446,7 @@ namespace Mangos.World.Handlers
             catch (Exception ex)
             {
                 ProjectData.SetProjectError(ex);
-                Exception e = ex;
+                var e = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Error on repop: {0}", e.ToString());
                 ProjectData.ClearProjectError();
             }
@@ -517,11 +517,11 @@ namespace Mangos.World.Handlers
                 return;
             }
             packet.GetInt16();
-            ulong GUID = packet.GetUInt64();
+            var GUID = packet.GetUInt64();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] MSG_INSPECT_HONOR_STATS [{2:X}]", client.IP, client.Port, GUID);
             if (WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(GUID))
             {
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.MSG_INSPECT_HONOR_STATS);
+                var response = new Packets.PacketClass(Opcodes.MSG_INSPECT_HONOR_STATS);
                 try
                 {
                     response.AddUInt64(GUID);
@@ -551,8 +551,8 @@ namespace Mangos.World.Handlers
         public void On_CMSG_MOVE_FALL_RESET(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MOVE_FALL_RESET", client.IP, client.Port);
-            Packets packets = WorldServiceLocator._Packets;
-            byte[] data = packet.Data;
+            var packets = WorldServiceLocator._Packets;
+            var data = packet.Data;
             WS_Network.ClientClass client2 = null;
             packets.DumpPacket(data, client2);
         }
@@ -565,7 +565,7 @@ namespace Mangos.World.Handlers
         public void On_CMSG_SET_ACTIVE_MOVER(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            ulong GUID = packet.GetUInt64();
+            var GUID = packet.GetUInt64();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_ACTIVE_MOVER [GUID={2:X}]", client.IP, client.Port, GUID);
         }
 
@@ -577,8 +577,8 @@ namespace Mangos.World.Handlers
         public void On_CMSG_SET_FACTION_ATWAR(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            int faction = packet.GetInt32();
-            byte enabled = packet.GetInt8();
+            var faction = packet.GetInt32();
+            var enabled = packet.GetInt8();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_FACTION_ATWAR [faction={2:X} enabled={3}]", client.IP, client.Port, faction, enabled);
             if (enabled <= 1)
             {
@@ -590,7 +590,7 @@ namespace Mangos.World.Handlers
                 {
                     client.Character.Reputation[faction].Flags = client.Character.Reputation[faction].Flags & -3;
                 }
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_SET_FACTION_STANDING);
+                var response = new Packets.PacketClass(Opcodes.SMSG_SET_FACTION_STANDING);
                 try
                 {
                     response.AddInt32(client.Character.Reputation[faction].Flags);
@@ -608,8 +608,8 @@ namespace Mangos.World.Handlers
         public void On_CMSG_SET_FACTION_INACTIVE(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            int faction = packet.GetInt32();
-            byte enabled = packet.GetInt8();
+            var faction = packet.GetInt32();
+            var enabled = packet.GetInt8();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_FACTION_INACTIVE [faction={2:X} enabled={3}]", client.IP, client.Port, faction, enabled);
             if (enabled <= 1)
             {
@@ -619,7 +619,7 @@ namespace Mangos.World.Handlers
         public void On_CMSG_SET_WATCHED_FACTION(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            int faction = packet.GetInt32();
+            var faction = packet.GetInt32();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SET_WATCHED_FACTION [faction={2:X}]", client.IP, client.Port, faction);
             if (faction == -1)
             {

@@ -72,7 +72,7 @@ namespace Mangos.Cluster.Network
                 clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.INFORMATION, "Connected Map Server: {0}", uri);
                 lock (((ICollection)Worlds).SyncRoot)
                 {
-                    foreach (uint Map in maps)
+                    foreach (var Map in maps)
                     {
 
                         // NOTE: Password protected remoting
@@ -96,13 +96,13 @@ namespace Mangos.Cluster.Network
                 return;
 
             // TODO: Unload arenas or battlegrounds that is hosted on this server!
-            foreach (uint map in maps)
+            foreach (var map in maps)
             {
 
                 // DONE: Disconnecting clients
                 lock (((ICollection)clusterServiceLocator._WorldCluster.CLIENTs).SyncRoot)
                 {
-                    foreach (KeyValuePair<uint, ClientClass> objCharacter in clusterServiceLocator._WorldCluster.CLIENTs)
+                    foreach (var objCharacter in clusterServiceLocator._WorldCluster.CLIENTs)
                     {
                         if (objCharacter.Value.Character is object && objCharacter.Value.Character.IsInWorld && objCharacter.Value.Character.Map == map)
                         {
@@ -150,7 +150,7 @@ namespace Mangos.Cluster.Network
             {
                 if (Worlds != null && WorldsInfo != null)
                 {
-                    foreach (KeyValuePair<uint, IWorld> w in Worlds)
+                    foreach (var w in Worlds)
                     {
                         try
                         {
@@ -257,7 +257,7 @@ namespace Mangos.Cluster.Network
         {
             byte[] b;
             clusterServiceLocator._WorldCluster.CHARACTERs_Lock.AcquireReaderLock(clusterServiceLocator._Global_Constants.DEFAULT_LOCK_TIMEOUT);
-            foreach (KeyValuePair<ulong, WcHandlerCharacter.CharacterObject> objCharacter in clusterServiceLocator._WorldCluster.CHARACTERs)
+            foreach (var objCharacter in clusterServiceLocator._WorldCluster.CHARACTERs)
             {
                 if (objCharacter.Value.IsInWorld && objCharacter.Value.Client is object)
                 {
@@ -415,7 +415,7 @@ namespace Mangos.Cluster.Network
         {
             var BattlefieldMap = new List<int>();
             clusterServiceLocator._WC_Handlers_Battleground.BATTLEFIELDs_Lock.AcquireReaderLock(clusterServiceLocator._Global_Constants.DEFAULT_LOCK_TIMEOUT);
-            foreach (KeyValuePair<int, WC_Handlers_Battleground.Battlefield> BG in clusterServiceLocator._WC_Handlers_Battleground.BATTLEFIELDs)
+            foreach (var BG in clusterServiceLocator._WC_Handlers_Battleground.BATTLEFIELDs)
             {
                 if ((byte)BG.Value.MapType == MapType)
                 {
@@ -454,7 +454,7 @@ namespace Mangos.Cluster.Network
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.NETWORK, "[G{0:00000}] Group update", GroupID);
             lock (((ICollection)Worlds).SyncRoot)
             {
-                foreach (KeyValuePair<uint, IWorld> w in Worlds)
+                foreach (var w in Worlds)
                 {
                     try
                     {
@@ -473,7 +473,7 @@ namespace Mangos.Cluster.Network
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.NETWORK, "[G{0:00000}] Group update loot", GroupID);
             lock (((ICollection)Worlds).SyncRoot)
             {
-                foreach (KeyValuePair<uint, IWorld> w in Worlds)
+                foreach (var w in Worlds)
                 {
                     try
                     {

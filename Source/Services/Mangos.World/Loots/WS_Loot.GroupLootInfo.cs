@@ -55,7 +55,7 @@ namespace Mangos.World.Loots
                     return;
                 }
                 byte maxRollType = 0;
-                foreach (KeyValuePair<WS_PlayerData.CharacterObject, int> looter2 in Looters)
+                foreach (var looter2 in Looters)
                 {
                     if (looter2.Value == 1)
                     {
@@ -69,7 +69,7 @@ namespace Mangos.World.Loots
                 if (maxRollType == 0)
                 {
                     LootObject.GroupLootInfo.Remove(LootSlot);
-                    Packets.PacketClass response2 = new Packets.PacketClass(Opcodes.SMSG_LOOT_ALL_PASSED);
+                    var response2 = new Packets.PacketClass(Opcodes.SMSG_LOOT_ALL_PASSED);
                     response2.AddUInt64(LootObject.GUID);
                     response2.AddInt32(LootSlot);
                     response2.AddInt32(Item.ItemID);
@@ -79,21 +79,21 @@ namespace Mangos.World.Loots
                     response2.Dispose();
                     return;
                 }
-                int maxRoll = -1;
+                var maxRoll = -1;
                 WS_PlayerData.CharacterObject looterCharacter = null;
                 checked
                 {
-                    foreach (KeyValuePair<WS_PlayerData.CharacterObject, int> looter in Looters)
+                    foreach (var looter in Looters)
                     {
                         if (looter.Value == maxRollType)
                         {
-                            byte rollValue = (byte)WorldServiceLocator._WorldServer.Rnd.Next(0, 100);
+                            var rollValue = (byte)WorldServiceLocator._WorldServer.Rnd.Next(0, 100);
                             if (rollValue > maxRoll)
                             {
                                 maxRoll = rollValue;
                                 looterCharacter = looter.Key;
                             }
-                            Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_LOOT_ROLL);
+                            var response = new Packets.PacketClass(Opcodes.SMSG_LOOT_ROLL);
                             response.AddUInt64(LootObject.GUID);
                             response.AddInt32(LootSlot);
                             response.AddUInt64(looter.Key.GUID);
@@ -106,12 +106,12 @@ namespace Mangos.World.Loots
                             response.Dispose();
                         }
                     }
-                    ItemObject itemObject = new ItemObject(Item.ItemID, looterCharacter.GUID)
+                    var itemObject = new ItemObject(Item.ItemID, looterCharacter.GUID)
                     {
                         StackCount = Item.ItemCount
                     };
-                    ItemObject tmpItem = itemObject;
-                    Packets.PacketClass wonItem = new Packets.PacketClass(Opcodes.SMSG_LOOT_ROLL_WON);
+                    var tmpItem = itemObject;
+                    var wonItem = new Packets.PacketClass(Opcodes.SMSG_LOOT_ROLL_WON);
                     wonItem.AddUInt64(LootObject.GUID);
                     wonItem.AddInt32(LootSlot);
                     wonItem.AddInt32(Item.ItemID);
@@ -137,7 +137,7 @@ namespace Mangos.World.Loots
 
             public void Broadcast(ref Packets.PacketClass packet)
             {
-                foreach (WS_PlayerData.CharacterObject objCharacter in Rolls)
+                foreach (var objCharacter in Rolls)
                 {
                     objCharacter.client.SendMultiplyPackets(ref packet);
                 }
@@ -145,12 +145,12 @@ namespace Mangos.World.Loots
 
             public void EndRoll(object state)
             {
-                foreach (WS_PlayerData.CharacterObject objCharacter in Rolls)
+                foreach (var objCharacter in Rolls)
                 {
                     if (!Looters.ContainsKey(objCharacter))
                     {
                         Looters[objCharacter] = 0;
-                        Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_LOOT_ROLL);
+                        var response = new Packets.PacketClass(Opcodes.SMSG_LOOT_ROLL);
                         response.AddUInt64(LootObject.GUID);
                         response.AddInt32(LootSlot);
                         response.AddUInt64(objCharacter.GUID);

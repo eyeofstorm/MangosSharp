@@ -56,8 +56,8 @@ namespace Mangos.World.Loots
                     }
                     checked
                     {
-                        int num = Items.Count - 1;
-                        for (int i = 0; i <= num; i++)
+                        var num = Items.Count - 1;
+                        for (var i = 0; i <= num; i++)
                         {
                             if (Items[i] != null)
                             {
@@ -91,7 +91,7 @@ namespace Mangos.World.Loots
                 }
                 if (decimal.Compare(new decimal(LootOwner), 0m) != 0 && client.Character.GUID != LootOwner)
                 {
-                    Packets.PacketClass notMy = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
+                    var notMy = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
                     notMy.AddInt8(58);
                     notMy.AddUInt64(0uL);
                     notMy.AddUInt64(0uL);
@@ -100,7 +100,7 @@ namespace Mangos.World.Loots
                     notMy.Dispose();
                     return;
                 }
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_LOOT_RESPONSE);
+                var response = new Packets.PacketClass(Opcodes.SMSG_LOOT_RESPONSE);
                 response.AddUInt64(GUID);
                 response.AddInt8((byte)LootType);
                 response.AddInt32(Money);
@@ -109,7 +109,7 @@ namespace Mangos.World.Loots
                 checked
                 {
                     response.AddInt8((byte)Items.Count);
-                    byte b = (byte)(Items.Count - 1);
+                    var b = (byte)(Items.Count - 1);
                     byte j = 0;
                     while (j <= (uint)b)
                     {
@@ -176,7 +176,7 @@ namespace Mangos.World.Loots
                 {
                     if (Items[Slot] == null)
                     {
-                        Packets.PacketClass response4 = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
+                        var response4 = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
                         response4.AddInt8(49);
                         response4.AddUInt64(0uL);
                         response4.AddUInt64(0uL);
@@ -187,7 +187,7 @@ namespace Mangos.World.Loots
                     }
                     if (GroupLootInfo.ContainsKey(Slot))
                     {
-                        Packets.PacketClass response3 = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
+                        var response3 = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
                         response3.AddInt8(58);
                         response3.AddUInt64(0uL);
                         response3.AddUInt64(0uL);
@@ -196,20 +196,20 @@ namespace Mangos.World.Loots
                         response3.Dispose();
                         return;
                     }
-                    ItemObject itemObject = new ItemObject(Items[Slot].ItemID, client.Character.GUID)
+                    var itemObject = new ItemObject(Items[Slot].ItemID, client.Character.GUID)
                     {
                         StackCount = Items[Slot].ItemCount
                     };
-                    ItemObject tmpItem = itemObject;
+                    var tmpItem = itemObject;
                     if (client.Character.ItemADD(ref tmpItem))
                     {
                         if (tmpItem.ItemInfo.Bonding == 1)
                         {
-                            ItemObject itemObject2 = tmpItem;
+                            var itemObject2 = tmpItem;
                             WS_Network.ClientClass client2 = null;
                             itemObject2.SoulbindItem(client2);
                         }
-                        Packets.PacketClass response2 = new Packets.PacketClass(Opcodes.SMSG_LOOT_REMOVED);
+                        var response2 = new Packets.PacketClass(Opcodes.SMSG_LOOT_REMOVED);
                         response2.AddInt8(Slot);
                         client.Send(ref response2);
                         response2.Dispose();
@@ -225,7 +225,7 @@ namespace Mangos.World.Loots
                     else
                     {
                         tmpItem.Delete();
-                        Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
+                        var response = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
                         response.AddInt8(50);
                         response.AddUInt64(0uL);
                         response.AddUInt64(0uL);
@@ -237,7 +237,7 @@ namespace Mangos.World.Loots
                 catch (Exception ex)
                 {
                     ProjectData.SetProjectError(ex);
-                    Exception e = ex;
+                    var e = ex;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Error getting loot.{0}", Environment.NewLine + e);
                     ProjectData.ClearProjectError();
                 }
@@ -245,7 +245,7 @@ namespace Mangos.World.Loots
 
             public void SendRelease(ref WS_Network.ClientClass client)
             {
-                Packets.PacketClass responseRelease = new Packets.PacketClass(Opcodes.SMSG_LOOT_RELEASE_RESPONSE);
+                var responseRelease = new Packets.PacketClass(Opcodes.SMSG_LOOT_RELEASE_RESPONSE);
                 responseRelease.AddUInt64(GUID);
                 responseRelease.AddInt8(1);
                 client.Send(ref responseRelease);

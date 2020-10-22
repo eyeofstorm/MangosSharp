@@ -171,21 +171,21 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    int PathID = (int)GetSound(0);
+                    var PathID = (int)GetSound(0);
                     float ShipSpeed = GetSound(1);
                     if (!WorldServiceLocator._WS_DBCDatabase.TaxiPaths.ContainsKey(PathID))
                     {
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "An transport [{0} - {1}] is created with an invalid TaxiPath.", ID, TransportName);
                         return false;
                     }
-                    int MapsUsed = 0;
-                    int MapChange = 0;
-                    List<TransportMove> PathPoints = new List<TransportMove>();
-                    int t = 0;
+                    var MapsUsed = 0;
+                    var MapChange = 0;
+                    var PathPoints = new List<TransportMove>();
+                    var t = 0;
                     if (WorldServiceLocator._WS_DBCDatabase.TaxiPathNodes.ContainsKey(PathID))
                     {
-                        int num = WorldServiceLocator._WS_DBCDatabase.TaxiPathNodes[PathID].Count - 2;
-                        for (int i = 0; i <= num; i++)
+                        var num = WorldServiceLocator._WS_DBCDatabase.TaxiPathNodes[PathID].Count - 2;
+                        for (var i = 0; i <= num; i++)
                         {
                             if (MapChange == 0)
                             {
@@ -219,8 +219,8 @@ namespace Mangos.World.Objects
                         {
                             LastStop = 0;
                         }
-                        int num2 = PathPoints.Count - 1;
-                        for (int j = 1; j <= num2; j++)
+                        var num2 = PathPoints.Count - 1;
+                        for (var j = 1; j <= num2; j++)
                         {
                             if (PathPoints[j].ActionFlag == 1 || PathPoints[j].MapID != PathPoints[j - 1].MapID)
                             {
@@ -239,13 +239,13 @@ namespace Mangos.World.Objects
                                 LastStop = j;
                             }
                         }
-                        float tmpDist = 0f;
-                        int num3 = PathPoints.Count - 1;
-                        for (int n = 0; n <= num3; n++)
+                        var tmpDist = 0f;
+                        var num3 = PathPoints.Count - 1;
+                        for (var n = 0; n <= num3; n++)
                         {
                             unchecked
                             {
-                                int j2 = checked(n + LastStop) % PathPoints.Count;
+                                var j2 = checked(n + LastStop) % PathPoints.Count;
                                 if (j2 >= 0)
                                 {
                                     tmpDist = ((PathPoints[j2].ActionFlag != 2) ? (tmpDist + PathPoints[j2].DistFromPrev) : 0f);
@@ -253,12 +253,12 @@ namespace Mangos.World.Objects
                                 }
                             }
                         }
-                        int num4 = PathPoints.Count - 1;
-                        for (int m = num4; m >= 0; m += -1)
+                        var num4 = PathPoints.Count - 1;
+                        for (var m = num4; m >= 0; m += -1)
                         {
                             unchecked
                             {
-                                int j2 = checked(m + (FirstStop + 1)) % PathPoints.Count;
+                                var j2 = checked(m + (FirstStop + 1)) % PathPoints.Count;
                                 tmpDist += PathPoints[checked(j2 + 1) % PathPoints.Count].DistFromPrev;
                                 PathPoints[j2].DistUntilStop = tmpDist;
                                 if (PathPoints[j2].ActionFlag == 2)
@@ -267,8 +267,8 @@ namespace Mangos.World.Objects
                                 }
                             }
                         }
-                        int num5 = PathPoints.Count - 1;
-                        for (int l = 0; l <= num5; l++)
+                        var num5 = PathPoints.Count - 1;
+                        for (var l = 0; l <= num5; l++)
                         {
                             if (PathPoints[l].DistSinceStop < 450f)
                             {
@@ -289,20 +289,20 @@ namespace Mangos.World.Objects
                             PathPoints[l].tFrom *= 1000f;
                             PathPoints[l].tTo *= 1000f;
                         }
-                        bool teleport = false;
+                        var teleport = false;
                         if (PathPoints[^1].MapID != PathPoints[0].MapID)
                         {
                             teleport = true;
                         }
                         Waypoints.Add(new TransportWP(0, 0, PathPoints[0].X, PathPoints[0].Y, PathPoints[0].Z, PathPoints[0].MapID, teleport));
                         t += PathPoints[0].Delay * 1000;
-                        uint cM = PathPoints[0].MapID;
-                        int num6 = PathPoints.Count - 2;
-                        for (int k = 0; k <= num6; k++)
+                        var cM = PathPoints[0].MapID;
+                        var num6 = PathPoints.Count - 2;
+                        for (var k = 0; k <= num6; k++)
                         {
-                            float d = 0f;
-                            float tFrom = PathPoints[k].tFrom;
-                            float tTo = PathPoints[k].tTo;
+                            var d = 0f;
+                            var tFrom = PathPoints[k].tFrom;
+                            var tTo = PathPoints[k].tTo;
                             if (d < PathPoints[k + 1].DistFromPrev && tTo > 0f)
                             {
                                 while (d < PathPoints[k + 1].DistFromPrev && tTo > 0f)
@@ -311,9 +311,9 @@ namespace Mangos.World.Objects
                                     tTo -= 100f;
                                     if (d > 0f)
                                     {
-                                        float newX = PathPoints[k].X + (PathPoints[k + 1].X - PathPoints[k].X) * d / PathPoints[k + 1].DistFromPrev;
-                                        float newY = PathPoints[k].Y + (PathPoints[k + 1].Y - PathPoints[k].Y) * d / PathPoints[k + 1].DistFromPrev;
-                                        float newZ = PathPoints[k].Z + (PathPoints[k + 1].Z - PathPoints[k].Z) * d / PathPoints[k + 1].DistFromPrev;
+                                        var newX = PathPoints[k].X + (PathPoints[k + 1].X - PathPoints[k].X) * d / PathPoints[k + 1].DistFromPrev;
+                                        var newY = PathPoints[k].Y + (PathPoints[k + 1].Y - PathPoints[k].Y) * d / PathPoints[k + 1].DistFromPrev;
+                                        var newZ = PathPoints[k].Z + (PathPoints[k + 1].Z - PathPoints[k].Z) * d / PathPoints[k + 1].DistFromPrev;
                                         teleport = false;
                                         if (PathPoints[k].MapID != cM)
                                         {
@@ -362,7 +362,7 @@ namespace Mangos.World.Objects
 
             public int GetNextWaypoint()
             {
-                int tmpWP = CurrentWaypoint;
+                var tmpWP = CurrentWaypoint;
                 tmpWP = checked(tmpWP + 1);
                 if (tmpWP >= Waypoints.Count)
                 {
@@ -399,7 +399,7 @@ namespace Mangos.World.Objects
                 {
                     return;
                 }
-                int Timer = WorldServiceLocator._WS_Network.MsTime() % Period;
+                var Timer = WorldServiceLocator._WS_Network.MsTime() % Period;
                 while (Math.Abs(checked(Timer - Waypoints[CurrentWaypoint].Time)) % PathTime > Math.Abs(checked(Waypoints[NextWaypoint].Time - Waypoints[CurrentWaypoint].Time)) % PathTime)
                 {
                     CurrentWaypoint = GetNextWaypoint();
@@ -447,19 +447,19 @@ namespace Mangos.World.Objects
 
             public void CreateEveryoneOnTransport(ref WS_PlayerData.CharacterObject Character)
             {
-                Packets.PacketClass mePacket = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                var mePacket = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                 mePacket.AddInt32(1);
                 mePacket.AddInt8(0);
-                Packets.UpdateClass meTmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
+                var meTmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
                 Character.FillAllUpdateFlags(ref meTmpUpdate);
                 meTmpUpdate.AddToPacket(ref mePacket, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref Character);
                 meTmpUpdate.Dispose();
                 mePacket.CompressUpdatePacket();
-                WS_Base.BaseUnit[] tmpArray = Passengers.ToArray();
-                WS_Base.BaseUnit[] array = tmpArray;
-                for (int i = 0; i < array.Length; i = checked(i + 1))
+                var tmpArray = Passengers.ToArray();
+                var array = tmpArray;
+                for (var i = 0; i < array.Length; i = checked(i + 1))
                 {
-                    WS_Base.BaseUnit tmpUnit = array[i];
+                    var tmpUnit = array[i];
                     if (tmpUnit == null)
                     {
                         continue;
@@ -468,21 +468,21 @@ namespace Mangos.World.Objects
                     {
                         case WS_PlayerData.CharacterObject _:
                             {
-                                WS_PlayerData.CharacterObject obj = Character;
+                                var obj = Character;
                                 WS_Base.BaseObject objCharacter = tmpUnit;
-                                bool flag = obj.CanSee(ref objCharacter);
+                                var flag = obj.CanSee(ref objCharacter);
                                 tmpUnit = (WS_Base.BaseUnit)objCharacter;
                                 if (flag)
                                 {
-                                    Packets.PacketClass myPacket2 = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                                    var myPacket2 = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                                     try
                                     {
                                         myPacket2.AddInt32(1);
                                         myPacket2.AddInt8(0);
-                                        Packets.UpdateClass myTmpUpdate2 = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
+                                        var myTmpUpdate2 = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
                                         ((WS_PlayerData.CharacterObject)tmpUnit).FillAllUpdateFlags(ref myTmpUpdate2);
-                                        Packets.UpdateClass updateClass = myTmpUpdate2;
-                                        WS_PlayerData.CharacterObject updateObject = (WS_PlayerData.CharacterObject)tmpUnit;
+                                        var updateClass = myTmpUpdate2;
+                                        var updateObject = (WS_PlayerData.CharacterObject)tmpUnit;
                                         updateClass.AddToPacket(ref myPacket2, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject);
                                         myTmpUpdate2.Dispose();
                                         Character.client.Send(ref myPacket2);
@@ -494,7 +494,7 @@ namespace Mangos.World.Objects
                                     ((WS_PlayerData.CharacterObject)tmpUnit).SeenBy.Add(Character.GUID);
                                     Character.playersNear.Add(tmpUnit.GUID);
                                 }
-                                WS_PlayerData.CharacterObject obj2 = (WS_PlayerData.CharacterObject)tmpUnit;
+                                var obj2 = (WS_PlayerData.CharacterObject)tmpUnit;
                                 objCharacter = Character;
                                 flag = obj2.CanSee(ref objCharacter);
                                 Character = (WS_PlayerData.CharacterObject)objCharacter;
@@ -514,21 +514,21 @@ namespace Mangos.World.Objects
                                 {
                                     continue;
                                 }
-                                WS_PlayerData.CharacterObject obj3 = Character;
+                                var obj3 = Character;
                                 WS_Base.BaseObject objCharacter = tmpUnit;
-                                bool flag = obj3.CanSee(ref objCharacter);
+                                var flag = obj3.CanSee(ref objCharacter);
                                 tmpUnit = (WS_Base.BaseUnit)objCharacter;
                                 if (flag)
                                 {
-                                    Packets.PacketClass myPacket = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                                    var myPacket = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                                     try
                                     {
                                         myPacket.AddInt32(1);
                                         myPacket.AddInt8(0);
-                                        Packets.UpdateClass myTmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_UNIT);
+                                        var myTmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_UNIT);
                                         ((WS_Creatures.CreatureObject)tmpUnit).FillAllUpdateFlags(ref myTmpUpdate);
-                                        Packets.UpdateClass updateClass2 = myTmpUpdate;
-                                        WS_Creatures.CreatureObject updateObject2 = (WS_Creatures.CreatureObject)tmpUnit;
+                                        var updateClass2 = myTmpUpdate;
+                                        var updateObject2 = (WS_Creatures.CreatureObject)tmpUnit;
                                         updateClass2.AddToPacket(ref myPacket, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject2);
                                         myTmpUpdate.Dispose();
                                         Character.client.Send(ref myPacket);
@@ -598,15 +598,15 @@ namespace Mangos.World.Objects
                         {
                             if ((short)unchecked(CellX + i) >= 0 && (short)unchecked(CellX + i) <= 63 && (short)unchecked(CellY + j) >= 0 && (short)unchecked(CellY + j) <= 63 && WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)] != null && WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)].PlayersHere.Count > 0)
                             {
-                                WS_Maps.TMapTile tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)];
-                                ulong[] list = tMapTile.PlayersHere.ToArray();
-                                ulong[] array = list;
-                                foreach (ulong plGUID in array)
+                                var tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)];
+                                var list = tMapTile.PlayersHere.ToArray();
+                                var array = list;
+                                foreach (var plGUID in array)
                                 {
                                     int num;
                                     if (WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(plGUID))
                                     {
-                                        WS_PlayerData.CharacterObject characterObject = WorldServiceLocator._WorldServer.CHARACTERs[plGUID];
+                                        var characterObject = WorldServiceLocator._WorldServer.CHARACTERs[plGUID];
                                         WS_Base.BaseObject objCharacter = this;
                                         num = (characterObject.CanSee(ref objCharacter) ? 1 : 0);
                                     }
@@ -618,7 +618,7 @@ namespace Mangos.World.Objects
                                     {
                                         continue;
                                     }
-                                    Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                                    var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
 
                                     using (packet)
                                     {
@@ -626,15 +626,15 @@ namespace Mangos.World.Objects
                                         {
                                             packet.AddInt32(1);
                                             packet.AddInt8(0);
-                                            Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
+                                            var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
                                             try
                                             {
                                                 Dictionary<ulong, WS_PlayerData.CharacterObject> cHARACTERs;
                                                 ulong key;
-                                                WS_PlayerData.CharacterObject Character = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = plGUID];
+                                                var Character = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = plGUID];
                                                 FillAllUpdateFlags(ref tmpUpdate, ref Character);
                                                 cHARACTERs[key] = Character;
-                                                Packets.UpdateClass updateClass = tmpUpdate;
+                                                var updateClass = tmpUpdate;
                                                 WS_GameObjects.GameObjectObject updateObject = this;
                                                 updateClass.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject);
                                             }
@@ -643,7 +643,7 @@ namespace Mangos.World.Objects
                                                 tmpUpdate.Dispose();
                                             }
 
-                                            if (WorldServiceLocator._WorldServer.CHARACTERs.TryGetValue(plGUID, out WS_PlayerData.CharacterObject _character))
+                                            if (WorldServiceLocator._WorldServer.CHARACTERs.TryGetValue(plGUID, out var _character))
                                             {
                                                 _character?.client?.SendMultiplyPackets(ref packet);
                                                 _character?.gameObjectsNear?.Add(GUID);
@@ -670,8 +670,8 @@ namespace Mangos.World.Objects
 
             public void NotifyLeave()
             {
-                ulong[] array = SeenBy.ToArray();
-                foreach (ulong plGUID in array)
+                var array = SeenBy.ToArray();
+                foreach (var plGUID in array)
                 {
                     if (WorldServiceLocator._WorldServer.CHARACTERs[plGUID].gameObjectsNear.Contains(GUID))
                     {
@@ -686,10 +686,10 @@ namespace Mangos.World.Objects
 
             public void TeleportTransport(uint NewMap, float PosX, float PosY, float PosZ)
             {
-                uint oldMap = MapID;
-                WS_Base.BaseUnit[] tmpArray = Passengers.ToArray();
-                WS_Base.BaseUnit[] array = tmpArray;
-                foreach (WS_Base.BaseUnit tmpUnit in array)
+                var oldMap = MapID;
+                var tmpArray = Passengers.ToArray();
+                var array = tmpArray;
+                foreach (var tmpUnit in array)
                 {
                     try
                     {
@@ -707,8 +707,8 @@ namespace Mangos.World.Objects
                             {
                                 case WS_PlayerData.CharacterObject _:
                                     {
-                                        WS_Handlers_Misc wS_Handlers_Misc = WorldServiceLocator._WS_Handlers_Misc;
-                                        WS_PlayerData.CharacterObject Character = (WS_PlayerData.CharacterObject)tmpUnit;
+                                        var wS_Handlers_Misc = WorldServiceLocator._WS_Handlers_Misc;
+                                        var Character = (WS_PlayerData.CharacterObject)tmpUnit;
                                         wS_Handlers_Misc.CharacterResurrect(ref Character);
                                         break;
                                     }
@@ -746,7 +746,7 @@ namespace Mangos.World.Objects
                     catch (Exception ex2)
                     {
                         ProjectData.SetProjectError(ex2);
-                        Exception ex = ex2;
+                        var ex = ex2;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Failed to transfer player [0x{0:X}].{1}{2}", tmpUnit.GUID, Environment.NewLine, ex.ToString());
                         ProjectData.ClearProjectError();
                     }
@@ -781,7 +781,7 @@ namespace Mangos.World.Objects
 
         private ulong GetNewGUID()
         {
-            ref ulong transportGUIDCounter = ref WorldServiceLocator._WorldServer.TransportGUIDCounter;
+            ref var transportGUIDCounter = ref WorldServiceLocator._WorldServer.TransportGUIDCounter;
             transportGUIDCounter = Convert.ToUInt64(decimal.Add(new decimal(transportGUIDCounter), 1m));
             return WorldServiceLocator._WorldServer.TransportGUIDCounter;
         }
@@ -790,7 +790,7 @@ namespace Mangos.World.Objects
         {
             try
             {
-                DataTable TransportQuery = new DataTable();
+                var TransportQuery = new DataTable();
                 WorldServiceLocator._WorldServer.WorldDatabase.Query("SELECT * FROM transports", ref TransportQuery);
                 IEnumerator enumerator = default;
                 try
@@ -798,11 +798,11 @@ namespace Mangos.World.Objects
                     enumerator = TransportQuery.Rows.GetEnumerator();
                     while (enumerator.MoveNext())
                     {
-                        DataRow row = (DataRow)enumerator.Current;
-                        int TransportEntry = row.As<int>("entry");
-                        string TransportName = row.As<string>("name");
-                        int TransportPeriod = row.As<int>("period");
-                        TransportObject newTransport = new TransportObject(TransportEntry, TransportName, TransportPeriod);
+                        var row = (DataRow)enumerator.Current;
+                        var TransportEntry = row.As<int>("entry");
+                        var TransportName = row.As<string>("name");
+                        var TransportPeriod = row.As<int>("period");
+                        var newTransport = new TransportObject(TransportEntry, TransportName, TransportPeriod);
                     }
                 }
                 finally

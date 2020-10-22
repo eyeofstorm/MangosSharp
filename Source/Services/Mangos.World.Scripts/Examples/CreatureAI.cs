@@ -54,7 +54,7 @@ namespace Mangos.World.Scripts.Examples
 
         public void CastKnockdown() // This is where the spell is brought into actual usage. 
         {
-            for (int i = 0; i <= 3; i++) // I believe this number is capped by the amount of spells from 0-any number. We'll make it 0 to 3 here just to be safe. You should do the same.
+            for (var i = 0; i <= 3; i++) // I believe this number is capped by the amount of spells from 0-any number. We'll make it 0 to 3 here just to be safe. You should do the same.
             {
                 WS_Base.BaseUnit Target = aiCreature;
                 if (Target is null)

@@ -34,7 +34,7 @@ namespace Mangos.Network.Tcp.Extensions
 
         public static async ValueTask WriteAsync(this ChannelWriter<byte> writer, byte[] data, int count)
         {
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 await writer.WriteAsync(data[i]);
             }

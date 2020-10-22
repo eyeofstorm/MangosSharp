@@ -106,7 +106,7 @@ namespace Mangos.Realm
         /* TODO ERROR: Skipped RegionDirectiveTrivia */
         public double ToDouble(byte[] d, ref int offset)
         {
-            double num1 = BitConverter.ToDouble(d, offset);
+            var num1 = BitConverter.ToDouble(d, offset);
             offset += 8;
             return num1;
         }
@@ -114,7 +114,7 @@ namespace Mangos.Realm
         /* TODO ERROR: Skipped RegionDirectiveTrivia */
         public float ToFloat(byte[] d, ref int offset)
         {
-            float single1 = BitConverter.ToSingle(d, offset);
+            var single1 = BitConverter.ToSingle(d, offset);
             offset += 4;
             return single1;
         }
@@ -122,14 +122,14 @@ namespace Mangos.Realm
         /* TODO ERROR: Skipped RegionDirectiveTrivia */
         public short ToInt16(byte[] d, ref int offset)
         {
-            short num1 = BitConverter.ToInt16(d, offset);
+            var num1 = BitConverter.ToInt16(d, offset);
             offset += 2;
             return num1;
         }
 
         public ushort ToUInt16(byte[] d, ref int offset)
         {
-            ushort num1 = BitConverter.ToUInt16(d, offset);
+            var num1 = BitConverter.ToUInt16(d, offset);
             offset += 2;
             return num1;
         }
@@ -137,14 +137,14 @@ namespace Mangos.Realm
         /* TODO ERROR: Skipped RegionDirectiveTrivia */
         public int ToInt32(byte[] d, ref int offset)
         {
-            int num1 = BitConverter.ToInt32(d, offset);
+            var num1 = BitConverter.ToInt32(d, offset);
             offset += 4;
             return num1;
         }
 
         public uint ToUInt32(byte[] d, ref int offset)
         {
-            uint num1 = BitConverter.ToUInt32(d, offset);
+            var num1 = BitConverter.ToUInt32(d, offset);
             offset += 4;
             return num1;
         }
@@ -152,14 +152,14 @@ namespace Mangos.Realm
         /* TODO ERROR: Skipped RegionDirectiveTrivia */
         public long ToInt64(byte[] d, ref int offset)
         {
-            long num1 = BitConverter.ToInt64(d, offset);
+            var num1 = BitConverter.ToInt64(d, offset);
             offset += 8;
             return num1;
         }
 
         public ulong ToUInt64(byte[] d, ref int offset)
         {
-            ulong num1 = BitConverter.ToUInt64(d, offset);
+            var num1 = BitConverter.ToUInt64(d, offset);
             offset += 8;
             return num1;
         }

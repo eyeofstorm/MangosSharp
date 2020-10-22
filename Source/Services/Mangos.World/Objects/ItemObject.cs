@@ -94,7 +94,7 @@ namespace Mangos.World.Objects
                 {
                     return byte.MaxValue;
                 }
-                WS_PlayerData.CharacterObject characterObject = WorldServiceLocator._WorldServer.CHARACTERs[OwnerGUID];
+                var characterObject = WorldServiceLocator._WorldServer.CHARACTERs[OwnerGUID];
                 byte i = 19;
                 do
                 {
@@ -102,7 +102,7 @@ namespace Mangos.World.Objects
                     {
                         if (characterObject.Items.ContainsKey(i))
                         {
-                            byte b = (byte)(characterObject.Items[i].ItemInfo.ContainerSlots - 1);
+                            var b = (byte)(characterObject.Items[i].ItemInfo.ContainerSlots - 1);
                             byte j = 0;
                             while (j <= (uint)b)
                             {
@@ -129,7 +129,7 @@ namespace Mangos.World.Objects
                 {
                     return -1;
                 }
-                WS_PlayerData.CharacterObject characterObject = WorldServiceLocator._WorldServer.CHARACTERs[OwnerGUID];
+                var characterObject = WorldServiceLocator._WorldServer.CHARACTERs[OwnerGUID];
                 byte i = 0;
                 do
                 {
@@ -163,7 +163,7 @@ namespace Mangos.World.Objects
                     {
                         if (characterObject.Items.ContainsKey(j))
                         {
-                            byte b = (byte)(characterObject.Items[j].ItemInfo.ContainerSlots - 1);
+                            var b = (byte)(characterObject.Items[j].ItemInfo.ContainerSlots - 1);
                             byte l = 0;
                             while (l <= (uint)b)
                             {
@@ -192,21 +192,21 @@ namespace Mangos.World.Objects
                 {
                     try
                     {
-                        int lostDurability = WorldServiceLocator._WorldServer.ITEMDatabase[ItemEntry].Durability - Durability;
+                        var lostDurability = WorldServiceLocator._WorldServer.ITEMDatabase[ItemEntry].Durability - Durability;
                         if (lostDurability > 300)
                         {
                             lostDurability = 300;
                         }
-                        int subClass = 0;
+                        var subClass = 0;
                         subClass = ((ItemInfo.ObjectClass != ITEM_CLASS.ITEM_CLASS_WEAPON) ? ((int)ItemInfo.SubClass + 21) : (int)ItemInfo.SubClass);
-                        uint durabilityCost = (uint)Math.Round(lostDurability * (WorldServiceLocator._WS_DBCDatabase.DurabilityCosts[ItemInfo.Level, subClass] / 40.0 * 100.0));
+                        var durabilityCost = (uint)Math.Round(lostDurability * (WorldServiceLocator._WS_DBCDatabase.DurabilityCosts[ItemInfo.Level, subClass] / 40.0 * 100.0));
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Durability cost: {0}", durabilityCost);
                         return durabilityCost;
                     }
                     catch (Exception projectError)
                     {
                         ProjectData.SetProjectError(projectError);
-                        uint GetDurabulityCost = 0u;
+                        var GetDurabulityCost = 0u;
                         ProjectData.ClearProjectError();
                         return GetDurabulityCost;
                     }
@@ -219,7 +219,7 @@ namespace Mangos.World.Objects
         [MethodImpl(MethodImplOptions.Synchronized)]
         private ulong GetNewGUID()
         {
-            ref ulong itemGuidCounter = ref WorldServiceLocator._WorldServer.itemGuidCounter;
+            ref var itemGuidCounter = ref WorldServiceLocator._WorldServer.itemGuidCounter;
             itemGuidCounter = Convert.ToUInt64(decimal.Add(new decimal(itemGuidCounter), 1m));
             return WorldServiceLocator._WorldServer.itemGuidCounter;
         }
@@ -272,7 +272,7 @@ namespace Mangos.World.Objects
                 }
                 update.SetUpdateFlag(12, GiftCreatorGUID);
                 update.SetUpdateFlag(14, StackCount);
-                int j = 0;
+                var j = 0;
                 do
                 {
                     if (ItemInfo.Spells[j].SpellTrigger == ITEM_SPELLTRIGGER_TYPE.USE || ItemInfo.Spells[j].SpellTrigger == ITEM_SPELLTRIGGER_TYPE.NO_DELAY_USE)
@@ -288,7 +288,7 @@ namespace Mangos.World.Objects
                 while (j <= 4);
                 update.SetUpdateFlag(21, _flags);
                 update.SetUpdateFlag(44, RandomProperties);
-                foreach (KeyValuePair<byte, WS_Items.TEnchantmentInfo> enchant in Enchantments)
+                foreach (var enchant in Enchantments)
                 {
                     update.SetUpdateFlag(22 + enchant.Key * 3, enchant.Value.ID);
                     update.SetUpdateFlag(22 + enchant.Key * 3 + 1, enchant.Value.Duration);
@@ -302,15 +302,15 @@ namespace Mangos.World.Objects
 
         public void SendContainedItemsUpdate(ref WS_Network.ClientClass client, int updatetype = 2)
         {
-            Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+            var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
             packet.AddInt32(Items.Count);
             packet.AddInt8(0);
-            foreach (KeyValuePair<byte, ItemObject> item in Items)
+            foreach (var item in Items)
             {
-                Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_ITEM);
+                var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_ITEM);
                 item.Value.FillAllUpdateFlags(ref tmpUpdate);
-                Packets.UpdateClass updateClass = tmpUpdate;
-                ItemObject updateObject = item.Value;
+                var updateClass = tmpUpdate;
+                var updateObject = item.Value;
                 updateClass.AddToPacket(ref packet, (ObjectUpdateType)updatetype, ref updateObject);
                 tmpUpdate.Dispose();
             }
@@ -335,7 +335,7 @@ namespace Mangos.World.Objects
             {
                 return true;
             }
-            DataTable mySqlQuery = new DataTable();
+            var mySqlQuery = new DataTable();
             WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM item_loot WHERE entry = {ItemEntry};", ref mySqlQuery);
             if (mySqlQuery.Rows.Count == 0)
             {
@@ -361,7 +361,7 @@ namespace Mangos.World.Objects
             Enchantments = new Dictionary<byte, WS_Items.TEnchantmentInfo>();
             _loot = null;
             ItemText = 0;
-            DataTable mySqlQuery = new DataTable();
+            var mySqlQuery = new DataTable();
             WorldServiceLocator._WorldServer.CharacterDatabase.Query($"SELECT * FROM characters_inventory WHERE item_guid = \"{guidVal}\";", ref mySqlQuery);
             if (mySqlQuery.Rows.Count == 0)
             {
@@ -378,17 +378,17 @@ namespace Mangos.World.Objects
             ItemEntry = mySqlQuery.Rows[0].As<int>("item_id");
             _flags = mySqlQuery.Rows[0].As<int>("item_flags");
             ItemText = mySqlQuery.Rows[0].As<int>("item_textId");
-            string[] tmp = Strings.Split(mySqlQuery.Rows[0].As<string>("item_enchantment"));
+            var tmp = Strings.Split(mySqlQuery.Rows[0].As<string>("item_enchantment"));
             checked
             {
                 if (tmp.Length > 0)
                 {
-                    int num = tmp.Length - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = tmp.Length - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (Operators.CompareString(Strings.Trim(tmp[i]), "", TextCompare: false) != 0)
                         {
-                            string[] tmp2 = Strings.Split(tmp[i], ":");
+                            var tmp2 = Strings.Split(tmp[i], ":");
                             Enchantments.Add(Conversions.ToByte(tmp2[0]), new WS_Items.TEnchantmentInfo(Conversions.ToInteger(tmp2[1]), Conversions.ToInteger(tmp2[2]), Conversions.ToInteger(tmp2[3])));
                             if (equipped)
                             {
@@ -399,7 +399,7 @@ namespace Mangos.World.Objects
                 }
                 if (!WorldServiceLocator._WorldServer.ITEMDatabase.ContainsKey(ItemEntry))
                 {
-                    WS_Items.ItemInfo tmpItem2 = new WS_Items.ItemInfo(ItemEntry);
+                    var tmpItem2 = new WS_Items.ItemInfo(ItemEntry);
                 }
                 InitializeBag();
                 mySqlQuery.Clear();
@@ -410,10 +410,10 @@ namespace Mangos.World.Objects
                     enumerator = mySqlQuery.Rows.GetEnumerator();
                     while (enumerator.MoveNext())
                     {
-                        DataRow row = (DataRow)enumerator.Current;
+                        var row = (DataRow)enumerator.Current;
                         if (Operators.ConditionalCompareObjectNotEqual(row["item_slot"], WorldServiceLocator._Global_Constants.ITEM_SLOT_NULL, TextCompare: false))
                         {
-                            ItemObject tmpItem = new ItemObject(row.As<long, ulong>("item_guid"));
+                            var tmpItem = new ItemObject(row.As<long, ulong>("item_guid"));
                             Items[row.As<byte>("item_slot")] = tmpItem;
                         }
                     }
@@ -446,12 +446,12 @@ namespace Mangos.World.Objects
             {
                 if (!WorldServiceLocator._WorldServer.ITEMDatabase.ContainsKey(itemId))
                 {
-                    WS_Items.ItemInfo tmpItem = new WS_Items.ItemInfo(itemId);
+                    var tmpItem = new WS_Items.ItemInfo(itemId);
                 }
                 ItemEntry = itemId;
                 OwnerGUID = owner;
                 Durability = WorldServiceLocator._WorldServer.ITEMDatabase[ItemEntry].Durability;
-                int i = 0;
+                var i = 0;
                 do
                 {
                     if ((WorldServiceLocator._WorldServer.ITEMDatabase[ItemEntry].Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_TYPE.USE || WorldServiceLocator._WorldServer.ITEMDatabase[ItemEntry].Spells[i].SpellTrigger == ITEM_SPELLTRIGGER_TYPE.NO_DELAY_USE) && WorldServiceLocator._WorldServer.ITEMDatabase[ItemEntry].Spells[i].SpellCharges != 0)
@@ -477,8 +477,8 @@ namespace Mangos.World.Objects
 
         private void SaveAsNew()
         {
-            string tmpCmd = "INSERT INTO characters_inventory (item_guid";
-            string tmpValues = " VALUES (" + Conversions.ToString(checked(GUID - WorldServiceLocator._Global_Constants.GUID_ITEM));
+            var tmpCmd = "INSERT INTO characters_inventory (item_guid";
+            var tmpValues = " VALUES (" + Conversions.ToString(checked(GUID - WorldServiceLocator._Global_Constants.GUID_ITEM));
             tmpCmd += ", item_owner";
             tmpValues = tmpValues + ", \"" + Conversions.ToString(OwnerGUID) + "\"";
             tmpCmd += ", item_creator";
@@ -497,8 +497,8 @@ namespace Mangos.World.Objects
             tmpValues = tmpValues + ", " + Conversions.ToString(ItemEntry);
             tmpCmd += ", item_flags";
             tmpValues = tmpValues + ", " + Conversions.ToString(_flags);
-            ArrayList temp = new ArrayList();
-            foreach (KeyValuePair<byte, WS_Items.TEnchantmentInfo> enchantment in Enchantments)
+            var temp = new ArrayList();
+            foreach (var enchantment in Enchantments)
             {
                 temp.Add($"{enchantment.Key}:{enchantment.Value.ID}:{enchantment.Value.Duration}:{enchantment.Value.Charges}");
             }
@@ -512,7 +512,7 @@ namespace Mangos.World.Objects
 
         public void Save(bool saveAll = true)
         {
-            string tmp = "UPDATE characters_inventory SET";
+            var tmp = "UPDATE characters_inventory SET";
             tmp = tmp + " item_owner=\"" + Conversions.ToString(OwnerGUID) + "\"";
             tmp = tmp + ", item_creator=" + Conversions.ToString(CreatorGUID);
             tmp = tmp + ", item_giftCreator=" + Conversions.ToString(GiftCreatorGUID);
@@ -521,8 +521,8 @@ namespace Mangos.World.Objects
             tmp = tmp + ", item_chargesLeft=" + Conversions.ToString(ChargesLeft);
             tmp = tmp + ", item_random_properties=" + Conversions.ToString(RandomProperties);
             tmp = tmp + ", item_flags=" + Conversions.ToString(_flags);
-            ArrayList temp = new ArrayList();
-            foreach (KeyValuePair<byte, WS_Items.TEnchantmentInfo> enchantment in Enchantments)
+            var temp = new ArrayList();
+            foreach (var enchantment in Enchantments)
             {
                 temp.Add($"{enchantment.Key}:{enchantment.Value.ID}:{enchantment.Value.Duration}:{enchantment.Value.Charges}");
             }
@@ -534,7 +534,7 @@ namespace Mangos.World.Objects
             {
                 return;
             }
-            foreach (KeyValuePair<byte, ItemObject> item in Items)
+            foreach (var item in Items)
             {
                 item.Value.Save();
             }
@@ -551,7 +551,7 @@ namespace Mangos.World.Objects
                 WorldServiceLocator._WorldServer.CharacterDatabase.Update($"DELETE FROM characters_inventory WHERE item_guid = {GUID - WorldServiceLocator._Global_Constants.GUID_ITEM}");
                 if (WorldServiceLocator._WorldServer.ITEMDatabase[ItemEntry].IsContainer)
                 {
-                    foreach (KeyValuePair<byte, ItemObject> item in Items)
+                    foreach (var item in Items)
                     {
                         item.Value.Delete();
                     }
@@ -567,7 +567,7 @@ namespace Mangos.World.Objects
                 WorldServiceLocator._WorldServer.WORLD_ITEMs.Remove(GUID);
                 if (WorldServiceLocator._WorldServer.ITEMDatabase[ItemEntry].IsContainer)
                 {
-                    foreach (KeyValuePair<byte, ItemObject> item in Items)
+                    foreach (var item in Items)
                     {
                         item.Value.Dispose();
                     }
@@ -601,7 +601,7 @@ namespace Mangos.World.Objects
         {
             if (WorldServiceLocator._WorldServer.ITEMDatabase[ItemEntry].Durability > 0)
             {
-                ref int durability = ref Durability;
+                ref var durability = ref Durability;
                 durability = checked((int)Math.Round(durability - Conversion.Fix(WorldServiceLocator._WorldServer.ITEMDatabase[ItemEntry].Durability * percent)));
                 if (Durability < 0)
                 {
@@ -634,12 +634,12 @@ namespace Mangos.World.Objects
 
         private void UpdateDurability(ref WS_Network.ClientClass client)
         {
-            Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+            var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
             packet.AddInt32(1);
             packet.AddInt8(0);
-            Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_ITEM);
+            var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_ITEM);
             tmpUpdate.SetUpdateFlag(46, Durability);
-            ItemObject updateObject = this;
+            var updateObject = this;
             tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
             tmpUpdate.Dispose();
             client.Send(ref packet);
@@ -677,16 +677,16 @@ namespace Mangos.World.Objects
                 {
                     if (WorldServiceLocator._WS_DBCDatabase.SpellItemEnchantments[Enchantments[slot].ID].SpellID[i] != 0 && WorldServiceLocator._WS_Spells.SPELLs.ContainsKey(WorldServiceLocator._WS_DBCDatabase.SpellItemEnchantments[Enchantments[slot].ID].SpellID[i]))
                     {
-                        WS_Spells.SpellInfo spellInfo = WorldServiceLocator._WS_Spells.SPELLs[WorldServiceLocator._WS_DBCDatabase.SpellItemEnchantments[Enchantments[slot].ID].SpellID[i]];
+                        var spellInfo = WorldServiceLocator._WS_Spells.SPELLs[WorldServiceLocator._WS_DBCDatabase.SpellItemEnchantments[Enchantments[slot].ID].SpellID[i]];
                         byte j = 0;
                         do
                         {
                             if (spellInfo.SpellEffects[j] != null)
                             {
-                                SpellEffects_Names iD = spellInfo.SpellEffects[j].ID;
+                                var iD = spellInfo.SpellEffects[j].ID;
                                 if (iD == SpellEffects_Names.SPELL_EFFECT_APPLY_AURA)
                                 {
-                                    WS_Spells.ApplyAuraHandler obj = WorldServiceLocator._WS_Spells.AURAs[spellInfo.SpellEffects[j].ApplyAuraIndex];
+                                    var obj = WorldServiceLocator._WS_Spells.AURAs[spellInfo.SpellEffects[j].ApplyAuraIndex];
                                     WS_Base.BaseUnit Target = objCharacter;
                                     WS_Base.BaseObject Caster = objCharacter;
                                     obj(ref Target, ref Caster, ref spellInfo.SpellEffects[j], spellInfo.ID, 1, AuraAction.AURA_ADD);
@@ -716,16 +716,16 @@ namespace Mangos.World.Objects
                 {
                     if (WorldServiceLocator._WS_DBCDatabase.SpellItemEnchantments[Enchantments[slot].ID].SpellID[i] != 0 && WorldServiceLocator._WS_Spells.SPELLs.ContainsKey(WorldServiceLocator._WS_DBCDatabase.SpellItemEnchantments[Enchantments[slot].ID].SpellID[i]))
                     {
-                        WS_Spells.SpellInfo spellInfo = WorldServiceLocator._WS_Spells.SPELLs[WorldServiceLocator._WS_DBCDatabase.SpellItemEnchantments[Enchantments[slot].ID].SpellID[i]];
+                        var spellInfo = WorldServiceLocator._WS_Spells.SPELLs[WorldServiceLocator._WS_DBCDatabase.SpellItemEnchantments[Enchantments[slot].ID].SpellID[i]];
                         byte j = 0;
                         do
                         {
                             if (spellInfo.SpellEffects[j] != null)
                             {
-                                SpellEffects_Names iD = spellInfo.SpellEffects[j].ID;
+                                var iD = spellInfo.SpellEffects[j].ID;
                                 if (iD == SpellEffects_Names.SPELL_EFFECT_APPLY_AURA)
                                 {
-                                    WS_Spells.ApplyAuraHandler obj = WorldServiceLocator._WS_Spells.AURAs[spellInfo.SpellEffects[j].ApplyAuraIndex];
+                                    var obj = WorldServiceLocator._WS_Spells.AURAs[spellInfo.SpellEffects[j].ApplyAuraIndex];
                                     Dictionary<ulong, WS_PlayerData.CharacterObject> cHARACTERs;
                                     ulong ownerGUID;
                                     WS_Base.BaseUnit Target = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[ownerGUID = OwnerGUID];
@@ -757,14 +757,14 @@ namespace Mangos.World.Objects
                     Enchantments.Remove(slot);
                     if (WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(OwnerGUID))
                     {
-                        Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                        var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                         packet.AddInt32(1);
                         packet.AddInt8(0);
-                        Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_ITEM);
+                        var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_ITEM);
                         tmpUpdate.SetUpdateFlag(22 + slot * 3, 0);
                         tmpUpdate.SetUpdateFlag(22 + slot * 3 + 1, 0);
                         tmpUpdate.SetUpdateFlag(22 + slot * 3 + 2, 0);
-                        ItemObject updateObject = this;
+                        var updateObject = this;
                         tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                         WorldServiceLocator._WorldServer.CHARACTERs[OwnerGUID].client.Send(ref packet);
                         packet.Dispose();
@@ -782,12 +782,12 @@ namespace Mangos.World.Objects
                 Save();
                 if (client != null)
                 {
-                    Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                    var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                     packet.AddInt32(1);
                     packet.AddInt8(0);
-                    Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_ITEM);
+                    var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_ITEM);
                     tmpUpdate.SetUpdateFlag(21, _flags);
-                    ItemObject updateObject = this;
+                    var updateObject = this;
                     tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                     client.Send(ref packet);
                     packet.Dispose();

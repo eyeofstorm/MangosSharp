@@ -161,7 +161,7 @@ namespace Mangos.Cluster.Handlers
                     PositionZ = MySQLQuery.Rows[0].As<float>("char_positionZ");
 
                     // DONE: Get guild info
-                    uint GuildID = MySQLQuery.Rows[0].As<uint>("char_guildId");
+                    var GuildID = MySQLQuery.Rows[0].As<uint>("char_guildId");
                     if (GuildID > 0L)
                     {
                         if (clusterServiceLocator._WC_Guild.GUILDs.ContainsKey(GuildID) == false)
@@ -331,7 +331,7 @@ namespace Mangos.Cluster.Handlers
                 clusterServiceLocator._WC_Guild.NotifyGuildStatus(argobjCharacter2, GuildEvent.SIGNED_ON);
 
                 // DONE: Put back character in group if disconnected
-                foreach (KeyValuePair<long, WC_Handlers_Group.Group> tmpGroup in clusterServiceLocator._WC_Handlers_Group.GROUPs)
+                foreach (var tmpGroup in clusterServiceLocator._WC_Handlers_Group.GROUPs)
                 {
                     for (byte i = 0, loopTo = (byte)(tmpGroup.Value.Members.Length - 1); i <= loopTo; i++)
                     {
@@ -375,7 +375,7 @@ namespace Mangos.Cluster.Handlers
 
             public void SendGuildUpdate()
             {
-                uint GuildID = 0U;
+                var GuildID = 0U;
                 if (Guild is object)
                     GuildID = Guild.ID;
                 GetWorld.GuildUpdate(Guid, GuildID, GuildRank);
@@ -400,9 +400,9 @@ namespace Mangos.Cluster.Handlers
 
         public ulong GetCharacterGUIDByName(string Name)
         {
-            ulong GUID = 0UL;
+            var GUID = 0UL;
             clusterServiceLocator._WorldCluster.CHARACTERs_Lock.AcquireReaderLock(clusterServiceLocator._Global_Constants.DEFAULT_LOCK_TIMEOUT);
-            foreach (KeyValuePair<ulong, CharacterObject> objCharacter in clusterServiceLocator._WorldCluster.CHARACTERs)
+            foreach (var objCharacter in clusterServiceLocator._WorldCluster.CHARACTERs)
             {
                 if (clusterServiceLocator._CommonFunctions.UppercaseFirstLetter(objCharacter.Value.Name) == clusterServiceLocator._CommonFunctions.UppercaseFirstLetter(Name))
                 {

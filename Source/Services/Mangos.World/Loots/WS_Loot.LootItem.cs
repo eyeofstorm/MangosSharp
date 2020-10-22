@@ -38,7 +38,7 @@ namespace Mangos.World.Loots
                 {
                     if (!WorldServiceLocator._WorldServer.ITEMDatabase.ContainsKey(ItemID))
                     {
-                        WS_Items.ItemInfo tmpItem = new WS_Items.ItemInfo(ItemID);
+                        var tmpItem = new WS_Items.ItemInfo(ItemID);
                         try
                         {
                             WorldServiceLocator._WorldServer.ITEMDatabase.Remove(ItemID);

@@ -168,9 +168,9 @@ namespace Mangos.World
         {
             try
             {
-                string FileName = "configs/WorldServer.ini";
-                string[] args = Environment.GetCommandLineArgs();
-                string[] array = args;
+                var FileName = "configs/WorldServer.ini";
+                var args = Environment.GetCommandLineArgs();
+                var array = args;
                 foreach (var arg in from string arg in array
                                     where arg.IndexOf("config") != -1
                                     select arg)
@@ -188,14 +188,14 @@ namespace Mangos.World
                     ProjectData.EndApp();
                 }
                 Console.Write("[{0}] Loading Configuration from {1}...", Strings.Format(DateAndTime.TimeOfDay, "hh:mm:ss"), FileName);
-                WorldServerConfiguration configuration = WorldServiceLocator._ConfigurationProvider.GetConfiguration();
+                var configuration = WorldServiceLocator._ConfigurationProvider.GetConfiguration();
                 Console.WriteLine(".[done]");
                 if (!configuration.VMapsEnabled)
                 {
                     configuration.LineOfSightEnabled = false;
                     configuration.HeightCalcEnabled = false;
                 }
-                string[] AccountDBSettings = Strings.Split(configuration.AccountDatabase, ";");
+                var AccountDBSettings = Strings.Split(configuration.AccountDatabase, ";");
                 if (AccountDBSettings.Length == 6)
                 {
                     AccountDatabase.SQLDBName = AccountDBSettings[4];
@@ -209,7 +209,7 @@ namespace Mangos.World
                 {
                     Console.WriteLine("Invalid connect string for the account database!");
                 }
-                string[] CharacterDBSettings = Strings.Split(configuration.CharacterDatabase, ";");
+                var CharacterDBSettings = Strings.Split(configuration.CharacterDatabase, ";");
                 if (CharacterDBSettings.Length == 6)
                 {
                     CharacterDatabase.SQLDBName = CharacterDBSettings[4];
@@ -223,7 +223,7 @@ namespace Mangos.World
                 {
                     Console.WriteLine("Invalid connect string for the character database!");
                 }
-                string[] WorldDBSettings = Strings.Split(configuration.WorldDatabase, ";");
+                var WorldDBSettings = Strings.Split(configuration.WorldDatabase, ";");
                 if (WorldDBSettings.Length == 6)
                 {
                     WorldDatabase.SQLDBName = WorldDBSettings[4];
@@ -252,7 +252,7 @@ namespace Mangos.World
             catch (Exception ex)
             {
                 ProjectData.SetProjectError(ex);
-                Exception e = ex;
+                var e = ex;
                 Console.WriteLine(e.ToString());
                 ProjectData.ClearProjectError();
             }
@@ -336,16 +336,16 @@ namespace Mangos.World
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("");
             Console.ForegroundColor = ConsoleColor.Gray;
-            DateTime dateTimeStarted = DateAndTime.Now;
+            var dateTimeStarted = DateAndTime.Now;
             Log.WriteLine(LogType.INFORMATION, "[{0}] World Server Starting...", Strings.Format(DateAndTime.TimeOfDay, "hh:mm:ss"));
-            AppDomain currentDomain = AppDomain.CurrentDomain;
+            var currentDomain = AppDomain.CurrentDomain;
             currentDomain.UnhandledException += GenericExceptionHandler;
             LoadConfig();
             Console.ForegroundColor = ConsoleColor.Gray;
             AccountDatabase.SQLMessage += AccountSQLEventHandler;
             CharacterDatabase.SQLMessage += CharacterSQLEventHandler;
             WorldDatabase.SQLMessage += WorldSQLEventHandler;
-            int ReturnValues = AccountDatabase.Connect();
+            var ReturnValues = AccountDatabase.Connect();
             if (ReturnValues > 0)
             {
                 Console.WriteLine("[{0}] An SQL Error has occurred", Strings.Format(DateAndTime.TimeOfDay, "hh:mm:ss"));
@@ -378,7 +378,7 @@ namespace Mangos.World
                 ProjectData.EndApp();
             }
             WorldDatabase.Update("SET NAMES 'utf8';");
-            bool areDbVersionsOk = true;
+            var areDbVersionsOk = true;
             if (!WorldServiceLocator._CommonGlobalFunctions.CheckRequiredDbVersion(AccountDatabase, ServerDb.Realm))
             {
                 areDbVersionsOk = false;
@@ -405,7 +405,7 @@ namespace Mangos.World
             await AllGraveYards.InitializeGraveyardsAsync();
             WorldServiceLocator._WS_Transports.LoadTransports();
             ClsWorldServer = new WS_Network.WorldServerClass(WorldServiceLocator._DataStoreProvider);
-            WorldServerConfiguration configuration = WorldServiceLocator._ConfigurationProvider.GetConfiguration();
+            var configuration = WorldServiceLocator._ConfigurationProvider.GetConfiguration();
             server = new ProxyServer<WS_Network.WorldServerClass>(Dns.GetHostAddresses(configuration.LocalConnectHost)[0], configuration.LocalConnectPort, ClsWorldServer);
             ClsWorldServer.ClusterConnect();
             Log.WriteLine(LogType.INFORMATION, "Interface UP at: {0}", ClsWorldServer.LocalURI);
@@ -427,7 +427,7 @@ namespace Mangos.World
             catch (Exception ex2)
             {
                 ProjectData.SetProjectError(ex2);
-                Exception ex = ex2;
+                var ex = ex2;
                 WorldServiceLocator._WS_TimerBasedEvents.Regenerator.Dispose();
                 AreaTriggers.Dispose();
                 ProjectData.ClearProjectError();
@@ -436,19 +436,19 @@ namespace Mangos.World
 
         public void WaitConsoleCommand()
         {
-            string tmp = "";
-            string[] cmd = new string[0];
+            var tmp = "";
+            var cmd = new string[0];
             while (!ClsWorldServer._flagStopListen)
             {
                 try
                 {
                     tmp = Log.ReadLine();
-                    string[] CommandList = tmp.Split(";");
-                    int num = Information.LBound(CommandList);
-                    int num2 = Information.UBound(CommandList);
-                    for (int varList = num; varList <= num2; varList = checked(varList + 1))
+                    var CommandList = tmp.Split(";");
+                    var num = Information.LBound(CommandList);
+                    var num2 = Information.UBound(CommandList);
+                    for (var varList = num; varList <= num2; varList = checked(varList + 1))
                     {
-                        string[] cmds = Strings.Split(CommandList[varList], " ", 2);
+                        var cmds = Strings.Split(CommandList[varList], " ", 2);
                         if (CommandList[varList].Length > 0)
                         {
                             switch (cmds[0].ToLower())
@@ -485,7 +485,7 @@ namespace Mangos.World
                 catch (Exception ex)
                 {
                     ProjectData.SetProjectError(ex);
-                    Exception e = ex;
+                    var e = ex;
                     Log.WriteLine(LogType.FAILED, "Error executing command [{0}]. {2}{1}", Strings.Format(DateAndTime.TimeOfDay, "hh:mm:ss"), tmp, e.ToString(), Environment.NewLine);
                     ProjectData.ClearProjectError();
                 }
@@ -504,7 +504,7 @@ namespace Mangos.World
                 throw new ArgumentNullException(nameof(e));
             }
 
-            Exception EX = (Exception)e.ExceptionObject;
+            var EX = (Exception)e.ExceptionObject;
             Log.WriteLine(LogType.CRITICAL, EX + Environment.NewLine);
             Log.WriteLine(LogType.FAILED, "Unexpected error has occured. An 'WorldServer-Error-yyyy-mmm-d-h-mm.log' file has been created. Check your log folder for more information.");
             new StreamWriter(new FileStream(string.Format("WorldServer-Error-{0}.log", Strings.Format(DateAndTime.Now, "yyyy-MMM-d-H-mm")), FileMode.Create)).Write(EX.ToString());

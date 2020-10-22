@@ -106,7 +106,7 @@ namespace Mangos.Realm
             var body = await reader.ReadAsync(length).ToListAsync();
             var data = new byte[1].Concat(header).Concat(body).ToArray();
 
-            int iUpper = data[33] - 1;
+            var iUpper = data[33] - 1;
             string packetAccount;
             string packetIp;
             AccountState accState; // = AccountState.LOGIN_DBBUSY
@@ -125,7 +125,7 @@ namespace Mangos.Realm
             int bMinor = data[9];
             int bRevision = data[10];
             int clientBuild = BitConverter.ToInt16(new[] { data[11], data[12] }, 0);
-            string clientLanguage = Conversions.ToString((char)data[24]) + (char)data[23] + (char)data[22] + (char)data[21];
+            var clientLanguage = Conversions.ToString((char)data[24]) + (char)data[23] + (char)data[22] + (char)data[21];
 
             // DONE: Check if our build can join the server
             // If ((RequiredVersion1 = 0 AndAlso RequiredVersion2 = 0 AndAlso RequiredVersion3 = 0) OrElse
@@ -179,7 +179,7 @@ namespace Mangos.Realm
                             {
                                 Access = (AccessLevel)Enum.Parse(typeof(AccessLevel), accountInfo.gmlevel);
                                 var hash = new byte[20];
-                                for (int i = 0; i <= 39; i += 2)
+                                for (var i = 0; i <= 39; i += 2)
                                     hash[i / 2] = (byte)Conversions.ToInteger(Operators.ConcatenateObject("&H", accountInfo.sha_pass_hash.Substring(i, 2)));
 
                                 // Language = clientLanguage
@@ -303,7 +303,7 @@ namespace Mangos.Realm
                 var dataResponse = new byte[31];
                 dataResponse[0] = (byte)AuthCMD.CMD_XFER_INITIATE;
                 // Name Len 0x05 -> sizeof(Patch)
-                int i = 1;
+                var i = 1;
                 converter.ToBytes(Conversions.ToByte(5), dataResponse, ref i);
                 // Name 'Patch'
                 converter.ToBytes("Patch", dataResponse, ref i);
@@ -354,7 +354,7 @@ namespace Mangos.Realm
             // AuthEngine.CalculateCRCHash()
 
             // Check M1=ClientM1
-            bool passCheck = true;
+            var passCheck = true;
             for (byte i = 0; i <= 19; i++)
             {
                 if (m1[i] != authEngineClass.M1[i])
@@ -387,10 +387,10 @@ namespace Mangos.Realm
                 await writer.WriteAsync(dataResponse);
 
                 // Set SSHash in DB
-                string sshash = "";
+                var sshash = "";
 
                 // For i as Integer = 0 To AuthEngine.SS_Hash.Length - 1
-                for (int i = 0; i <= 40 - 1; i++)
+                for (var i = 0; i <= 40 - 1; i++)
                     sshash = authEngineClass.SsHash[i] < 16 ? sshash + "0" + Conversion.Hex(authEngineClass.SsHash[i]) : sshash + Conversion.Hex(authEngineClass.SsHash[i]);
                 await accountStorage.UpdateAccountAsync(sshash, remoteEnpoint.Address.ToString(), Strings.Format(DateAndTime.Now, "yyyy-MM-dd"), Account);
                 logger.Debug("Auth success for user {0} [{1}]", Account, sshash);
@@ -402,7 +402,7 @@ namespace Mangos.Realm
             var body = await reader.ReadAsync(4).ToListAsync();
             var data = new byte[1].Concat(body).ToArray();
 
-            int packetLen = 0;
+            var packetLen = 0;
 
             // Fetch RealmList Data
             var realmList = await accountStorage.GetRealmListAsync();
@@ -434,7 +434,7 @@ namespace Mangos.Realm
             // (uint16) Realms Count
             dataResponse[7] = (byte)realmList.Count();
             dataResponse[8] = 0;
-            int tmp = 8;
+            var tmp = 8;
             foreach (var realmListItem in realmList)
             {
                 // Get Number of Characters for the Realm

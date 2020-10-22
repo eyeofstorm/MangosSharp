@@ -128,9 +128,9 @@ namespace Mangos.World.Globals
                     }
                     if (updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT || updateType == ObjectUpdateType.UPDATETYPE_VALUES)
                     {
-                        int updateCount = 0;
-                        int num = UpdateMask.Count - 1;
-                        for (int i = 0; i <= num; i++)
+                        var updateCount = 0;
+                        var num = UpdateMask.Count - 1;
+                        for (var i = 0; i <= num; i++)
                         {
                             if (UpdateMask.Get(i))
                             {
@@ -139,8 +139,8 @@ namespace Mangos.World.Globals
                         }
                         packet.AddInt8((byte)(checked(updateCount + 32) / 32));
                         packet.AddBitArray(UpdateMask, checked((byte)(checked(updateCount + 32) / 32)) * 4);
-                        int num2 = UpdateMask.Count - 1;
-                        for (int j = 0; j <= num2; j++)
+                        var num2 = UpdateMask.Count - 1;
+                        for (var j = 0; j <= num2; j++)
                         {
                             if (UpdateMask.Get(j))
                             {
@@ -177,7 +177,7 @@ namespace Mangos.World.Globals
                 }
                 if (updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT || updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF || updateType == ObjectUpdateType.UPDATETYPE_MOVEMENT)
                 {
-                    int flags2 = updateObject.charMovementFlags & 0xFF;
+                    var flags2 = updateObject.charMovementFlags & 0xFF;
                     if (updateObject.OnTransport != null)
                     {
                         flags2 |= 0x2000000;
@@ -210,9 +210,9 @@ namespace Mangos.World.Globals
                 {
                     if (updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT || updateType == ObjectUpdateType.UPDATETYPE_VALUES || updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF)
                     {
-                        int updateCount = 0;
-                        int num = UpdateMask.Count - 1;
-                        for (int i = 0; i <= num; i++)
+                        var updateCount = 0;
+                        var num = UpdateMask.Count - 1;
+                        for (var i = 0; i <= num; i++)
                         {
                             if (UpdateMask.Get(i))
                             {
@@ -221,8 +221,8 @@ namespace Mangos.World.Globals
                         }
                         packet.AddInt8((byte)(checked(updateCount + 32) / 32));
                         packet.AddBitArray(UpdateMask, checked((byte)(checked(updateCount + 32) / 32)) * 4);
-                        int num2 = UpdateMask.Count - 1;
-                        for (int j = 0; j <= num2; j++)
+                        var num2 = UpdateMask.Count - 1;
+                        for (var j = 0; j <= num2; j++)
                         {
                             if (UpdateMask.Get(j))
                             {
@@ -270,9 +270,9 @@ namespace Mangos.World.Globals
                     }
                     if (updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT || updateType == ObjectUpdateType.UPDATETYPE_VALUES)
                     {
-                        int updateCount = 0;
-                        int num = UpdateMask.Count - 1;
-                        for (int j = 0; j <= num; j++)
+                        var updateCount = 0;
+                        var num = UpdateMask.Count - 1;
+                        for (var j = 0; j <= num; j++)
                         {
                             if (UpdateMask.Get(j))
                             {
@@ -281,8 +281,8 @@ namespace Mangos.World.Globals
                         }
                         packet.AddInt8((byte)(checked(updateCount + 32) / 32));
                         packet.AddBitArray(UpdateMask, checked((byte)(checked(updateCount + 32) / 32)) * 4);
-                        int num2 = UpdateMask.Count - 1;
-                        for (int i = 0; i <= num2; i++)
+                        var num2 = UpdateMask.Count - 1;
+                        for (var i = 0; i <= num2; i++)
                         {
                             if (UpdateMask.Get(i))
                             {
@@ -357,9 +357,9 @@ namespace Mangos.World.Globals
                     }
                     if (updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT || updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF || updateType == ObjectUpdateType.UPDATETYPE_VALUES)
                     {
-                        int updateCount = 0;
-                        int num = UpdateMask.Count - 1;
-                        for (int i = 0; i <= num; i++)
+                        var updateCount = 0;
+                        var num = UpdateMask.Count - 1;
+                        for (var i = 0; i <= num; i++)
                         {
                             if (UpdateMask.Get(i))
                             {
@@ -368,8 +368,8 @@ namespace Mangos.World.Globals
                         }
                         packet.AddInt8((byte)(checked(updateCount + 32) / 32));
                         packet.AddBitArray(UpdateMask, checked((byte)(checked(updateCount + 32) / 32)) * 4);
-                        int num2 = UpdateMask.Count - 1;
-                        for (int j = 0; j <= num2; j++)
+                        var num2 = UpdateMask.Count - 1;
+                        for (var j = 0; j <= num2; j++)
                         {
                             if (UpdateMask.Get(j))
                             {
@@ -414,9 +414,9 @@ namespace Mangos.World.Globals
                     }
                     if (updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT || updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF || updateType == ObjectUpdateType.UPDATETYPE_VALUES)
                     {
-                        int updateCount = 0;
-                        int num = UpdateMask.Count - 1;
-                        for (int i = 0; i <= num; i++)
+                        var updateCount = 0;
+                        var num = UpdateMask.Count - 1;
+                        for (var i = 0; i <= num; i++)
                         {
                             if (UpdateMask.Get(i))
                             {
@@ -425,8 +425,8 @@ namespace Mangos.World.Globals
                         }
                         packet.AddInt8((byte)(checked(updateCount + 32) / 32));
                         packet.AddBitArray(UpdateMask, checked((byte)(checked(updateCount + 32) / 32)) * 4);
-                        int num2 = UpdateMask.Count - 1;
-                        for (int j = 0; j <= num2; j++)
+                        var num2 = UpdateMask.Count - 1;
+                        for (var j = 0; j <= num2; j++)
                         {
                             if (UpdateMask.Get(j))
                             {
@@ -471,9 +471,9 @@ namespace Mangos.World.Globals
                     }
                     if (updateType == ObjectUpdateType.UPDATETYPE_CREATE_OBJECT || updateType == ObjectUpdateType.UPDATETYPE_VALUES)
                     {
-                        int updateCount = 0;
-                        int num = UpdateMask.Count - 1;
-                        for (int j = 0; j <= num; j++)
+                        var updateCount = 0;
+                        var num = UpdateMask.Count - 1;
+                        for (var j = 0; j <= num; j++)
                         {
                             if (UpdateMask.Get(j))
                             {
@@ -482,8 +482,8 @@ namespace Mangos.World.Globals
                         }
                         packet.AddInt8((byte)(checked(updateCount + 32) / 32));
                         packet.AddBitArray(UpdateMask, checked((byte)(checked(updateCount + 32) / 32)) * 4);
-                        int num2 = UpdateMask.Count - 1;
-                        for (int i = 0; i <= num2; i++)
+                        var num2 = UpdateMask.Count - 1;
+                        for (var i = 0; i <= num2; i++)
                         {
                             if (UpdateMask.Get(i))
                             {

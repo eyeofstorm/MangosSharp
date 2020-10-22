@@ -47,7 +47,7 @@ namespace Mangos.World.Warden
 
             public void Do_MEM_CHECK(string ScanModule, int Offset, byte Length)
             {
-                CheatCheck newCheck = new CheatCheck(CheckTypes.MEM_CHECK)
+                var newCheck = new CheatCheck(CheckTypes.MEM_CHECK)
                 {
                     Str = ScanModule,
                     Addr = Offset,
@@ -62,7 +62,7 @@ namespace Mangos.World.Warden
 
             public void Do_PAGE_CHECK_A_B(int Seed, byte[] Hash, int Offset, byte Length)
             {
-                CheatCheck newCheck = new CheatCheck(CheckTypes.PAGE_CHECK_A_B)
+                var newCheck = new CheatCheck(CheckTypes.PAGE_CHECK_A_B)
                 {
                     Seed = Seed,
                     Hash = Hash,
@@ -74,7 +74,7 @@ namespace Mangos.World.Warden
 
             public void Do_MPQ_CHECK(string File)
             {
-                CheatCheck newCheck = new CheatCheck(CheckTypes.MPQ_CHECK)
+                var newCheck = new CheatCheck(CheckTypes.MPQ_CHECK)
                 {
                     Str = File
                 };
@@ -84,7 +84,7 @@ namespace Mangos.World.Warden
 
             public void Do_LUA_STR_CHECK(string str)
             {
-                CheatCheck newCheck = new CheatCheck(CheckTypes.LUA_STR_CHECK)
+                var newCheck = new CheatCheck(CheckTypes.LUA_STR_CHECK)
                 {
                     Str = str
                 };
@@ -94,7 +94,7 @@ namespace Mangos.World.Warden
 
             public void Do_DRIVER_CHECK(int Seed, byte[] Hash, string Driver)
             {
-                CheatCheck newCheck = new CheatCheck(CheckTypes.DRIVER_CHECK)
+                var newCheck = new CheatCheck(CheckTypes.DRIVER_CHECK)
                 {
                     Seed = Seed,
                     Hash = Hash,
@@ -106,13 +106,13 @@ namespace Mangos.World.Warden
 
             public void Do_TIMING_CHECK()
             {
-                CheatCheck newCheck = new CheatCheck(CheckTypes.TIMING_CHECK);
+                var newCheck = new CheatCheck(CheckTypes.TIMING_CHECK);
                 Checks.Add(newCheck);
             }
 
             public void Do_PROC_CHECK(int Seed, byte[] Hash, string ScanModule, string ProcName, int Offset, byte Length)
             {
-                CheatCheck newCheck = new CheatCheck(CheckTypes.PROC_CHECK)
+                var newCheck = new CheatCheck(CheckTypes.PROC_CHECK)
                 {
                     Seed = Seed,
                     Hash = Hash,
@@ -128,7 +128,7 @@ namespace Mangos.World.Warden
 
             public void Do_MODULE_CHECK(int Seed, byte[] Hash)
             {
-                CheatCheck newCheck = new CheatCheck(CheckTypes.MODULE_CHECK)
+                var newCheck = new CheatCheck(CheckTypes.MODULE_CHECK)
                 {
                     Seed = Seed,
                     Hash = Hash
@@ -138,18 +138,18 @@ namespace Mangos.World.Warden
 
             public Packets.PacketClass GetPacket()
             {
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_WARDEN_DATA);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_WARDEN_DATA);
                 packet.AddInt8(2);
-                foreach (string tmpStr in UsedStrings)
+                foreach (var tmpStr in UsedStrings)
                 {
                     packet.AddString2(tmpStr);
                 }
                 packet.AddInt8(0);
                 byte i = 0;
-                foreach (CheatCheck Check in Checks)
+                foreach (var Check in Checks)
                 {
                     byte xorCheck = (byte)(WorldServiceLocator._WS_Warden.Maiev.CheckIDs[(uint)Check.Type] ^ Character.WardenData.xorByte);
-                    byte[] checkData = Check.ToData(xorCheck, ref i);
+                    var checkData = Check.ToData(xorCheck, ref i);
                     packet.AddByteArray(checkData);
                 }
                 packet.AddInt8(Character.WardenData.xorByte);
@@ -164,53 +164,53 @@ namespace Mangos.World.Warden
 
             public void HandleResponse(ref Packets.PacketClass p)
             {
-                foreach (CheatCheck Check in Checks)
+                foreach (var Check in Checks)
                 {
                     switch (Check.Type)
                     {
                         case CheckTypes.MEM_CHECK:
                             {
-                                byte result = p.GetInt8();
-                                byte[] bytes = p.GetByteArray();
+                                var result = p.GetInt8();
+                                var bytes = p.GetByteArray();
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[WARDEN] [{0}] Result={1} Bytes=0x{2}", Check.Type, result, BitConverter.ToString(bytes).Replace("-", ""));
                                 break;
                             }
                         case CheckTypes.PAGE_CHECK_A_B:
                             {
-                                byte result2 = p.GetInt8();
+                                var result2 = p.GetInt8();
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[WARDEN] [{0}] Result={1}", Check.Type, result2);
                                 break;
                             }
                         case CheckTypes.MPQ_CHECK:
                             {
-                                byte result3 = p.GetInt8();
-                                byte[] hash = p.GetByteArray();
+                                var result3 = p.GetInt8();
+                                var hash = p.GetByteArray();
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[WARDEN] [{0}] Result={1} Hash=0x{2}", Check.Type, result3, BitConverter.ToString(hash).Replace("-", ""));
                                 break;
                             }
                         case CheckTypes.LUA_STR_CHECK:
                             {
-                                byte unk = p.GetInt8();
-                                string data = p.GetString2();
+                                var unk = p.GetInt8();
+                                var data = p.GetString2();
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[WARDEN] [{0}] Result={1} Data={2}", Check.Type, unk, data);
                                 break;
                             }
                         case CheckTypes.DRIVER_CHECK:
                             {
-                                byte result4 = p.GetInt8();
+                                var result4 = p.GetInt8();
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[WARDEN] [{0}] Result={1}", Check.Type, result4);
                                 break;
                             }
                         case CheckTypes.TIMING_CHECK:
                             {
-                                byte result5 = p.GetInt8();
-                                int time = p.GetInt32();
+                                var result5 = p.GetInt8();
+                                var time = p.GetInt32();
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[WARDEN] [{0}] Result={1} Time={2}", Check.Type, result5, time);
                                 break;
                             }
                         case CheckTypes.PROC_CHECK:
                             {
-                                byte result6 = p.GetInt8();
+                                var result6 = p.GetInt8();
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[WARDEN] [{0}] Result={1}", Check.Type, result6);
                                 break;
                             }

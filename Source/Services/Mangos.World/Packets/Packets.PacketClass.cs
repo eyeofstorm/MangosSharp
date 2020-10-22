@@ -82,8 +82,8 @@ namespace Mangos.World.Globals
             {
                 if (OpCode == Opcodes.SMSG_UPDATE_OBJECT && Data.Length >= 200)
                 {
-                    int uncompressedSize = Data.Length;
-                    byte[] compressedBuffer = WorldServiceLocator._GlobalZip.Compress(Data, 4, checked(Data.Length - 4));
+                    var uncompressedSize = Data.Length;
+                    var compressedBuffer = WorldServiceLocator._GlobalZip.Compress(Data, 4, checked(Data.Length - 4));
                     if (compressedBuffer.Length != 0)
                     {
                         Data = new byte[4];
@@ -100,11 +100,11 @@ namespace Mangos.World.Globals
 
             public void AddBitArray(BitArray buffer, int arraryLen)
             {
-                ref byte[] data = ref Data;
+                ref var data = ref Data;
                 checked
                 {
                     data = (byte[])Utils.CopyArray(data, new byte[Data.Length - 1 + arraryLen + 1]);
-                    byte[] bufferarray = new byte[checked((byte)Math.Round((buffer.Length + 8) / 8.0)) + 1];
+                    var bufferarray = new byte[checked((byte)Math.Round((buffer.Length + 8) / 8.0)) + 1];
                     buffer.CopyTo(bufferarray, 0);
                     Array.Copy(bufferarray, 0, Data, Data.Length - arraryLen, arraryLen);
                 }
@@ -115,7 +115,7 @@ namespace Mangos.World.Globals
                 if (position <= 0 || position >= Data.Length)
                 {
                     position = Data.Length;
-                    ref byte[] data = ref Data;
+                    ref var data = ref Data;
                     data = (byte[])Utils.CopyArray(data, new byte[checked(Data.Length + 1)]);
                 }
                 Data[position] = buffer;
@@ -128,7 +128,7 @@ namespace Mangos.World.Globals
                     if (position <= 0 || position >= Data.Length)
                     {
                         position = Data.Length;
-                        ref byte[] data = ref Data;
+                        ref var data = ref Data;
                         data = (byte[])Utils.CopyArray(data, new byte[Data.Length + 1 + 1]);
                     }
                     Data[position] = (byte)(buffer & 0xFF);
@@ -143,7 +143,7 @@ namespace Mangos.World.Globals
                     if (position <= 0 || position > Data.Length - 3)
                     {
                         position = Data.Length;
-                        ref byte[] data = ref Data;
+                        ref var data = ref Data;
                         data = (byte[])Utils.CopyArray(data, new byte[Data.Length + 3 + 1]);
                     }
                     Data[position] = (byte)(buffer & 0xFF);
@@ -160,7 +160,7 @@ namespace Mangos.World.Globals
                     if (position <= 0 || position > Data.Length - 7)
                     {
                         position = Data.Length;
-                        ref byte[] data = ref Data;
+                        ref var data = ref Data;
                         data = (byte[])Utils.CopyArray(data, new byte[Data.Length + 7 + 1]);
                     }
                     Data[position] = (byte)(buffer & 0xFF);
@@ -181,13 +181,13 @@ namespace Mangos.World.Globals
                     AddInt8(0);
                     return;
                 }
-                byte[] bytes = Encoding.UTF8.GetBytes(buffer.ToCharArray());
-                ref byte[] data = ref Data;
+                var bytes = Encoding.UTF8.GetBytes(buffer.ToCharArray());
+                ref var data = ref Data;
                 checked
                 {
                     data = (byte[])Utils.CopyArray(data, new byte[Data.Length + bytes.Length + 1]);
-                    int num = bytes.Length - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = bytes.Length - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         Data[Data.Length - 1 - bytes.Length + i] = bytes[i];
                     }
@@ -202,14 +202,14 @@ namespace Mangos.World.Globals
                     AddInt8(0);
                     return;
                 }
-                byte[] bytes = Encoding.UTF8.GetBytes(buffer.ToCharArray());
-                ref byte[] data = ref Data;
+                var bytes = Encoding.UTF8.GetBytes(buffer.ToCharArray());
+                ref var data = ref Data;
                 checked
                 {
                     data = (byte[])Utils.CopyArray(data, new byte[Data.Length + bytes.Length + 1]);
                     Data[Data.Length - 1 - bytes.Length] = (byte)bytes.Length;
-                    int num = bytes.Length - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = bytes.Length - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         Data[Data.Length - bytes.Length + i] = bytes[i];
                     }
@@ -218,8 +218,8 @@ namespace Mangos.World.Globals
 
             public void AddSingle(float buffer2)
             {
-                byte[] buffer3 = BitConverter.GetBytes(buffer2);
-                ref byte[] data = ref Data;
+                var buffer3 = BitConverter.GetBytes(buffer2);
+                ref var data = ref Data;
                 checked
                 {
                     data = (byte[])Utils.CopyArray(data, new byte[Data.Length + buffer3.Length - 1 + 1]);
@@ -229,18 +229,18 @@ namespace Mangos.World.Globals
 
             public void AddByteArray(byte[] buffer)
             {
-                int tmp = Data.Length;
-                ref byte[] data = ref Data;
+                var tmp = Data.Length;
+                ref var data = ref Data;
                 data = (byte[])Utils.CopyArray(data, new byte[checked(Data.Length + buffer.Length - 1 + 1)]);
                 Array.Copy(buffer, 0, Data, tmp, buffer.Length);
             }
 
             public void AddPackGUID(ulong buffer)
             {
-                byte[] guid = BitConverter.GetBytes(buffer);
-                BitArray flags = new BitArray(8);
-                int offsetStart = Data.Length;
-                int offsetNewSize = offsetStart;
+                var guid = BitConverter.GetBytes(buffer);
+                var flags = new BitArray(8);
+                var offsetStart = Data.Length;
+                var offsetNewSize = offsetStart;
                 byte j = 0;
                 checked
                 {
@@ -254,7 +254,7 @@ namespace Mangos.World.Globals
                         j = (byte)unchecked((uint)(j + 1));
                     }
                     while (j <= 7u);
-                    ref byte[] data = ref Data;
+                    ref var data = ref Data;
                     data = (byte[])Utils.CopyArray(data, new byte[offsetNewSize + 1]);
                     flags.CopyTo(Data, offsetStart);
                     offsetStart++;
@@ -274,7 +274,7 @@ namespace Mangos.World.Globals
 
             public void AddUInt16(ushort buffer)
             {
-                ref byte[] data = ref Data;
+                ref var data = ref Data;
                 checked
                 {
                     data = (byte[])Utils.CopyArray(data, new byte[Data.Length + 1 + 1]);
@@ -285,7 +285,7 @@ namespace Mangos.World.Globals
 
             public void AddUInt32(uint buffer)
             {
-                ref byte[] data = ref Data;
+                ref var data = ref Data;
                 checked
                 {
                     data = (byte[])Utils.CopyArray(data, new byte[Data.Length + 3 + 1]);
@@ -298,8 +298,8 @@ namespace Mangos.World.Globals
 
             public void AddUInt64(ulong buffer, int position = 0)
             {
-                byte[] dBuffer = BitConverter.GetBytes(buffer);
-                long valueConverted = BitConverter.ToInt64(dBuffer, 0);
+                var dBuffer = BitConverter.GetBytes(buffer);
+                var valueConverted = BitConverter.ToInt64(dBuffer, 0);
                 AddInt64(valueConverted, position);
             }
 
@@ -326,7 +326,7 @@ namespace Mangos.World.Globals
 
             public short GetInt16()
             {
-                short num1 = BitConverter.ToInt16(Data, Offset);
+                var num1 = BitConverter.ToInt16(Data, Offset);
                 checked
                 {
                     Offset += 2;
@@ -336,7 +336,7 @@ namespace Mangos.World.Globals
 
             public int GetInt32()
             {
-                int num1 = BitConverter.ToInt32(Data, Offset);
+                var num1 = BitConverter.ToInt32(Data, Offset);
                 checked
                 {
                     Offset += 4;
@@ -346,7 +346,7 @@ namespace Mangos.World.Globals
 
             public long GetInt64()
             {
-                long num1 = BitConverter.ToInt64(Data, Offset);
+                var num1 = BitConverter.ToInt64(Data, Offset);
                 checked
                 {
                     Offset += 8;
@@ -356,7 +356,7 @@ namespace Mangos.World.Globals
 
             public float GetFloat()
             {
-                float single1 = BitConverter.ToSingle(Data, Offset);
+                var single1 = BitConverter.ToSingle(Data, Offset);
                 checked
                 {
                     Offset += 4;
@@ -366,8 +366,8 @@ namespace Mangos.World.Globals
 
             public string GetString()
             {
-                int start = Offset;
-                int i = 0;
+                var start = Offset;
+                var i = 0;
                 checked
                 {
                     while (Data[start + i] != 0)
@@ -385,7 +385,7 @@ namespace Mangos.World.Globals
                 int thisLength = Data[Offset];
                 checked
                 {
-                    int start = Offset + 1;
+                    var start = Offset + 1;
                     Offset += thisLength + 1;
                     return WorldServiceLocator._Functions.EscapeString(Encoding.UTF8.GetString(Data, start, thisLength));
                 }
@@ -393,7 +393,7 @@ namespace Mangos.World.Globals
 
             public ushort GetUInt16()
             {
-                ushort num1 = BitConverter.ToUInt16(Data, Offset);
+                var num1 = BitConverter.ToUInt16(Data, Offset);
                 checked
                 {
                     Offset += 2;
@@ -403,7 +403,7 @@ namespace Mangos.World.Globals
 
             public uint GetUInt32()
             {
-                uint num1 = BitConverter.ToUInt32(Data, Offset);
+                var num1 = BitConverter.ToUInt32(Data, Offset);
                 checked
                 {
                     Offset += 4;
@@ -413,7 +413,7 @@ namespace Mangos.World.Globals
 
             public ulong GetUInt64()
             {
-                ulong num1 = BitConverter.ToUInt64(Data, Offset);
+                var num1 = BitConverter.ToUInt64(Data, Offset);
                 checked
                 {
                     Offset += 8;
@@ -423,8 +423,8 @@ namespace Mangos.World.Globals
 
             public ulong GetPackGuid()
             {
-                byte flags = Data[Offset];
-                byte[] guid = new byte[8];
+                var flags = Data[Offset];
+                var guid = new byte[8];
                 checked
                 {
                     Offset++;
@@ -474,7 +474,7 @@ namespace Mangos.World.Globals
 
             public byte[] GetByteArray()
             {
-                int lengthLoc = checked(Data.Length - Offset);
+                var lengthLoc = checked(Data.Length - Offset);
                 if (lengthLoc <= 0)
                 {
                     return new byte[0];
@@ -494,7 +494,7 @@ namespace Mangos.World.Globals
                     {
                         return new byte[0];
                     }
-                    byte[] tmpBytes = new byte[lengthLoc - 1 + 1];
+                    var tmpBytes = new byte[lengthLoc - 1 + 1];
                     Array.Copy(Data, Offset, tmpBytes, 0, tmpBytes.Length);
                     Offset += tmpBytes.Length;
                     return tmpBytes;

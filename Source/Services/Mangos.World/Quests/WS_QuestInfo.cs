@@ -205,7 +205,7 @@ namespace Mangos.World.Quests
             CompleteScript = 0;
             ID = QuestID;
             PreQuests = new List<int>();
-            DataTable MySQLQuery = new DataTable();
+            var MySQLQuery = new DataTable();
             WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM quests WHERE entry = {QuestID};", ref MySQLQuery);
             if (MySQLQuery.Rows.Count == 0)
             {
@@ -224,7 +224,7 @@ namespace Mangos.World.Quests
             ZoneOrSort = MySQLQuery.Rows[0].As<int>("ZoneOrSort");
             QuestFlags = MySQLQuery.Rows[0].As<int>("QuestFlags");
             SpecialFlags = MySQLQuery.Rows[0].As<int>("SpecialFlags");
-            int SkillOrClass = MySQLQuery.Rows[0].As<int>("SkillOrClass");
+            var SkillOrClass = MySQLQuery.Rows[0].As<int>("SkillOrClass");
             if (SkillOrClass < 0)
             {
                 RequiredClass = checked(-SkillOrClass);
@@ -387,7 +387,7 @@ namespace Mangos.World.Quests
             {
                 if (!WorldServiceLocator._WorldServer.ALLQUESTS.IsValidQuest(NextQuestInChain))
                 {
-                    WS_QuestInfo tmpQuest2 = new WS_QuestInfo(NextQuestInChain);
+                    var tmpQuest2 = new WS_QuestInfo(NextQuestInChain);
                     if (!tmpQuest2.PreQuests.Contains(ID))
                     {
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Added prequest [{0}] to quest [{1}]", ID, NextQuestInChain);
@@ -404,11 +404,11 @@ namespace Mangos.World.Quests
             {
                 return;
             }
-            int unsignedNextQuest = Math.Abs(NextQuest);
-            int signedQuestID = ((NextQuest < 0) ? checked(-ID) : ID);
+            var unsignedNextQuest = Math.Abs(NextQuest);
+            var signedQuestID = ((NextQuest < 0) ? checked(-ID) : ID);
             if (!WorldServiceLocator._WorldServer.ALLQUESTS.IsValidQuest(unsignedNextQuest))
             {
-                WS_QuestInfo tmpQuest = new WS_QuestInfo(unsignedNextQuest);
+                var tmpQuest = new WS_QuestInfo(unsignedNextQuest);
                 if (!tmpQuest.PreQuests.Contains(signedQuestID))
                 {
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Added prequest [{0}] to quest [{1}]", signedQuestID, unsignedNextQuest);
@@ -424,7 +424,7 @@ namespace Mangos.World.Quests
 
         public bool CanSeeQuest(ref WS_PlayerData.CharacterObject objCharacter)
         {
-            bool retValue = true;
+            var retValue = true;
             checked
             {
                 if (objCharacter.Level + 6 < Level_Start)
@@ -438,8 +438,8 @@ namespace Mangos.World.Quests
             }
             if (ZoneOrSort < 0)
             {
-                WS_Quests tmpQuest = new WS_Quests();
-                byte reqSort = tmpQuest.ClassByQuestSort(checked(-ZoneOrSort));
+                var tmpQuest = new WS_Quests();
+                var reqSort = tmpQuest.ClassByQuestSort(checked(-ZoneOrSort));
                 if (reqSort > 0 && reqSort != (uint)objCharacter.Classe)
                 {
                     retValue = false;
@@ -470,7 +470,7 @@ namespace Mangos.World.Quests
             }
             if (PreQuests.Count > 0)
             {
-                foreach (int QuestID in PreQuests)
+                foreach (var QuestID in PreQuests)
                 {
                     if (QuestID > 0)
                     {

@@ -141,7 +141,7 @@ namespace Mangos.World.Objects
             {
                 get
                 {
-                    byte creatureFamily = CreatureInfo.CreatureFamily;
+                    var creatureFamily = CreatureInfo.CreatureFamily;
                     if (creatureFamily == byte.MaxValue)
                     {
                         return false;
@@ -251,7 +251,7 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    short LevelDiff = (short)unchecked(Level - objCharacter.Level);
+                    var LevelDiff = (short)unchecked(Level - objCharacter.Level);
                     float Range = 20 + LevelDiff;
                     if (Range < 5f)
                     {
@@ -267,11 +267,11 @@ namespace Mangos.World.Objects
 
             public void SendTargetUpdate(ulong TargetGUID)
             {
-                Packets.UpdatePacketClass packet = new Packets.UpdatePacketClass();
-                Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(188);
+                var packet = new Packets.UpdatePacketClass();
+                var tmpUpdate = new Packets.UpdateClass(188);
                 tmpUpdate.SetUpdateFlag(16, TargetGUID);
                 Packets.PacketClass packet2 = packet;
-                CreatureObject updateObject = this;
+                var updateObject = this;
                 tmpUpdate.AddToPacket(ref packet2, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                 tmpUpdate.Dispose();
                 packet2 = packet;
@@ -289,9 +289,9 @@ namespace Mangos.World.Objects
                 {
                     return null;
                 }
-                int i = 0;
-                int target = WorldServiceLocator._WorldServer.Rnd.Next(0, aiScript.aiHateTable.Count);
-                foreach (KeyValuePair<WS_Base.BaseUnit, int> tmpUnit in aiScript.aiHateTable)
+                var i = 0;
+                var target = WorldServiceLocator._WorldServer.Rnd.Next(0, aiScript.aiHateTable.Count);
+                foreach (var tmpUnit in aiScript.aiHateTable)
                 {
                     if (target == i)
                     {
@@ -358,7 +358,7 @@ namespace Mangos.World.Objects
                         {
                             if (WorldServiceLocator._WS_DBCDatabase.CreatureEquip.ContainsKey(EquipmentID))
                             {
-                                WS_DBCDatabase.CreatureEquipInfo EquipmentInfo = WorldServiceLocator._WS_DBCDatabase.CreatureEquip[EquipmentID];
+                                var EquipmentInfo = WorldServiceLocator._WS_DBCDatabase.CreatureEquip[EquipmentID];
                                 Update.SetUpdateFlag(37, EquipmentInfo.EquipModel[0]);
                                 Update.SetUpdateFlag(40, EquipmentInfo.EquipInfo[0]);
                                 Update.SetUpdateFlag(41, EquipmentInfo.EquipSlot[0]);
@@ -381,21 +381,21 @@ namespace Mangos.World.Objects
                     }
                     Update.SetUpdateFlag(129, BoundingRadius);
                     Update.SetUpdateFlag(130, CombatReach);
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                    for (int k = 0; k <= num; k++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                    for (var k = 0; k <= num; k++)
                     {
                         if (ActiveSpells[k] != null)
                         {
                             Update.SetUpdateFlag(47 + k, ActiveSpells[k].SpellID);
                         }
                     }
-                    int num2 = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECT_FLAGs - 1;
-                    for (int j = 0; j <= num2; j++)
+                    var num2 = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECT_FLAGs - 1;
+                    for (var j = 0; j <= num2; j++)
                     {
                         Update.SetUpdateFlag(95 + j, ActiveSpells_Flags[j]);
                     }
-                    int num3 = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECT_LEVELSs - 1;
-                    for (int i = 0; i <= num3; i++)
+                    var num3 = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECT_LEVELSs - 1;
+                    for (var i = 0; i <= num3; i++)
                     {
                         Update.SetUpdateFlag(113 + i, ActiveSpells_Count[i]);
                         Update.SetUpdateFlag(101 + i, ActiveSpells_Level[i]);
@@ -411,7 +411,7 @@ namespace Mangos.World.Objects
                 orientation = o;
                 if (SeenBy.Count > 0)
                 {
-                    Packets.PacketClass packet = new Packets.PacketClass(Opcodes.MSG_MOVE_HEARTBEAT);
+                    var packet = new Packets.PacketClass(Opcodes.MSG_MOVE_HEARTBEAT);
                     packet.AddPackGUID(GUID);
                     packet.AddInt32(0);
                     packet.AddInt32(WorldServiceLocator._NativeMethods.timeGetTime(""));
@@ -429,10 +429,10 @@ namespace Mangos.World.Objects
             {
                 if (aiScript != null && (Forced || aiScript.State != AIState.AI_MOVING_TO_SPAWN))
                 {
-                    int timeDiff = checked(WorldServiceLocator._NativeMethods.timeGetTime("") - LastMove);
+                    var timeDiff = checked(WorldServiceLocator._NativeMethods.timeGetTime("") - LastMove);
                     if ((Forced || aiScript.IsMoving()) && LastMove > 0 && timeDiff < LastMove_Time)
                     {
-                        float distance = ((aiScript.State != AIState.AI_MOVING && aiScript.State != AIState.AI_WANDERING) ? (timeDiff / 1000f * (CreatureInfo.RunSpeed * SpeedMod)) : (timeDiff / 1000f * (CreatureInfo.WalkSpeed * SpeedMod)));
+                        var distance = ((aiScript.State != AIState.AI_MOVING && aiScript.State != AIState.AI_WANDERING) ? (timeDiff / 1000f * (CreatureInfo.RunSpeed * SpeedMod)) : (timeDiff / 1000f * (CreatureInfo.WalkSpeed * SpeedMod)));
                         positionX = (float)(OldX + Math.Cos(orientation) * distance);
                         positionY = (float)(OldY + Math.Sin(orientation) * distance);
                         positionZ = WorldServiceLocator._WS_Maps.GetZCoord(positionX, positionY, positionZ, MapID);
@@ -472,8 +472,8 @@ namespace Mangos.World.Objects
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "MoveTo:SeenBy Failed");
                     ProjectData.ClearProjectError();
                 }
-                int TimeToMove = 1;
-                Packets.PacketClass SMSG_MONSTER_MOVE = new Packets.PacketClass(Opcodes.SMSG_MONSTER_MOVE);
+                var TimeToMove = 1;
+                var SMSG_MONSTER_MOVE = new Packets.PacketClass(Opcodes.SMSG_MONSTER_MOVE);
                 checked
                 {
                     try
@@ -492,7 +492,7 @@ namespace Mangos.World.Objects
                             SMSG_MONSTER_MOVE.AddInt8(4);
                             SMSG_MONSTER_MOVE.AddSingle(o);
                         }
-                        float moveDist = WorldServiceLocator._WS_Combat.GetDistance(positionX, x, positionY, y, positionZ, z);
+                        var moveDist = WorldServiceLocator._WS_Combat.GetDistance(positionX, x, positionY, y, positionZ, z);
                         if (Flying)
                         {
                             SMSG_MONSTER_MOVE.AddInt32(768);
@@ -531,7 +531,7 @@ namespace Mangos.World.Objects
                     catch (Exception ex2)
                     {
                         ProjectData.SetProjectError(ex2);
-                        Exception ex = ex2;
+                        var ex = ex2;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "MoveTo:Main Failed - {0}", ex.Message);
                         ProjectData.ClearProjectError();
                     }
@@ -546,7 +546,7 @@ namespace Mangos.World.Objects
 
             public bool CanMoveTo(float x, float y, float z)
             {
-                WS_Maps wS_Maps = WorldServiceLocator._WS_Maps;
+                var wS_Maps = WorldServiceLocator._WS_Maps;
                 WS_Base.BaseObject objCharacter = this;
                 if (wS_Maps.IsOutsideOfMap(ref objCharacter))
                 {
@@ -582,7 +582,7 @@ namespace Mangos.World.Objects
                 orientation = orientation_;
                 if (SeenBy.Count > 0 && (aiScript == null || !aiScript.IsMoving()))
                 {
-                    Packets.PacketClass packet = new Packets.PacketClass(Opcodes.MSG_MOVE_HEARTBEAT);
+                    var packet = new Packets.PacketClass(Opcodes.MSG_MOVE_HEARTBEAT);
                     try
                     {
                         packet.AddPackGUID(GUID);
@@ -623,16 +623,16 @@ namespace Mangos.World.Objects
                 }
                 if (Attacker != null && Attacker is CreatureObject @object && @object.aiScript != null)
                 {
-                    WS_Creatures_AI.TBaseAI tBaseAI = @object.aiScript;
+                    var tBaseAI = @object.aiScript;
                     WS_Base.BaseUnit Victim = this;
                     tBaseAI.OnKill(ref Victim);
                 }
-                Packets.UpdatePacketClass packetForNear = new Packets.UpdatePacketClass();
-                Packets.UpdateClass UpdateData = new Packets.UpdateClass(188);
+                var packetForNear = new Packets.UpdatePacketClass();
+                var UpdateData = new Packets.UpdateClass(188);
                 checked
                 {
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (ActiveSpells[i] != null)
                         {
@@ -645,7 +645,7 @@ namespace Mangos.World.Objects
                 UpdateData.SetUpdateFlag((int)checked(23 + base.ManaType), Mana.Current);
                 UpdateData.SetUpdateFlag(46, cUnitFlags);
                 Packets.PacketClass packet = packetForNear;
-                CreatureObject updateObject = this;
+                var updateObject = this;
                 UpdateData.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                 packet = packetForNear;
                 SendToNearPlayers(ref packet);
@@ -663,7 +663,7 @@ namespace Mangos.World.Objects
                         Character = object1;
                         LootCorpse(ref Character);
                     }
-                    WS_Quests aLLQUESTS = WorldServiceLocator._WorldServer.ALLQUESTS;
+                    var aLLQUESTS = WorldServiceLocator._WorldServer.ALLQUESTS;
                     Character = object1;
                     updateObject = this;
                     aLLQUESTS.OnQuestKill(ref Character, ref updateObject);
@@ -690,7 +690,7 @@ namespace Mangos.World.Objects
                         Die(ref Attacker);
                         return;
                     }
-                    int tmpPercent = (int)(Life.Current / (double)Life.Maximum * 100.0);
+                    var tmpPercent = (int)(Life.Current / (double)Life.Maximum * 100.0);
                     if (tmpPercent != LastPercent)
                     {
                         LastPercent = tmpPercent;
@@ -702,12 +702,12 @@ namespace Mangos.World.Objects
                 }
                 if (SeenBy.Count > 0)
                 {
-                    Packets.UpdatePacketClass packetForNear = new Packets.UpdatePacketClass();
-                    Packets.UpdateClass UpdateData = new Packets.UpdateClass(188);
+                    var packetForNear = new Packets.UpdatePacketClass();
+                    var UpdateData = new Packets.UpdateClass(188);
                     UpdateData.SetUpdateFlag(22, Life.Current);
                     UpdateData.SetUpdateFlag((int)checked(23 + base.ManaType), Mana.Current);
                     Packets.PacketClass packet = packetForNear;
-                    CreatureObject updateObject = this;
+                    var updateObject = this;
                     UpdateData.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                     packet = packetForNear;
                     SendToNearPlayers(ref packet);
@@ -725,11 +725,11 @@ namespace Mangos.World.Objects
                         Life.Current += Damage;
                         if (SeenBy.Count > 0)
                         {
-                            Packets.UpdatePacketClass packetForNear = new Packets.UpdatePacketClass();
-                            Packets.UpdateClass UpdateData = new Packets.UpdateClass(188);
+                            var packetForNear = new Packets.UpdatePacketClass();
+                            var UpdateData = new Packets.UpdateClass(188);
                             UpdateData.SetUpdateFlag(22, Life.Current);
                             Packets.PacketClass packet = packetForNear;
-                            CreatureObject updateObject = this;
+                            var updateObject = this;
                             UpdateData.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                             packet = packetForNear;
                             SendToNearPlayers(ref packet);
@@ -750,11 +750,11 @@ namespace Mangos.World.Objects
                     }
                     if (SeenBy.Count > 0)
                     {
-                        Packets.UpdatePacketClass packetForNear = new Packets.UpdatePacketClass();
-                        Packets.UpdateClass UpdateData = new Packets.UpdateClass(188);
+                        var packetForNear = new Packets.UpdatePacketClass();
+                        var UpdateData = new Packets.UpdateClass(188);
                         UpdateData.SetUpdateFlag((int)checked(23 + base.ManaType), Mana.Current);
                         Packets.PacketClass packet = packetForNear;
-                        CreatureObject updateObject = this;
+                        var updateObject = this;
                         UpdateData.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                         packet = packetForNear;
                         SendToNearPlayers(ref packet);
@@ -778,13 +778,13 @@ namespace Mangos.World.Objects
                     }
                     cUnitFlags |= 67108864;
                 }
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                 packet.AddInt32(1);
                 packet.AddInt8(0);
-                Packets.UpdateClass UpdateData = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
+                var UpdateData = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
                 UpdateData.SetUpdateFlag(143, cDynamicFlags);
                 UpdateData.SetUpdateFlag(46, cUnitFlags);
-                CreatureObject updateObject = this;
+                var updateObject = this;
                 UpdateData.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                 UpdateData.Dispose();
                 if (!WorldServiceLocator._WS_Loot.LootTable.ContainsKey(GUID) && (cUnitFlags & 0x4000000) == 67108864)
@@ -797,7 +797,7 @@ namespace Mangos.World.Objects
                     switch (Character.Group.LootMethod)
                     {
                         case GroupLootMethod.LOOT_FREE_FOR_ALL:
-                            foreach (ulong objCharacter in Character.Group.LocalMembers)
+                            foreach (var objCharacter in Character.Group.LocalMembers)
                             {
                                 if (SeenBy.Contains(objCharacter))
                                 {
@@ -822,7 +822,7 @@ namespace Mangos.World.Objects
                         case GroupLootMethod.LOOT_GROUP:
                         case GroupLootMethod.LOOT_NEED_BEFORE_GREED:
                             {
-                                WS_PlayerData.CharacterObject cLooter = Character.Group.GetNextLooter();
+                                var cLooter = Character.Group.GetNextLooter();
                                 while (!SeenBy.Contains(cLooter.GUID) && cLooter != Character)
                                 {
                                     cLooter = Character.Group.GetNextLooter();
@@ -847,7 +847,7 @@ namespace Mangos.World.Objects
                 {
                     return false;
                 }
-                WS_Loot.LootObject Loot = new WS_Loot.LootObject(GUID, LootType);
+                var Loot = new WS_Loot.LootObject(GUID, LootType);
                 WorldServiceLocator._WS_Loot.LootTemplates_Creature.GetLoot(CreatureInfo.LootID)?.Process(ref Loot, 0);
                 checked
                 {
@@ -864,8 +864,8 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    int XP = Level * 5 + 45;
-                    int lvlDifference = Character.Level - Level;
+                    var XP = Level * 5 + 45;
+                    var lvlDifference = Character.Level - Level;
                     if (lvlDifference > 0)
                     {
                         XP = (int)Math.Round(XP * (1.0 + 0.05 * (Level - Character.Level)));
@@ -1050,7 +1050,7 @@ namespace Mangos.World.Objects
                     XP = (int)Math.Round(XP * WorldServiceLocator._ConfigurationProvider.GetConfiguration().XPRate);
                     if (!Character.IsInGroup)
                     {
-                        int RestedXP2 = 0;
+                        var RestedXP2 = 0;
                         if (Character.RestBonus >= 0)
                         {
                             RestedXP2 = XP;
@@ -1065,30 +1065,30 @@ namespace Mangos.World.Objects
                         return;
                     }
                     XP = (int)Math.Round(XP / (double)Character.Group.GetMembersCount());
-                    int membersCount = Character.Group.GetMembersCount();
+                    var membersCount = Character.Group.GetMembersCount();
                     XP = ((membersCount <= 2) ? (XP * 1) : (membersCount switch
                     {
                         3 => (int)Math.Round(XP * 1.166),
                         4 => (int)Math.Round(XP * 1.3),
                         _ => (int)Math.Round(XP * 1.4),
                     }));
-                    int baseLvl = 0;
-                    foreach (ulong Member2 in Character.Group.LocalMembers)
+                    var baseLvl = 0;
+                    foreach (var Member2 in Character.Group.LocalMembers)
                     {
-                        WS_PlayerData.CharacterObject characterObject = WorldServiceLocator._WorldServer.CHARACTERs[Member2];
+                        var characterObject = WorldServiceLocator._WorldServer.CHARACTERs[Member2];
                         if (!characterObject.DEAD && Math.Sqrt(Math.Pow(positionX - positionX, 2.0) + Math.Pow(positionY - positionY, 2.0)) <= VisibleDistance)
                         {
                             baseLvl += Level;
                         }
                         characterObject = null;
                     }
-                    foreach (ulong Member in Character.Group.LocalMembers)
+                    foreach (var Member in Character.Group.LocalMembers)
                     {
-                        WS_PlayerData.CharacterObject characterObject2 = WorldServiceLocator._WorldServer.CHARACTERs[Member];
+                        var characterObject2 = WorldServiceLocator._WorldServer.CHARACTERs[Member];
                         if (!characterObject2.DEAD && Math.Sqrt(Math.Pow(positionX - positionX, 2.0) + Math.Pow(positionY - positionY, 2.0)) <= VisibleDistance)
                         {
-                            int tmpXP = XP;
-                            int RestedXP = 0;
+                            var tmpXP = XP;
+                            var RestedXP = 0;
                             if (characterObject2.RestBonus >= 0)
                             {
                                 RestedXP = tmpXP;
@@ -1119,10 +1119,10 @@ namespace Mangos.World.Objects
             {
                 if (WorldServiceLocator._WS_Spells.SPELLs.ContainsKey(SpellID))
                 {
-                    WS_Spells.SpellTargets t = new WS_Spells.SpellTargets();
+                    var t = new WS_Spells.SpellTargets();
                     WS_Base.BaseUnit objCharacter = this;
                     t.SetTarget_SELF(ref objCharacter);
-                    WS_Spells.SpellInfo spellInfo = WorldServiceLocator._WS_Spells.SPELLs[SpellID];
+                    var spellInfo = WorldServiceLocator._WS_Spells.SPELLs[SpellID];
                     WS_Base.BaseObject caster = this;
                     spellInfo.Apply(ref caster, t);
                 }
@@ -1134,12 +1134,12 @@ namespace Mangos.World.Objects
                 {
                     return -1;
                 }
-                WS_Spells.SpellTargets Targets = new WS_Spells.SpellTargets();
-                WS_Spells.SpellTargets spellTargets = Targets;
+                var Targets = new WS_Spells.SpellTargets();
+                var spellTargets = Targets;
                 WS_Base.BaseUnit objCharacter = this;
                 spellTargets.SetTarget_SELF(ref objCharacter);
                 WS_Base.BaseObject Caster = this;
-                WS_Spells.CastSpellParameters tmpSpell = new WS_Spells.CastSpellParameters(ref Targets, ref Caster, SpellID);
+                var tmpSpell = new WS_Spells.CastSpellParameters(ref Targets, ref Caster, SpellID);
                 if (WorldServiceLocator._WS_Spells.SPELLs[SpellID].GetDuration > 0)
                 {
                     SpellCasted = tmpSpell;
@@ -1162,10 +1162,10 @@ namespace Mangos.World.Objects
                 {
                     return -1;
                 }
-                WS_Spells.SpellTargets Targets = new WS_Spells.SpellTargets();
+                var Targets = new WS_Spells.SpellTargets();
                 Targets.SetTarget_UNIT(ref Target);
                 WS_Base.BaseObject Caster = this;
-                WS_Spells.CastSpellParameters tmpSpell = new WS_Spells.CastSpellParameters(ref Targets, ref Caster, SpellID);
+                var tmpSpell = new WS_Spells.CastSpellParameters(ref Targets, ref Caster, SpellID);
                 if (WorldServiceLocator._WS_Spells.SPELLs[SpellID].GetDuration > 0)
                 {
                     SpellCasted = tmpSpell;
@@ -1184,10 +1184,10 @@ namespace Mangos.World.Objects
                 {
                     return -1;
                 }
-                WS_Spells.SpellTargets Targets = new WS_Spells.SpellTargets();
+                var Targets = new WS_Spells.SpellTargets();
                 Targets.SetTarget_DESTINATIONLOCATION(x, y, z);
                 WS_Base.BaseObject Caster = this;
-                WS_Spells.CastSpellParameters tmpSpell = new WS_Spells.CastSpellParameters(ref Targets, ref Caster, SpellID);
+                var tmpSpell = new WS_Spells.CastSpellParameters(ref Targets, ref Caster, SpellID);
                 if (WorldServiceLocator._WS_Spells.SPELLs[SpellID].GetDuration > 0)
                 {
                     SpellCasted = tmpSpell;
@@ -1198,7 +1198,7 @@ namespace Mangos.World.Objects
 
             public void SpawnCreature(int Entry, float PosX, float PosY, float PosZ)
             {
-                CreatureObject tmpCreature = new CreatureObject(Entry, PosX, PosY, PosZ, 0f, checked((int)MapID))
+                var tmpCreature = new CreatureObject(Entry, PosX, PosY, PosZ, 0f, checked((int)MapID))
                 {
                     instance = instance,
                     DestroyAtNoCombat = true
@@ -1217,7 +1217,7 @@ namespace Mangos.World.Objects
 
             public void SendChatMessage(string Message, ChatMsg msgType, LANGUAGES msgLanguage, ulong SecondGUID = 0uL)
             {
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_MESSAGECHAT);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_MESSAGECHAT);
                 byte flag = 0;
                 packet.AddInt8(checked((byte)msgType));
                 packet.AddInt32((int)msgLanguage);
@@ -1242,7 +1242,7 @@ namespace Mangos.World.Objects
             public void ResetAI()
             {
                 aiScript.Dispose();
-                CreatureObject Creature = this;
+                var Creature = this;
                 aiScript = new WS_Creatures_AI.DefaultAI(ref Creature);
                 MoveType = 1;
             }
@@ -1293,7 +1293,7 @@ namespace Mangos.World.Objects
                     cBytes2 = 1;
                     if (this is WS_Pets.PetObject)
                     {
-                        CreatureObject Creature = this;
+                        var Creature = this;
                         aiScript = new WS_Pets.PetAI(ref Creature);
                         return;
                     }
@@ -1306,7 +1306,7 @@ namespace Mangos.World.Objects
                     }
                     else if (File.Exists("scripts\\creatures\\" + WorldServiceLocator._Functions.FixName(Name) + ".vb"))
                     {
-                        ScriptedObject tmpScript = new ScriptedObject("scripts\\creatures\\" + WorldServiceLocator._Functions.FixName(Name) + ".vb", "", InMemory: true);
+                        var tmpScript = new ScriptedObject("scripts\\creatures\\" + WorldServiceLocator._Functions.FixName(Name) + ".vb", "", InMemory: true);
                         aiScript = (WS_Creatures_AI.TBaseAI)tmpScript.InvokeConstructor("CreatureAI_" + WorldServiceLocator._Functions.FixName(Name).Replace(" ", "_"), new object[1]
                         {
                             this
@@ -1319,35 +1319,35 @@ namespace Mangos.World.Objects
                     }
                     if (isCritter)
                     {
-                        CreatureObject Creature = this;
+                        var Creature = this;
                         aiScript = new WS_Creatures_AI.CritterAI(ref Creature);
                     }
                     else if (isGuard)
                     {
                         if (MoveType == 2)
                         {
-                            CreatureObject Creature = this;
+                            var Creature = this;
                             aiScript = new WS_Creatures_AI.GuardWaypointAI(ref Creature);
                         }
                         else
                         {
-                            CreatureObject Creature = this;
+                            var Creature = this;
                             aiScript = new WS_Creatures_AI.GuardAI(ref Creature);
                         }
                     }
                     else if (MoveType == 1)
                     {
-                        CreatureObject Creature = this;
+                        var Creature = this;
                         aiScript = new WS_Creatures_AI.DefaultAI(ref Creature);
                     }
                     else if (MoveType == 2)
                     {
-                        CreatureObject Creature = this;
+                        var Creature = this;
                         aiScript = new WS_Creatures_AI.WaypointAI(ref Creature);
                     }
                     else
                     {
-                        CreatureObject Creature = this;
+                        var Creature = this;
                         aiScript = new WS_Creatures_AI.StandStillAI(ref Creature);
                     }
                 }
@@ -1387,7 +1387,7 @@ namespace Mangos.World.Objects
                 PositionUpdated = true;
                 if (infoRow == null)
                 {
-                    DataTable MySQLQuery = new DataTable();
+                    var MySQLQuery = new DataTable();
                     WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM creature LEFT OUTER JOIN game_event_creature ON creature.guid = game_event_creature.guid WHERE creature.guid = {GUID_};", ref MySQLQuery);
                     if (MySQLQuery.Rows.Count <= 0)
                     {
@@ -1397,7 +1397,7 @@ namespace Mangos.World.Objects
                     infoRow = MySQLQuery.Rows[0];
                 }
                 DataRow row = null;
-                DataTable AddonInfoQuery = new DataTable();
+                var AddonInfoQuery = new DataTable();
                 WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM spawns_creatures_addon WHERE spawn_id = {GUID_};", ref AddonInfoQuery);
                 if (AddonInfoQuery.Rows.Count > 0)
                 {
@@ -1436,7 +1436,7 @@ namespace Mangos.World.Objects
                 }
                 if (!WorldServiceLocator._WorldServer.CREATURESDatabase.ContainsKey(ID))
                 {
-                    CreatureInfo baseCreature = new CreatureInfo(ID);
+                    var baseCreature = new CreatureInfo(ID);
                 }
                 GUID = checked(GUID_ + WorldServiceLocator._Global_Constants.GUID_UNIT);
                 Initialize();
@@ -1450,7 +1450,7 @@ namespace Mangos.World.Objects
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "WS_Creatures:New failed - Guid: {1}  {0}", ex.Message, GUID_);
                     ProjectData.ClearProjectError();
                 }
@@ -1490,7 +1490,7 @@ namespace Mangos.World.Objects
                 PositionUpdated = true;
                 if (!WorldServiceLocator._WorldServer.CREATURESDatabase.ContainsKey(ID_))
                 {
-                    CreatureInfo baseCreature = new CreatureInfo(ID_);
+                    var baseCreature = new CreatureInfo(ID_);
                 }
                 ID = ID_;
                 GUID = GUID_;
@@ -1505,7 +1505,7 @@ namespace Mangos.World.Objects
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "WS_Creatures:New failed - Guid: {1} ID: {2}  {0}", ex.Message, GUID_, ID_);
                     ProjectData.ClearProjectError();
                 }
@@ -1545,7 +1545,7 @@ namespace Mangos.World.Objects
                 PositionUpdated = true;
                 if (!WorldServiceLocator._WorldServer.CREATURESDatabase.ContainsKey(ID_))
                 {
-                    CreatureInfo baseCreature = new CreatureInfo(ID_);
+                    var baseCreature = new CreatureInfo(ID_);
                 }
                 ID = ID_;
                 GUID = WorldServiceLocator._WS_Creatures.GetNewGUID();
@@ -1560,7 +1560,7 @@ namespace Mangos.World.Objects
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "WS_Creatures:New failed - Guid: {1} ID: {2}  {0}", ex.Message, ID_);
                     ProjectData.ClearProjectError();
                 }
@@ -1600,7 +1600,7 @@ namespace Mangos.World.Objects
                 PositionUpdated = true;
                 if (!WorldServiceLocator._WorldServer.CREATURESDatabase.ContainsKey(ID_))
                 {
-                    CreatureInfo baseCreature = new CreatureInfo(ID_);
+                    var baseCreature = new CreatureInfo(ID_);
                 }
                 ID = ID_;
                 GUID = WorldServiceLocator._WS_Creatures.GetNewGUID();
@@ -1628,7 +1628,7 @@ namespace Mangos.World.Objects
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "WS_Creatures:New failed - Guid: {1} ID: {2} Map: {3}  {0}", ex.Message, GUID, ID_, Map);
                     ProjectData.ClearProjectError();
                 }
@@ -1657,7 +1657,7 @@ namespace Mangos.World.Objects
                     catch (Exception ex2)
                     {
                         ProjectData.SetProjectError(ex2);
-                        Exception ex = ex2;
+                        var ex = ex2;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "WS_Creatures:Dispose failed -  {0}", ex.Message);
                         ProjectData.ClearProjectError();
                     }
@@ -1683,7 +1683,7 @@ namespace Mangos.World.Objects
                 {
                     WorldServiceLocator._WorldServer.CHARACTERs[SummonedBy].NonCombatPet = null;
                 }
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_DESTROY_OBJECT);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_DESTROY_OBJECT);
                 packet.AddUInt64(GUID);
                 SendToNearPlayers(ref packet);
                 packet.Dispose();
@@ -1728,14 +1728,14 @@ namespace Mangos.World.Objects
                 }
                 if (SeenBy.Count > 0)
                 {
-                    Packets.UpdatePacketClass packetForNear = new Packets.UpdatePacketClass();
-                    Packets.UpdateClass UpdateData = new Packets.UpdateClass(188);
+                    var packetForNear = new Packets.UpdatePacketClass();
+                    var UpdateData = new Packets.UpdateClass(188);
                     UpdateData.SetUpdateFlag(22, Life.Current);
                     UpdateData.SetUpdateFlag((int)checked(23 + base.ManaType), Mana.Current);
                     UpdateData.SetUpdateFlag(46, cUnitFlags);
                     UpdateData.SetUpdateFlag(143, cDynamicFlags);
                     Packets.PacketClass packet = packetForNear;
-                    CreatureObject updateObject = this;
+                    var updateObject = this;
                     UpdateData.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                     packet = packetForNear;
                     SendToNearPlayers(ref packet);
@@ -1764,7 +1764,7 @@ namespace Mangos.World.Objects
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "WS_Creatures:AddToWorld failed - Guid: {1} ID: {2}  {0}", ex.Message);
                     ProjectData.ClearProjectError();
                     return;
@@ -1779,24 +1779,24 @@ namespace Mangos.World.Objects
                         {
                             if ((short)unchecked(CellX + i) >= 0 && (short)unchecked(CellX + i) <= 63 && (short)unchecked(CellY + j) >= 0 && (short)unchecked(CellY + j) <= 63 && WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)] != null && WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)].PlayersHere.Count > 0)
                             {
-                                WS_Maps.TMapTile tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)];
-                                ulong[] list = tMapTile.PlayersHere.ToArray();
-                                ulong[] array = list;
-                                foreach (ulong plGUID in array)
+                                var tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)];
+                                var list = tMapTile.PlayersHere.ToArray();
+                                var array = list;
+                                foreach (var plGUID in array)
                                 {
-                                    WS_PlayerData.CharacterObject characterObject = WorldServiceLocator._WorldServer.CHARACTERs[plGUID];
+                                    var characterObject = WorldServiceLocator._WorldServer.CHARACTERs[plGUID];
                                     WS_Base.BaseObject objCharacter = this;
                                     if (characterObject.CanSee(ref objCharacter))
                                     {
-                                        Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                                        var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                                         try
                                         {
                                             packet.AddInt32(1);
                                             packet.AddInt8(0);
-                                            Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_UNIT);
+                                            var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_UNIT);
                                             FillAllUpdateFlags(ref tmpUpdate);
-                                            Packets.UpdateClass updateClass = tmpUpdate;
-                                            CreatureObject updateObject = this;
+                                            var updateClass = tmpUpdate;
+                                            var updateObject = this;
                                             updateClass.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject);
                                             tmpUpdate.Dispose();
                                             WorldServiceLocator._WorldServer.CHARACTERs[plGUID].client.SendMultiplyPackets(ref packet);
@@ -1823,8 +1823,8 @@ namespace Mangos.World.Objects
             {
                 WorldServiceLocator._WS_Maps.GetMapTile(positionX, positionY, ref CellX, ref CellY);
                 WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[CellX, CellY].CreaturesHere.Remove(GUID);
-                ulong[] array = SeenBy.ToArray();
-                foreach (ulong plGUID in array)
+                var array = SeenBy.ToArray();
+                foreach (var plGUID in array)
                 {
                     if (WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(plGUID))
                     {
@@ -1861,7 +1861,7 @@ namespace Mangos.World.Objects
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception e = ex2;
+                    var e = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "WS_Creatures:MoveCell - Creature outside of map bounds, Resetting  {0}", e.Message);
                     try
                     {
@@ -1870,7 +1870,7 @@ namespace Mangos.World.Objects
                     catch (Exception ex3)
                     {
                         ProjectData.SetProjectError(ex3);
-                        Exception ex = ex3;
+                        var ex = ex3;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "WS_Creatures:MoveCell - Couldn't reset creature outside of map bounds, Disposing  {0}", ex.Message);
                         aiScript.Dispose();
                         ProjectData.ClearProjectError();
@@ -1941,13 +1941,13 @@ namespace Mangos.World.Objects
                 EmoteDelay2 = new int[8];
                 EmoteDelay3 = new int[8];
                 TextID = _TextID;
-                DataTable MySQLQuery = new DataTable();
+                var MySQLQuery = new DataTable();
                 WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM npc_text WHERE ID = {TextID};", ref MySQLQuery);
                 checked
                 {
                     if (MySQLQuery.Rows.Count > 0)
                     {
-                        int i = 0;
+                        var i = 0;
                         do
                         {
                             Probability[i] = MySQLQuery.Rows[0].As<float>(("prob" + Conversions.ToString(i)) ?? "");
@@ -2075,10 +2075,10 @@ namespace Mangos.World.Objects
                 {
                     return;
                 }
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_CREATURE_QUERY_RESPONSE);
+                var response = new Packets.PacketClass(Opcodes.SMSG_CREATURE_QUERY_RESPONSE);
                 packet.GetInt16();
-                int CreatureID = packet.GetInt32();
-                ulong CreatureGUID = packet.GetUInt64();
+                var CreatureID = packet.GetInt32();
+                var CreatureGUID = packet.GetUInt64();
                 try
                 {
                     if (!WorldServiceLocator._WorldServer.CREATURESDatabase.ContainsKey(CreatureID))
@@ -2089,7 +2089,7 @@ namespace Mangos.World.Objects
                         response.Dispose();
                         return;
                     }
-                    CreatureInfo Creature = WorldServiceLocator._WorldServer.CREATURESDatabase[CreatureID];
+                    var Creature = WorldServiceLocator._WorldServer.CREATURESDatabase[CreatureID];
                     response.AddInt32(Creature.Id);
                     response.AddString(Creature.Name);
                     response.AddInt8(0);
@@ -2115,7 +2115,7 @@ namespace Mangos.World.Objects
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Unknown Error: Unable to find CreatureID={0} in database. {1}", CreatureID, ex.Message);
                     ProjectData.ClearProjectError();
                 }
@@ -2130,7 +2130,7 @@ namespace Mangos.World.Objects
                 {
                     packet.GetInt16();
                     long TextID = packet.GetInt32();
-                    ulong TargetGUID = packet.GetUInt64();
+                    var TargetGUID = packet.GetUInt64();
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_NPC_TEXT_QUERY [TextID={2}]", client.IP, client.Port, TextID);
                     client.Character.SendTalking((int)TextID);
                 }
@@ -2144,7 +2144,7 @@ namespace Mangos.World.Objects
                 return;
             }
             packet.GetInt16();
-            ulong GUID = packet.GetUInt64();
+            var GUID = packet.GetUInt64();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_GOSSIP_HELLO [GUID={2:X}]", client.IP, client.Port, GUID);
             if (!WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(GUID) || WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].CreatureInfo.cNpcFlags == 0)
             {
@@ -2162,17 +2162,17 @@ namespace Mangos.World.Objects
                 {
                     if (WorldServiceLocator._WorldServer.CREATURESDatabase[WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].ID].TalkScript == null)
                     {
-                        Packets.PacketClass test = new Packets.PacketClass(Opcodes.SMSG_NPC_WONT_TALK);
+                        var test = new Packets.PacketClass(Opcodes.SMSG_NPC_WONT_TALK);
                         test.AddUInt64(GUID);
                         test.AddInt8(1);
                         client.Send(ref test);
                         test.Dispose();
                         if (!NPCTexts.ContainsKey(34))
                         {
-                            NPCText tmpText = new NPCText(34, "Hi $N, I'm not yet scripted to talk with you.");
+                            var tmpText = new NPCText(34, "Hi $N, I'm not yet scripted to talk with you.");
                         }
                         client.Character.SendTalking(34);
-                        WS_PlayerData.CharacterObject character = client.Character;
+                        var character = client.Character;
                         GossipMenu Menu = null;
                         QuestMenu qMenu = null;
                         character.SendGossip(GUID, 34, Menu, qMenu);
@@ -2185,7 +2185,7 @@ namespace Mangos.World.Objects
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error in gossip hello.{0}{1}", Environment.NewLine, ex.ToString());
                     ProjectData.ClearProjectError();
                 }
@@ -2199,8 +2199,8 @@ namespace Mangos.World.Objects
                 return;
             }
             packet.GetInt16();
-            ulong GUID = packet.GetUInt64();
-            int SelOption = packet.GetInt32();
+            var GUID = packet.GetUInt64();
+            var SelOption = packet.GetInt32();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_GOSSIP_SELECT_OPTION [SelOption={3} GUID={2:X}]", client.IP, client.Port, GUID, SelOption);
             if (!WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(GUID) || WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].CreatureInfo.cNpcFlags == 0)
             {
@@ -2225,7 +2225,7 @@ namespace Mangos.World.Objects
                     return;
                 }
                 packet.GetInt16();
-                ulong GUID = packet.GetUInt64();
+                var GUID = packet.GetUInt64();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SPIRIT_HEALER_ACTIVATE [GUID={2}]", client.IP, client.Port, GUID);
                 try
                 {
@@ -2243,7 +2243,7 @@ namespace Mangos.World.Objects
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Error activating spirit healer: {0}", ex.ToString());
                     ProjectData.ClearProjectError();
                 }
@@ -2255,7 +2255,7 @@ namespace Mangos.World.Objects
         [MethodImpl(MethodImplOptions.Synchronized)]
         private ulong GetNewGUID()
         {
-            ref ulong creatureGUIDCounter = ref WorldServiceLocator._WorldServer.CreatureGUIDCounter;
+            ref var creatureGUIDCounter = ref WorldServiceLocator._WorldServer.CreatureGUIDCounter;
             creatureGUIDCounter = Convert.ToUInt64(decimal.Add(new decimal(creatureGUIDCounter), 1m));
             return WorldServiceLocator._WorldServer.CreatureGUIDCounter;
         }

@@ -27,8 +27,8 @@ namespace Mangos.WoWFakeClient
     {
         public static void On_SMSG_PONG(ref Packets.PacketClass Packet)
         {
-            uint SequenceID = Packet.GetUInt32();
-            int Latency = Worldserver.timeGetTime() - Worldserver.PingSent;
+            var SequenceID = Packet.GetUInt32();
+            var Latency = Worldserver.timeGetTime() - Worldserver.PingSent;
             if (SequenceID == Worldserver.CurrentPing && Latency >= 0)
             {
                 Worldserver.CurrentLatency = Latency;
@@ -65,7 +65,7 @@ namespace Mangos.WoWFakeClient
         public static void On_SMSG_AUTH_RESPONSE(ref Packets.PacketClass Packet)
         {
             Console.WriteLine("[{0}][World] Received Auth Response.", Strings.Format(DateAndTime.TimeOfDay, "HH:mm:ss"));
-            byte ErrorCode = Packet.GetInt8();
+            var ErrorCode = Packet.GetInt8();
             switch (ErrorCode)
             {
                 case 0xC:
@@ -96,33 +96,33 @@ namespace Mangos.WoWFakeClient
         public static void On_SMSG_CHAR_ENUM(ref Packets.PacketClass Packet)
         {
             Console.WriteLine("[{0}][World] Received Character List.", Strings.Format(DateAndTime.TimeOfDay, "HH:mm:ss"));
-            byte NumChars = Packet.GetInt8();
+            var NumChars = Packet.GetInt8();
             if (NumChars > 0)
             {
                 for (byte i = 1, loopTo = NumChars; i <= loopTo; i++)
                 {
-                    ulong GUID = Packet.GetUInt64();
-                    string Name = Packet.GetString();
-                    byte Race = Packet.GetInt8();
-                    byte Classe = Packet.GetInt8();
-                    byte Gender = Packet.GetInt8();
-                    byte Skin = Packet.GetInt8();
-                    byte Face = Packet.GetInt8();
-                    byte HairStyle = Packet.GetInt8();
-                    byte HairColor = Packet.GetInt8();
-                    byte FacialHair = Packet.GetInt8();
-                    byte Level = Packet.GetInt8();
-                    int Zone = Packet.GetInt32();
-                    int Map = Packet.GetInt32();
-                    float PosX = Packet.GetFloat();
-                    float PosY = Packet.GetFloat();
-                    float PosZ = Packet.GetFloat();
-                    uint GuildID = Packet.GetUInt32();
-                    uint PlayerState = Packet.GetUInt32();
-                    byte RestState = Packet.GetInt8();
-                    uint PetInfoID = Packet.GetUInt32();
-                    uint PetLevel = Packet.GetUInt32();
-                    uint PetFamilyID = Packet.GetUInt32();
+                    var GUID = Packet.GetUInt64();
+                    var Name = Packet.GetString();
+                    var Race = Packet.GetInt8();
+                    var Classe = Packet.GetInt8();
+                    var Gender = Packet.GetInt8();
+                    var Skin = Packet.GetInt8();
+                    var Face = Packet.GetInt8();
+                    var HairStyle = Packet.GetInt8();
+                    var HairColor = Packet.GetInt8();
+                    var FacialHair = Packet.GetInt8();
+                    var Level = Packet.GetInt8();
+                    var Zone = Packet.GetInt32();
+                    var Map = Packet.GetInt32();
+                    var PosX = Packet.GetFloat();
+                    var PosY = Packet.GetFloat();
+                    var PosZ = Packet.GetFloat();
+                    var GuildID = Packet.GetUInt32();
+                    var PlayerState = Packet.GetUInt32();
+                    var RestState = Packet.GetInt8();
+                    var PetInfoID = Packet.GetUInt32();
+                    var PetLevel = Packet.GetUInt32();
+                    var PetFamilyID = Packet.GetUInt32();
                     Console.WriteLine("[{0}][World] Logging in with character [{1}].", Strings.Format(DateAndTime.TimeOfDay, "HH:mm:ss"), Name);
                     Worldserver.CharacterGUID = GUID;
                     var Response = new Packets.PacketClass(OPCODES.CMSG_PLAYER_LOGIN);

@@ -132,14 +132,14 @@ namespace Mangos.World.Maps
                     Graveyards.Clear();
                     var tmpDBC = await dataStoreProvider.GetDataStoreAsync("WorldSafeLocs.dbc");
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.INFORMATION, "Loading.... {0} Graveyard Locations", tmpDBC.Rows - 1);
-                    int num = tmpDBC.Rows - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = tmpDBC.Rows - 1;
+                    for (var i = 0; i <= num; i++)
                     {
-                        int locationIndex = tmpDBC.ReadInt(i, 0);
-                        int locationMapID = tmpDBC.ReadInt(i, 1);
-                        float locationPosX = tmpDBC.ReadFloat(i, 2);
-                        float locationPosY = tmpDBC.ReadFloat(i, 3);
-                        float locationPosZ = tmpDBC.ReadFloat(i, 4);
+                        var locationIndex = tmpDBC.ReadInt(i, 0);
+                        var locationMapID = tmpDBC.ReadInt(i, 1);
+                        var locationPosX = tmpDBC.ReadFloat(i, 2);
+                        var locationPosY = tmpDBC.ReadFloat(i, 3);
+                        var locationPosZ = tmpDBC.ReadFloat(i, 4);
                         if (WorldServiceLocator._ConfigurationProvider.GetConfiguration().Maps.Contains(locationMapID.ToString()))
                         {
                             Graveyards.Add(locationIndex, new TGraveyard(locationPosX, locationPosY, locationPosZ, locationMapID));
@@ -162,9 +162,9 @@ namespace Mangos.World.Maps
 
         public void GoToNearestGraveyard(ref WS_PlayerData.CharacterObject Character, bool Alive, bool Teleport)
         {
-            DataTable GraveQuery = new DataTable();
-            bool foundNear = false;
-            float distNear = 0f;
+            var GraveQuery = new DataTable();
+            var foundNear = false;
+            var distNear = 0f;
             TGraveyard entryNear = default;
             TGraveyard entryFar = default;
             checked
@@ -172,7 +172,7 @@ namespace Mangos.World.Maps
                 if (WorldServiceLocator._WS_Maps.Maps[Character.MapID].IsDungeon | WorldServiceLocator._WS_Maps.Maps[Character.MapID].IsBattleGround | WorldServiceLocator._WS_Maps.Maps[Character.MapID].IsRaid)
                 {
                     Character.ZoneCheckInstance();
-                    int Ghostzone = WorldServiceLocator._WS_Maps.AreaTable[WorldServiceLocator._WS_Maps.GetAreaIDByMapandParent((int)Character.MapID, WorldServiceLocator._WS_Maps.AreaTable[WorldServiceLocator._WS_Maps.GetAreaFlag(Character.resurrectPositionX, Character.resurrectPositionY, (int)Character.MapID)].Zone)].ID;
+                    var Ghostzone = WorldServiceLocator._WS_Maps.AreaTable[WorldServiceLocator._WS_Maps.GetAreaIDByMapandParent((int)Character.MapID, WorldServiceLocator._WS_Maps.AreaTable[WorldServiceLocator._WS_Maps.GetAreaFlag(Character.resurrectPositionX, Character.resurrectPositionY, (int)Character.MapID)].Zone)].ID;
                     WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT id, faction FROM game_graveyard_zone WHERE ghost_zone = {Ghostzone} and (faction = 0 or faction = {Character.Team}) ", ref GraveQuery);
                     if (GraveQuery.Rows.Count == 0)
                     {
@@ -199,9 +199,9 @@ namespace Mangos.World.Maps
                             enumerator = GraveQuery.Rows.GetEnumerator();
                             while (enumerator.MoveNext())
                             {
-                                DataRow row = (DataRow)enumerator.Current;
-                                int GraveyardID2 = row.As<int>("id");
-                                int GraveyardFaction2 = row.As<int>("faction");
+                                var row = (DataRow)enumerator.Current;
+                                var GraveyardID2 = row.As<int>("id");
+                                var GraveyardFaction2 = row.As<int>("faction");
                                 if (!Graveyards.ContainsKey(GraveyardID2))
                                 {
                                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.INFORMATION, "GraveYards: Graveyard link invalid [{0}]", GraveyardID2);
@@ -219,7 +219,7 @@ namespace Mangos.World.Maps
                                     {
                                         continue;
                                     }
-                                    float dist3 = WorldServiceLocator._WS_Combat.GetDistance(Character.positionX, Graveyards[GraveyardID2].X, Character.positionY, Graveyards[GraveyardID2].Y, Character.positionZ, Graveyards[GraveyardID2].Z);
+                                    var dist3 = WorldServiceLocator._WS_Combat.GetDistance(Character.positionX, Graveyards[GraveyardID2].X, Character.positionY, Graveyards[GraveyardID2].Y, Character.positionZ, Graveyards[GraveyardID2].Z);
                                     if (foundNear)
                                     {
                                         if (dist3 < distNear)
@@ -245,7 +245,7 @@ namespace Mangos.World.Maps
                             }
                         }
                     }
-                    TGraveyard selectedGraveyard2 = entryNear;
+                    var selectedGraveyard2 = entryNear;
                     if (Information.IsNothing(selectedGraveyard2))
                     {
                         selectedGraveyard2 = entryFar;
@@ -268,9 +268,9 @@ namespace Mangos.World.Maps
                     enumerator2 = GraveQuery.Rows.GetEnumerator();
                     while (enumerator2.MoveNext())
                     {
-                        DataRow row = (DataRow)enumerator2.Current;
-                        int GraveyardID = row.As<int>("id");
-                        int GraveyardFaction = row.As<int>("faction");
+                        var row = (DataRow)enumerator2.Current;
+                        var GraveyardID = row.As<int>("id");
+                        var GraveyardFaction = row.As<int>("faction");
                         if (!Graveyards.ContainsKey(GraveyardID))
                         {
                             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.INFORMATION, "GraveYards: Graveyard link invalid [{0}]", GraveyardID);
@@ -288,7 +288,7 @@ namespace Mangos.World.Maps
                             {
                                 continue;
                             }
-                            float dist2 = WorldServiceLocator._WS_Combat.GetDistance(Character.positionX, Graveyards[GraveyardID].X, Character.positionY, Graveyards[GraveyardID].Y, Character.positionZ, Graveyards[GraveyardID].Z);
+                            var dist2 = WorldServiceLocator._WS_Combat.GetDistance(Character.positionX, Graveyards[GraveyardID].X, Character.positionY, Graveyards[GraveyardID].Y, Character.positionZ, Graveyards[GraveyardID].Z);
                             if (foundNear)
                             {
                                 if (dist2 < distNear)
@@ -313,7 +313,7 @@ namespace Mangos.World.Maps
                         (enumerator2 as IDisposable).Dispose();
                     }
                 }
-                TGraveyard selectedGraveyard = entryNear;
+                var selectedGraveyard = entryNear;
                 if (Information.IsNothing(selectedGraveyard))
                 {
                     selectedGraveyard = entryFar;

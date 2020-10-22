@@ -96,7 +96,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastPolymorph()
         {
-            for (int i = 1; i <= 2; i++)
+            for (var i = 1; i <= 2; i++)
             {
                 var target = aiCreature.GetRandomTarget(); // Finally learned how random target functions work.
                 if (target is null)
@@ -114,7 +114,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastSilence()
         {
-            for (int i = 2; i <= 2; i++)
+            for (var i = 2; i <= 2; i++)
             {
                 var target = aiCreature.GetRandomTarget();
                 if (target is null)

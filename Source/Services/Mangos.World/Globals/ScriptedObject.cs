@@ -38,11 +38,11 @@ namespace Mangos.World.Globals
         [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         public ScriptedObject()
         {
-            string AssemblyFile = "Mangos.World.Scripts.dll";
-            string[] AssemblySources = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\Scripts\\", "*.vb", SearchOption.AllDirectories);
-            string[] array = AssemblySources;
+            var AssemblyFile = "Mangos.World.Scripts.dll";
+            var AssemblySources = Directory.GetFiles(AppDomain.CurrentDomain.BaseDirectory + "\\Scripts\\", "*.vb", SearchOption.AllDirectories);
+            var array = AssemblySources;
             DateTime LastDate = default;
-            foreach (string Source in array)
+            foreach (var Source in array)
             {
                 if (DateTime.Compare(LastDate, FileSystem.FileDateTime(Source)) < 0)
                 {
@@ -57,15 +57,15 @@ namespace Mangos.World.Globals
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.SUCCESS, "Compiling: \\Scripts\\*.*");
             try
             {
-                VBCodeProvider vBcp = new VBCodeProvider();
-                CompilerParameters cParameters = new CompilerParameters();
+                var vBcp = new VBCodeProvider();
+                var cParameters = new CompilerParameters();
                 IEnumerator enumerator = default;
                 try
                 {
                     enumerator = WorldServiceLocator._ConfigurationProvider.GetConfiguration().CompilerInclude.GetEnumerator();
                     while (enumerator.MoveNext())
                     {
-                        string include = Conversions.ToString(enumerator.Current);
+                        var include = Conversions.ToString(enumerator.Current);
                         cParameters.ReferencedAssemblies.Add(include);
                     }
                 }
@@ -81,7 +81,7 @@ namespace Mangos.World.Globals
                 cParameters.GenerateExecutable = false;
                 cParameters.GenerateInMemory = false;
                 cParameters.IncludeDebugInformation = true;
-                CompilerResults cResults = vBcp.CompileAssemblyFromFile(cParameters, AssemblySources);
+                var cResults = vBcp.CompileAssemblyFromFile(cParameters, AssemblySources);
                 if (cResults.Errors.HasErrors)
                 {
                     IEnumerator enumerator2 = default;
@@ -90,7 +90,7 @@ namespace Mangos.World.Globals
                         enumerator2 = cResults.Errors.GetEnumerator();
                         while (enumerator2.MoveNext())
                         {
-                            CompilerError err = (CompilerError)enumerator2.Current;
+                            var err = (CompilerError)enumerator2.Current;
                             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Compiling: Error on line {1} in {3}:{0}{2}", Environment.NewLine, err.Line, err.ErrorText, err.FileName);
                         }
                     }
@@ -110,7 +110,7 @@ namespace Mangos.World.Globals
             catch (Exception ex)
             {
                 ProjectData.SetProjectError(ex);
-                Exception e = ex;
+                var e = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Unable to compile scripts. {1}{0}", e.ToString(), Environment.NewLine);
                 ProjectData.ClearProjectError();
             }
@@ -127,9 +127,9 @@ namespace Mangos.World.Globals
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.SUCCESS, "Compiling: {0}", AssemblySourceFile);
             try
             {
-                VBCodeProvider VBcp = new VBCodeProvider();
-                CSharpCodeProvider CScp = new CSharpCodeProvider();
-                CompilerParameters cParameters = new CompilerParameters();
+                var VBcp = new VBCodeProvider();
+                var CScp = new CSharpCodeProvider();
+                var cParameters = new CompilerParameters();
                 if (!InMemory)
                 {
                     cParameters.OutputAssembly = AssemblyFile;
@@ -140,7 +140,7 @@ namespace Mangos.World.Globals
                     enumerator = WorldServiceLocator._ConfigurationProvider.GetConfiguration().CompilerInclude.GetEnumerator();
                     while (enumerator.MoveNext())
                     {
-                        string Include = Conversions.ToString(enumerator.Current);
+                        var Include = Conversions.ToString(enumerator.Current);
                         cParameters.ReferencedAssemblies.Add(Include);
                     }
                 }
@@ -177,7 +177,7 @@ namespace Mangos.World.Globals
                         enumerator2 = cResults.Errors.GetEnumerator();
                         while (enumerator2.MoveNext())
                         {
-                            CompilerError err = (CompilerError)enumerator2.Current;
+                            var err = (CompilerError)enumerator2.Current;
                             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Compiling: Error on line {1}:{0}{2}", Environment.NewLine, err.Line, err.ErrorText);
                         }
                     }
@@ -198,7 +198,7 @@ namespace Mangos.World.Globals
             catch (Exception ex)
             {
                 ProjectData.SetProjectError(ex);
-                Exception e = ex;
+                var e = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Unable to compile script [{0}]. {2}{1}", AssemblySourceFile, e.ToString(), Environment.NewLine);
                 ProjectData.ClearProjectError();
             }
@@ -208,14 +208,14 @@ namespace Mangos.World.Globals
         {
             try
             {
-                Type ty = ass.GetType("Scripts." + MyModule);
-                MethodInfo mi = ty.GetMethod(MyMethod);
+                var ty = ass.GetType("Scripts." + MyModule);
+                var mi = ty.GetMethod(MyMethod);
                 mi.Invoke(null, (object[])Parameters);
             }
             catch (TargetInvocationException ex)
             {
                 ProjectData.SetProjectError(ex);
-                TargetInvocationException e2 = ex;
+                var e2 = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Script execution error:{1}{0}", e2.GetBaseException().ToString(), Environment.NewLine);
                 ProjectData.ClearProjectError();
             }
@@ -231,21 +231,21 @@ namespace Mangos.World.Globals
         {
             try
             {
-                Type ty = ass.GetType("Scripts." + MyBaseClass);
-                ConstructorInfo[] ci = ty.GetConstructors();
+                var ty = ass.GetType("Scripts." + MyBaseClass);
+                var ci = ty.GetConstructors();
                 return ci[0].Invoke((object[])Parameters);
             }
             catch (NullReferenceException ex)
             {
                 ProjectData.SetProjectError(ex);
-                NullReferenceException e2 = ex;
+                var e2 = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Scripted Class [{0}] not found in [Scripts]!", MyBaseClass);
                 ProjectData.ClearProjectError();
             }
             catch (Exception ex2)
             {
                 ProjectData.SetProjectError(ex2);
-                Exception e = ex2;
+                var e = ex2;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Script execution error:{1}{0}", e.GetBaseException().ToString(), Environment.NewLine);
                 ProjectData.ClearProjectError();
             }
@@ -256,21 +256,21 @@ namespace Mangos.World.Globals
         {
             try
             {
-                Type ty = ass.GetType("Scripts." + MyModule);
-                PropertyInfo pi = ty.GetProperty(MyProperty);
+                var ty = ass.GetType("Scripts." + MyModule);
+                var pi = ty.GetProperty(MyProperty);
                 return pi.GetValue(null, null);
             }
             catch (NullReferenceException ex)
             {
                 ProjectData.SetProjectError(ex);
-                NullReferenceException e2 = ex;
+                var e2 = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Scripted Property [{1}] not found in [Scripts.{1}]!", MyModule, MyProperty);
                 ProjectData.ClearProjectError();
             }
             catch (Exception ex2)
             {
                 ProjectData.SetProjectError(ex2);
-                Exception e = ex2;
+                var e = ex2;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Script execution error:{1}{0}", e.GetBaseException().ToString(), Environment.NewLine);
                 ProjectData.ClearProjectError();
             }
@@ -281,21 +281,21 @@ namespace Mangos.World.Globals
         {
             try
             {
-                Type ty = ass.GetType("Scripts." + MyModule);
-                FieldInfo fi = ty.GetField(MyField, BindingFlags.Static | BindingFlags.Public);
+                var ty = ass.GetType("Scripts." + MyModule);
+                var fi = ty.GetField(MyField, BindingFlags.Static | BindingFlags.Public);
                 return fi.GetValue(null);
             }
             catch (NullReferenceException ex)
             {
                 ProjectData.SetProjectError(ex);
-                NullReferenceException e2 = ex;
+                var e2 = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Scripted Field [{1}] not found in [Scripts.{0}]!", MyModule, MyField);
                 ProjectData.ClearProjectError();
             }
             catch (Exception ex2)
             {
                 ProjectData.SetProjectError(ex2);
-                Exception e = ex2;
+                var e = ex2;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Script execution error:{1}{0}", e.GetBaseException().ToString(), Environment.NewLine);
                 ProjectData.ClearProjectError();
             }
@@ -304,8 +304,8 @@ namespace Mangos.World.Globals
 
         public bool ContainsMethod(string MyModule, string MyMethod)
         {
-            Type ty = ass.GetType("Scripts." + MyModule);
-            MethodInfo mi = ty.GetMethod(MyMethod);
+            var ty = ass.GetType("Scripts." + MyModule);
+            var mi = ty.GetMethod(MyMethod);
             if (mi is null)
             {
                 return false;
@@ -322,21 +322,21 @@ namespace Mangos.World.Globals
             catch (FileNotFoundException ex)
             {
                 ProjectData.SetProjectError(ex);
-                FileNotFoundException fnfe = ex;
+                var fnfe = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "DLL not found error:{1}{0}", fnfe.GetBaseException().ToString(), Environment.NewLine);
                 ProjectData.ClearProjectError();
             }
             catch (ArgumentNullException ex2)
             {
                 ProjectData.SetProjectError(ex2);
-                ArgumentNullException ane = ex2;
+                var ane = ex2;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "DLL NULL error:{1}{0}", ane.GetBaseException().ToString(), Environment.NewLine);
                 ProjectData.ClearProjectError();
             }
             catch (BadImageFormatException ex3)
             {
                 ProjectData.SetProjectError(ex3);
-                BadImageFormatException bife = ex3;
+                var bife = ex3;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "DLL not a valid assembly error:{1}{0}", bife.GetBaseException().ToString(), Environment.NewLine);
                 ProjectData.ClearProjectError();
             }

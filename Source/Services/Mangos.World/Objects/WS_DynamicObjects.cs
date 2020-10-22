@@ -125,13 +125,13 @@ namespace Mangos.World.Objects
                     ProjectData.ClearProjectError();
                     return;
                 }
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                 packet.AddInt32(1);
                 packet.AddInt8(0);
-                Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_DYNAMICOBJECT);
+                var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_DYNAMICOBJECT);
                 FillAllUpdateFlags(ref tmpUpdate);
-                Packets.UpdateClass updateClass = tmpUpdate;
-                DynamicObjectObject updateObject = this;
+                var updateClass = tmpUpdate;
+                var updateObject = this;
                 updateClass.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF, ref updateObject);
                 tmpUpdate.Dispose();
                 short i = -1;
@@ -144,15 +144,15 @@ namespace Mangos.World.Objects
                         {
                             if ((short)unchecked(CellX + i) >= 0 && (short)unchecked(CellX + i) <= 63 && (short)unchecked(CellY + j) >= 0 && (short)unchecked(CellY + j) <= 63 && WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)] != null && WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)].PlayersHere.Count > 0)
                             {
-                                WS_Maps.TMapTile tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)];
-                                ulong[] list = tMapTile.PlayersHere.ToArray();
-                                ulong[] array = list;
-                                foreach (ulong plGUID in array)
+                                var tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)];
+                                var list = tMapTile.PlayersHere.ToArray();
+                                var array = list;
+                                foreach (var plGUID in array)
                                 {
                                     int num;
                                     if (WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(plGUID))
                                     {
-                                        WS_PlayerData.CharacterObject characterObject = WorldServiceLocator._WorldServer.CHARACTERs[plGUID];
+                                        var characterObject = WorldServiceLocator._WorldServer.CHARACTERs[plGUID];
                                         WS_Base.BaseObject objCharacter = this;
                                         num = (characterObject.CanSee(ref objCharacter) ? 1 : 0);
                                     }
@@ -182,8 +182,8 @@ namespace Mangos.World.Objects
             {
                 WorldServiceLocator._WS_Maps.GetMapTile(positionX, positionY, ref CellX, ref CellY);
                 WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[CellX, CellY].DynamicObjectsHere.Remove(GUID);
-                ulong[] array = SeenBy.ToArray();
-                foreach (ulong plGUID in array)
+                var array = SeenBy.ToArray();
+                foreach (var plGUID in array)
                 {
                     if (WorldServiceLocator._WorldServer.CHARACTERs[plGUID].dynamicObjectsNear.Contains(GUID))
                     {
@@ -211,7 +211,7 @@ namespace Mangos.World.Objects
                 {
                     return true;
                 }
-                bool DeleteThis = false;
+                var DeleteThis = false;
                 checked
                 {
                     if (Duration > 1000)
@@ -223,27 +223,27 @@ namespace Mangos.World.Objects
                         DeleteThis = true;
                     }
                 }
-                foreach (WS_Spells.SpellEffect effect in Effects)
+                foreach (var effect in Effects)
                 {
-                    WS_Spells.SpellEffect Effect = effect;
+                    var Effect = effect;
                     if (Effect.GetRadius == 0f)
                     {
                         if (Effect.Amplitude == 0 || checked(WorldServiceLocator._WS_Spells.SPELLs[SpellID].GetDuration - Duration) % Effect.Amplitude == 0)
                         {
-                            WS_Spells.ApplyAuraHandler obj = WorldServiceLocator._WS_Spells.AURAs[Effect.ApplyAuraIndex];
-                            ref WS_Base.BaseUnit caster = ref Caster;
+                            var obj = WorldServiceLocator._WS_Spells.AURAs[Effect.ApplyAuraIndex];
+                            ref var caster = ref Caster;
                             WS_Base.BaseObject baseObject = this;
                             obj(ref caster, ref baseObject, ref Effect, SpellID, 1, AuraAction.AURA_UPDATE);
                         }
                         continue;
                     }
-                    List<WS_Base.BaseUnit> Targets = WorldServiceLocator._WS_Spells.GetEnemyAtPoint(ref Caster, positionX, positionY, positionZ, Effect.GetRadius);
-                    foreach (WS_Base.BaseUnit item in Targets)
+                    var Targets = WorldServiceLocator._WS_Spells.GetEnemyAtPoint(ref Caster, positionX, positionY, positionZ, Effect.GetRadius);
+                    foreach (var item in Targets)
                     {
-                        WS_Base.BaseUnit Target = item;
+                        var Target = item;
                         if (Effect.Amplitude == 0 || checked(WorldServiceLocator._WS_Spells.SPELLs[SpellID].GetDuration - Duration) % Effect.Amplitude == 0)
                         {
-                            WS_Spells.ApplyAuraHandler obj2 = WorldServiceLocator._WS_Spells.AURAs[Effect.ApplyAuraIndex];
+                            var obj2 = WorldServiceLocator._WS_Spells.AURAs[Effect.ApplyAuraIndex];
                             WS_Base.BaseObject baseObject = this;
                             obj2(ref Target, ref baseObject, ref Effect, SpellID, 1, AuraAction.AURA_UPDATE);
                         }
@@ -260,7 +260,7 @@ namespace Mangos.World.Objects
             public void Spawn()
             {
                 AddToWorld();
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_SPAWN_ANIM);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_SPAWN_ANIM);
                 packet.AddUInt64(GUID);
                 SendToNearPlayers(ref packet);
                 packet.Dispose();
@@ -272,7 +272,7 @@ namespace Mangos.World.Objects
                 {
                     Caster.dynamicObjects.Remove(this);
                 }
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_DESPAWN_ANIM);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_DESPAWN_ANIM);
                 packet.AddUInt64(GUID);
                 SendToNearPlayers(ref packet);
                 packet.Dispose();
@@ -283,7 +283,7 @@ namespace Mangos.World.Objects
 
         private ulong GetNewGUID()
         {
-            ref ulong dynamicObjectsGUIDCounter = ref WorldServiceLocator._WorldServer.DynamicObjectsGUIDCounter;
+            ref var dynamicObjectsGUIDCounter = ref WorldServiceLocator._WorldServer.DynamicObjectsGUIDCounter;
             dynamicObjectsGUIDCounter = Convert.ToUInt64(decimal.Add(new decimal(dynamicObjectsGUIDCounter), 1m));
             return WorldServiceLocator._WorldServer.DynamicObjectsGUIDCounter;
         }

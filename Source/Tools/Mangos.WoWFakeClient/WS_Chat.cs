@@ -89,16 +89,16 @@ namespace Mangos.WoWFakeClient
 
         public static void On_SMSG_MESSAGECHAT(ref Packets.PacketClass Packet)
         {
-            ChatMsg msgType = (ChatMsg)Packet.GetInt8();
-            LANGUAGES msgLanguage = (LANGUAGES)Packet.GetInt32();
+            var msgType = (ChatMsg)Packet.GetInt8();
+            var msgLanguage = (LANGUAGES)Packet.GetInt32();
             switch (msgType)
             {
                 case ChatMsg.CHAT_MSG_WHISPER:
                     {
-                        ulong SenderGuid = (ulong)Packet.GetInt64();
-                        int ByteCount = Packet.GetInt32();
-                        string Message = Packet.GetString();
-                        byte ChatFlag = Packet.GetInt8();
+                        var SenderGuid = (ulong)Packet.GetInt64();
+                        var ByteCount = Packet.GetInt32();
+                        var Message = Packet.GetString();
+                        var ChatFlag = Packet.GetInt8();
                         Console.WriteLine("Answer: " + Message);
                         break;
                     }

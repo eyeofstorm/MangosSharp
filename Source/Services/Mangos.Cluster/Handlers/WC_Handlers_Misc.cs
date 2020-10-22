@@ -68,7 +68,7 @@ namespace Mangos.Cluster.Handlers
             if (packet.Data.Length - 1 < 13)
                 return;
             packet.GetInt16();
-            ulong GUID = packet.GetUInt64();
+            var GUID = packet.GetUInt64();
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_NAME_QUERY [GUID={2:X}]", client.IP, client.Port, GUID);
             if (clusterServiceLocator._CommonGlobalFunctions.GuidIsPlayer(GUID) && clusterServiceLocator._WorldCluster.CHARACTERs.ContainsKey(GUID))
             {
@@ -99,7 +99,7 @@ namespace Mangos.Cluster.Handlers
         public void On_CMSG_INSPECT(PacketClass packet, ClientClass client)
         {
             packet.GetInt16();
-            ulong GUID = packet.GetUInt64();
+            var GUID = packet.GetUInt64();
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_INSPECT [GUID={2:X}]", client.IP, client.Port, GUID);
         }
 

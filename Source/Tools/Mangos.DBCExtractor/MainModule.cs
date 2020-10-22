@@ -47,7 +47,7 @@ namespace Mangos.DBCExtractor
             }
 
             var MPQFilesToOpen = new List<string> { "terrain.MPQ", "dbc.MPQ", "misc.MPQ", "patch.MPQ", "patch-2.MPQ" };
-            foreach (string mpq in MPQFilesToOpen)
+            foreach (var mpq in MPQFilesToOpen)
             {
                 if (File.Exists(@"Data\" + mpq) == false)
                 {
@@ -57,7 +57,7 @@ namespace Mangos.DBCExtractor
             }
 
             Console.ForegroundColor = ConsoleColor.Yellow;
-            foreach (string mpq in MPQFilesToOpen)
+            foreach (var mpq in MPQFilesToOpen)
             {
                 var stream = File.Open(Path.GetFullPath(@"Data\" + mpq), FileMode.Open);
                 var newArchive = new MpqArchive(stream, true);
@@ -116,12 +116,12 @@ namespace Mangos.DBCExtractor
             Console.ForegroundColor = ConsoleColor.White;
             Console.Write("Extracting DBC Files");
             Console.ForegroundColor = ConsoleColor.Gray;
-            string dbcFolder = Path.GetFullPath("dbc");
-            int numDBCs = 0;
+            var dbcFolder = Path.GetFullPath("dbc");
+            var numDBCs = 0;
             foreach (var mpqArchive in MPQArchives)
                 numDBCs += mpqArchive.Where(x => x.Filename is object).Where(x => x.Filename.EndsWith(".dbc")).Count();
-            int i = 0;
-            int numDiv30 = numDBCs / 30;
+            var i = 0;
+            var numDiv30 = numDBCs / 30;
             foreach (var mpqArchive in MPQArchives)
             {
                 foreach (var mpqFile in mpqArchive.Where(x => x.Filename is object).Where(x => x.Filename.EndsWith(".dbc")))

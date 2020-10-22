@@ -62,14 +62,14 @@ namespace Mangos.World.Server
                     {
                         WorldServiceLocator._WorldServer.WORLD_CREATUREs_Lock.AcquireReaderLock(WorldServiceLocator._Global_Constants.DEFAULT_LOCK_TIMEOUT);
                         long num = WorldServiceLocator._WorldServer.WORLD_CREATUREsKeys.Count - 1;
-                        for (long i = 0L; i <= num; i++)
+                        for (var i = 0L; i <= num; i++)
                         {
-                            WS_Creatures.CreatureObject creatureObject = WorldServiceLocator._WorldServer.WORLD_CREATUREs[Conversions.ToULong(WorldServiceLocator._WorldServer.WORLD_CREATUREsKeys[(int)i])];
+                            var creatureObject = WorldServiceLocator._WorldServer.WORLD_CREATUREs[Conversions.ToULong(WorldServiceLocator._WorldServer.WORLD_CREATUREsKeys[(int)i])];
                             if (creatureObject != null)
                             {
                                 ulong key;
                                 Dictionary<ulong, WS_Creatures.CreatureObject> wORLD_CREATUREs;
-                                object value = WorldServiceLocator._WorldServer.WORLD_CREATUREsKeys[(int)i];
+                                var value = WorldServiceLocator._WorldServer.WORLD_CREATUREsKeys[(int)i];
                                 WS_Base.BaseUnit objCharacter = (wORLD_CREATUREs = WorldServiceLocator._WorldServer.WORLD_CREATUREs)[key = Conversions.ToULong(value)];
                                 UpdateSpells(ref objCharacter);
                                 wORLD_CREATUREs[key] = (WS_Creatures.CreatureObject)objCharacter;
@@ -79,7 +79,7 @@ namespace Mangos.World.Server
                     catch (Exception ex4)
                     {
                         ProjectData.SetProjectError(ex4);
-                        Exception ex3 = ex4;
+                        var ex3 = ex4;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, ex3.ToString(), null);
                         ProjectData.ClearProjectError();
                     }
@@ -102,7 +102,7 @@ namespace Mangos.World.Server
                     catch (Exception ex5)
                     {
                         ProjectData.SetProjectError(ex5);
-                        Exception ex2 = ex5;
+                        var ex2 = ex5;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, ex2.ToString(), null);
                         ProjectData.ClearProjectError();
                     }
@@ -110,11 +110,11 @@ namespace Mangos.World.Server
                     {
                         WorldServiceLocator._WorldServer.CHARACTERs_Lock.ReleaseReaderLock();
                     }
-                    List<WS_DynamicObjects.DynamicObjectObject> DynamicObjectsToDelete = new List<WS_DynamicObjects.DynamicObjectObject>();
+                    var DynamicObjectsToDelete = new List<WS_DynamicObjects.DynamicObjectObject>();
                     try
                     {
                         WorldServiceLocator._WorldServer.WORLD_DYNAMICOBJECTs_Lock.AcquireReaderLock(WorldServiceLocator._Global_Constants.DEFAULT_LOCK_TIMEOUT);
-                        foreach (KeyValuePair<ulong, WS_DynamicObjects.DynamicObjectObject> Dynamic in WorldServiceLocator._WorldServer.WORLD_DYNAMICOBJECTs)
+                        foreach (var Dynamic in WorldServiceLocator._WorldServer.WORLD_DYNAMICOBJECTs)
                         {
                             if (Dynamic.Value != null && Dynamic.Value.Update())
                             {
@@ -125,7 +125,7 @@ namespace Mangos.World.Server
                     catch (Exception ex6)
                     {
                         ProjectData.SetProjectError(ex6);
-                        Exception ex = ex6;
+                        var ex = ex6;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, ex.ToString(), null);
                         ProjectData.ClearProjectError();
                     }
@@ -133,7 +133,7 @@ namespace Mangos.World.Server
                     {
                         WorldServiceLocator._WorldServer.WORLD_DYNAMICOBJECTs_Lock.ReleaseReaderLock();
                     }
-                    foreach (WS_DynamicObjects.DynamicObjectObject item in DynamicObjectsToDelete)
+                    foreach (var item in DynamicObjectsToDelete)
                     {
                         item?.Delete();
                     }
@@ -172,7 +172,7 @@ namespace Mangos.World.Server
                 }
                 checked
                 {
-                    for (int i = 0; i <= WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs - 1; i++)
+                    for (var i = 0; i <= WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs - 1; i++)
                     {
                         if (objCharacter.ActiveSpells[i] == null)
                         {
@@ -186,10 +186,10 @@ namespace Mangos.World.Server
                             {
                                 if (objCharacter.ActiveSpells[i] != null && objCharacter.ActiveSpells[i].Aura[j] != null && objCharacter.ActiveSpells[i].Aura_Info[j] != null && objCharacter.ActiveSpells[i].Aura_Info[j].Amplitude != 0 && checked(objCharacter.ActiveSpells[i].GetSpellInfo.GetDuration - objCharacter.ActiveSpells[i].SpellDuration) % objCharacter.ActiveSpells[i].Aura_Info[j].Amplitude == 0)
                                 {
-                                    ref WS_Base.BaseUnit spellCaster = ref objCharacter.ActiveSpells[i].SpellCaster;
+                                    ref var spellCaster = ref objCharacter.ActiveSpells[i].SpellCaster;
                                     WS_Base.BaseObject Caster = spellCaster;
                                     objCharacter.ActiveSpells[i].Aura[j](ref objCharacter, ref Caster, ref objCharacter.ActiveSpells[i].Aura_Info[j], objCharacter.ActiveSpells[i].SpellID, objCharacter.ActiveSpells[i].StackCount + 1, AuraAction.AURA_UPDATE);
-                                    ref WS_Base.BaseUnit reference = ref spellCaster;
+                                    ref var reference = ref spellCaster;
                                     reference = (WS_Base.BaseUnit)Caster;
                                 }
                                 j = (byte)unchecked((uint)(j + 1));
@@ -207,35 +207,35 @@ namespace Mangos.World.Server
                             {
                                 if (objCharacter.ActiveSpells[i].SpellCaster == objCharacter)
                                 {
-                                    List<WS_Base.BaseUnit> Targets = new List<WS_Base.BaseUnit>();
+                                    var Targets = new List<WS_Base.BaseUnit>();
                                     switch (objCharacter)
                                     {
                                         case WS_PlayerData.CharacterObject _:
                                             {
-                                                WS_Spells wS_Spells = WorldServiceLocator._WS_Spells;
-                                                WS_PlayerData.CharacterObject objCharacter2 = (WS_PlayerData.CharacterObject)objCharacter;
+                                                var wS_Spells = WorldServiceLocator._WS_Spells;
+                                                var objCharacter2 = (WS_PlayerData.CharacterObject)objCharacter;
                                                 Targets = wS_Spells.GetPartyMembersAroundMe(ref objCharacter2, objCharacter.ActiveSpells[i].Aura_Info[k].GetRadius);
                                                 break;
                                             }
 
                                         case WS_Totems.TotemObject _ when ((WS_Totems.TotemObject)objCharacter).Caster != null && ((WS_Totems.TotemObject)objCharacter).Caster is WS_PlayerData.CharacterObject:
                                             {
-                                                WS_Spells wS_Spells2 = WorldServiceLocator._WS_Spells;
-                                                ref WS_Base.BaseUnit caster2 = ref ((WS_Totems.TotemObject)objCharacter).Caster;
-                                                ref WS_Base.BaseUnit reference = ref caster2;
-                                                WS_PlayerData.CharacterObject objCharacter2 = (WS_PlayerData.CharacterObject)caster2;
+                                                var wS_Spells2 = WorldServiceLocator._WS_Spells;
+                                                ref var caster2 = ref ((WS_Totems.TotemObject)objCharacter).Caster;
+                                                ref var reference = ref caster2;
+                                                var objCharacter2 = (WS_PlayerData.CharacterObject)caster2;
                                                 List<WS_Base.BaseUnit> partyMembersAtPoint = wS_Spells2.GetPartyMembersAtPoint(ref objCharacter2, objCharacter.ActiveSpells[i].Aura_Info[k].GetRadius, objCharacter.positionX, objCharacter.positionY, objCharacter.positionZ);
                                                 reference = objCharacter2;
                                                 Targets = partyMembersAtPoint;
                                                 break;
                                             }
                                     }
-                                    foreach (WS_Base.BaseUnit item in Targets)
+                                    foreach (var item in Targets)
                                     {
-                                        WS_Base.BaseUnit Unit = item;
+                                        var Unit = item;
                                         if (!Unit.HaveAura(objCharacter.ActiveSpells[i].SpellID))
                                         {
-                                            WS_Spells wS_Spells3 = WorldServiceLocator._WS_Spells;
+                                            var wS_Spells3 = WorldServiceLocator._WS_Spells;
                                             WS_Base.BaseObject Caster = objCharacter;
                                             wS_Spells3.ApplyAura(ref Unit, ref Caster, ref objCharacter.ActiveSpells[i].Aura_Info[k], objCharacter.ActiveSpells[i].SpellID);
                                             objCharacter = (WS_Base.BaseUnit)Caster;

@@ -64,7 +64,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastLightning()
         {
-            for (int i = 0; i <= 3; i++)
+            for (var i = 0; i <= 3; i++)
             {
                 WS_Base.BaseUnit Target = aiCreature;
                 if (Target is null)

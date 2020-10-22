@@ -116,7 +116,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void Cast_Lucirons_Curse()
         {
-            for (int i = 0; i <= 2; i++)
+            for (var i = 0; i <= 2; i++)
             {
                 WS_Base.BaseUnit theTarget = aiCreature;
                 if (theTarget is null)
@@ -134,7 +134,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void Cast_Impending_Doom()
         {
-            for (int i = 1; i <= 2; i++)
+            for (var i = 1; i <= 2; i++)
             {
                 WS_Base.BaseUnit theTarget = aiCreature;
                 if (theTarget is null)
@@ -152,7 +152,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void Cast_Shadow_Shock()
         {
-            for (int i = 2; i <= 2; i++)
+            for (var i = 2; i <= 2; i++)
             {
                 var theTarget = aiCreature.GetRandomTarget();
                 if (theTarget is null)

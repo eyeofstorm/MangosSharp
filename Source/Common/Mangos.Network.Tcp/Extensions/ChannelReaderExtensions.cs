@@ -26,7 +26,7 @@ namespace Mangos.Network.Tcp.Extensions
     {
         public static async IAsyncEnumerable<byte> ReadAsync(this ChannelReader<byte> reader, int count)
         {
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 yield return await reader.ReadAsync();
             }
@@ -34,7 +34,7 @@ namespace Mangos.Network.Tcp.Extensions
 
         public static async ValueTask ReadAsync(this ChannelReader<byte> reader, byte[] buffer, int offset, int count)
         {
-            for (int i = 0; i < count; i++)
+            for (var i = 0; i < count; i++)
             {
                 buffer[offset + i] = await reader.ReadAsync();
             }

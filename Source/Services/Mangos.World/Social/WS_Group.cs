@@ -87,9 +87,9 @@ namespace Mangos.World.Social
 
             public WS_PlayerData.CharacterObject GetNextLooter()
             {
-                bool nextIsLooter = false;
-                bool nextLooterFound = false;
-                foreach (ulong guid in LocalMembers)
+                var nextIsLooter = false;
+                var nextLooterFound = false;
+                foreach (var guid in LocalMembers)
                 {
                     if (nextIsLooter)
                     {
@@ -127,7 +127,7 @@ namespace Mangos.World.Social
 
         public Packets.PacketClass BuildPartyMemberStats(ref WS_PlayerData.CharacterObject objCharacter, uint flag)
         {
-            Opcodes opCode = Opcodes.SMSG_PARTY_MEMBER_STATS;
+            var opCode = Opcodes.SMSG_PARTY_MEMBER_STATS;
             if (flag == 1015 || flag == 524279)
             {
                 opCode = Opcodes.SMSG_PARTY_MEMBER_STATS_FULL;
@@ -136,7 +136,7 @@ namespace Mangos.World.Social
                     flag |= 8u;
                 }
             }
-            Packets.PacketClass packet = new Packets.PacketClass(opCode);
+            var packet = new Packets.PacketClass(opCode);
             packet.AddPackGUID(objCharacter.GUID);
             packet.AddUInt32(flag);
             if ((flag & (true ? 1u : 0u)) != 0)
@@ -211,11 +211,11 @@ namespace Mangos.World.Social
                 }
                 if ((flag & 0x200u) != 0)
                 {
-                    ulong auraMask2 = 0uL;
-                    int auraPos2 = packet.Data.Length;
+                    var auraMask2 = 0uL;
+                    var auraPos2 = packet.Data.Length;
                     packet.AddUInt64(0uL);
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                    for (int j = 0; j <= num; j++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                    for (var j = 0; j <= num; j++)
                     {
                         if (objCharacter.ActiveSpells[j] != null)
                         {
@@ -321,11 +321,11 @@ namespace Mangos.World.Social
                 {
                     if (objCharacter.Pet != null)
                     {
-                        ulong auraMask = 0uL;
-                        int auraPos = packet.Data.Length;
+                        var auraMask = 0uL;
+                        var auraPos = packet.Data.Length;
                         packet.AddUInt64(0uL);
-                        int num2 = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                        for (int i = 0; i <= num2; i++)
+                        var num2 = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                        for (var i = 0; i <= num2; i++)
                         {
                             if (objCharacter.Pet.ActiveSpells[i] != null)
                             {

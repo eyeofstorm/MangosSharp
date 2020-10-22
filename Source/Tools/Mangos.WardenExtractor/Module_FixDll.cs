@@ -35,21 +35,21 @@ namespace Mangos.WardenExtractor
             var ms2 = new MemoryStream(Data);
             var br = new BinaryReader(ms2);
             var Sections = new List<Section>();
-            int CurrentPosition = 0x400;
-            int ImportAddress = br.ReadInt32();
-            int ImportUnk = br.ReadInt32();
-            int ExportAddress = br.ReadInt32();
-            int ExportUnk = br.ReadInt32();
+            var CurrentPosition = 0x400;
+            var ImportAddress = br.ReadInt32();
+            var ImportUnk = br.ReadInt32();
+            var ExportAddress = br.ReadInt32();
+            var ExportUnk = br.ReadInt32();
             br.BaseStream.Position = 36L;
-            int numSections = br.ReadInt32();
-            int BufferPosition = 0x4E;
-            int i = 40;
-            int j = 0;
+            var numSections = br.ReadInt32();
+            var BufferPosition = 0x4E;
+            var i = 40;
+            var j = 0;
             do
             {
-                int virtualaddress = br.ReadInt32();
-                int len = br.ReadInt32();
-                int type = br.ReadInt32();
+                var virtualaddress = br.ReadInt32();
+                var len = br.ReadInt32();
+                var type = br.ReadInt32();
                 string name;
                 int characteristics;
                 if (type == 2)
@@ -78,7 +78,7 @@ namespace Mangos.WardenExtractor
                     return;
                 }
 
-                long tmpPos = br.BaseStream.Position;
+                var tmpPos = br.BaseStream.Position;
                 var newSection = new Section
                 {
                     Name = name,
@@ -257,7 +257,7 @@ namespace Mangos.WardenExtractor
             bw.Write(0); // Size
 
             // IMAGE_SECTION_HEADER
-            foreach (Section tmpSection in Sections)
+            foreach (var tmpSection in Sections)
             {
                 bw.Write(GetName(tmpSection.Name)); // Name (8 bytes, null-padded)
                 bw.Write(tmpSection.Size); // VirtualSize
@@ -273,7 +273,7 @@ namespace Mangos.WardenExtractor
             // End Header
 
             // Section data
-            foreach (Section tmpSection in Sections)
+            foreach (var tmpSection in Sections)
             {
                 bw.BaseStream.Position = tmpSection.Pointer;
                 bw.Write(tmpSection.Data, 0, tmpSection.Data.Length);
@@ -299,7 +299,7 @@ namespace Mangos.WardenExtractor
         public static ulong GetName(string Name)
         {
             var bBytes = new byte[8];
-            for (int i = 0; i <= 7; i++)
+            for (var i = 0; i <= 7; i++)
             {
                 if (i + 1 > Name.Length)
                     break;
@@ -315,12 +315,12 @@ namespace Mangos.WardenExtractor
             var tmpBytes = br.ReadBytes(Length);
             if (Conversions.ToBoolean(characteristics & 0x20))
             {
-                int InstructionPos = 0;
+                var InstructionPos = 0;
                 do
                 {
                     try
                     {
-                        int InstrPos = InstructionPos;
+                        var InstrPos = InstructionPos;
                         var Instr = ParseInstuction(ref tmpBytes, ref InstructionPos);
                         if (Instr is null)
                             continue;
@@ -407,8 +407,8 @@ namespace Mangos.WardenExtractor
                 return null;
             }
 
-            int StartAt = Position;
-            for (int i = 0; i <= 3; i++)
+            var StartAt = Position;
+            for (var i = 0; i <= 3; i++)
             {
                 if (!IsPrefix(Data[Position]))
                     break;
@@ -417,7 +417,7 @@ namespace Mangos.WardenExtractor
             }
 
             newInstruction.InitPrefix();
-            byte bOpcode = Data[Position];
+            var bOpcode = Data[Position];
             Position += 1;
             if (bOpcode == 0xF)
             {
@@ -583,7 +583,7 @@ namespace Mangos.WardenExtractor
 
         private static int FindDisplacementDataSize(ref Instruction Instr)
         {
-            bool address_size_is_32 = false;
+            var address_size_is_32 = false;
             if (Instr.EffectiveAddressSize == 32)
                 address_size_is_32 = true;
             if (Instr.Opcode == 0x9A || Instr.Opcode == 0xEA)
@@ -622,7 +622,7 @@ namespace Mangos.WardenExtractor
 
         private static int FindImmediateDataSize(ref Instruction Instr)
         {
-            bool operand_size_32 = false;
+            var operand_size_32 = false;
             if (Instr.EffectiveOperandSize == 32)
                 operand_size_32 = true;
             if (Instr.Opcode == 0xC2 || Instr.Opcode == 0xCA)
@@ -665,8 +665,8 @@ namespace Mangos.WardenExtractor
 
         private static int FindDisplacementDataSize2(ref Instruction Instr)
         {
-            bool address_size_is_32 = false;
-            int DisplacementSize = 0;
+            var address_size_is_32 = false;
+            var DisplacementSize = 0;
             if (Instr.EffectiveOperandSize == 32)
                 address_size_is_32 = true;
             switch (Instr.ModRmData & MOD_FIELD_MASK)
@@ -712,8 +712,8 @@ namespace Mangos.WardenExtractor
 
         private static int FindImmediateDataSize2(ref Instruction Instr)
         {
-            bool operand_size_32 = false;
-            int immediate_size = 0;
+            var operand_size_32 = false;
+            var immediate_size = 0;
             if (Instr.EffectiveOperandSize == 32)
                 operand_size_32 = true;
             switch (Instr.ExtendedOpcode)
@@ -787,10 +787,10 @@ namespace Mangos.WardenExtractor
 
         private static bool IsBitSetInTable(byte bOpcode, ushort[] Table)
         {
-            byte row_index = (byte)(0xF0 & bOpcode);
+            var row_index = (byte)(0xF0 & bOpcode);
             row_index = (byte)(row_index >> 4);
-            byte col_index = (byte)(0xF & bOpcode);
-            ushort databits = Table[row_index];
+            var col_index = (byte)(0xF & bOpcode);
+            var databits = Table[row_index];
             uint the_bit;
             switch (col_index)
             {
@@ -920,7 +920,7 @@ namespace Mangos.WardenExtractor
 
             public void InitPrefix()
             {
-                for (int i = 0; i <= 3; i++)
+                for (var i = 0; i <= 3; i++)
                 {
                     if (IsPrefix(Prefix[i]) == false)
                         break;
@@ -958,7 +958,7 @@ namespace Mangos.WardenExtractor
             public byte[] GetBytes()
             {
                 var newData = new MemoryStream();
-                for (int i = 0; i <= 3; i++)
+                for (var i = 0; i <= 3; i++)
                 {
                     if (IsPrefix(Prefix[i]) == false)
                         break;

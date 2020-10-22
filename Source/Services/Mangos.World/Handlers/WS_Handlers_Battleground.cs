@@ -33,13 +33,13 @@ namespace Mangos.World.Handlers
                 return;
             }
             packet.GetInt16();
-            ulong GUID = packet.GetUInt64();
+            var GUID = packet.GetUInt64();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_BATTLEMASTER_HELLO [{2:X}]", client.IP, client.Port, GUID);
             if (!WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(GUID) || (WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].CreatureInfo.cNpcFlags & 0x800) == 0 || !WorldServiceLocator._WS_DBCDatabase.Battlemasters.ContainsKey(WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].ID))
             {
                 return;
             }
-            byte BGType = WorldServiceLocator._WS_DBCDatabase.Battlemasters[WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].ID];
+            var BGType = WorldServiceLocator._WS_DBCDatabase.Battlemasters[WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].ID];
             if (!WorldServiceLocator._WS_DBCDatabase.Battlegrounds.ContainsKey(BGType))
             {
                 return;
@@ -49,15 +49,15 @@ namespace Mangos.World.Handlers
                 WorldServiceLocator._Functions.SendMessageNotification(ref client, "You don't meet Battleground level requirements");
                 return;
             }
-            Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_BATTLEFIELD_LIST);
+            var response = new Packets.PacketClass(Opcodes.SMSG_BATTLEFIELD_LIST);
             try
             {
                 response.AddUInt64(client.Character.GUID);
                 response.AddInt32(BGType);
-                List<int> Battlegrounds = WorldServiceLocator._WorldServer.ClsWorldServer.Cluster.BattlefieldList(BGType);
+                var Battlegrounds = WorldServiceLocator._WorldServer.ClsWorldServer.Cluster.BattlefieldList(BGType);
                 response.AddInt8(0);
                 response.AddInt32(Battlegrounds.Count);
-                foreach (int Instance in Battlegrounds)
+                foreach (var Instance in Battlegrounds)
                 {
                     response.AddInt32(Instance);
                 }

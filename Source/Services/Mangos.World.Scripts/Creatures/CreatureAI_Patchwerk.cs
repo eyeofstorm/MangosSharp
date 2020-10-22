@@ -135,7 +135,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastBerserk()
         {
-            for (int i = 0; i <= 1; i++)
+            for (var i = 0; i <= 1; i++)
             {
                 WS_Base.BaseUnit Self = aiCreature;
                 if (Self is null)

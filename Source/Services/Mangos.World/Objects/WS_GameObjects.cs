@@ -76,7 +76,7 @@ namespace Mangos.World.Objects
                 found_ = false;
                 ID = ID_;
                 WorldServiceLocator._WorldServer.GAMEOBJECTSDatabase.Add(ID, this);
-                DataTable MySQLQuery = new DataTable();
+                var MySQLQuery = new DataTable();
                 WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM gameobject_template WHERE entry = {ID_};", ref MySQLQuery);
                 if (MySQLQuery.Rows.Count == 0)
                 {
@@ -214,7 +214,7 @@ namespace Mangos.World.Objects
             {
                 get
                 {
-                    GameObjectType type = ObjectInfo.Type;
+                    var type = ObjectInfo.Type;
                     if (type == GameObjectType.GAMEOBJECT_TYPE_CHEST)
                     {
                         return (ulong)GetSound(3) == 1;
@@ -237,17 +237,17 @@ namespace Mangos.World.Objects
                 Update.SetUpdateFlag(16, positionY);
                 Update.SetUpdateFlag(17, positionZ);
                 Update.SetUpdateFlag(18, orientation);
-                long Rotation = 0L;
-                float f_rot1 = (float)Math.Sin(orientation / 2f);
-                long i_rot1 = checked((long)Math.Round(f_rot1 / Math.Atan(Math.Pow(2.0, -20.0))));
+                var Rotation = 0L;
+                var f_rot1 = (float)Math.Sin(orientation / 2f);
+                var i_rot1 = checked((long)Math.Round(f_rot1 / Math.Atan(Math.Pow(2.0, -20.0))));
                 Rotation |= (i_rot1 << 43 >> 43) & 0x1FFFFF;
                 Update.SetUpdateFlag(10, Rotation);
-                int DynFlags = 0;
+                var DynFlags = 0;
                 if (Type == GameObjectType.GAMEOBJECT_TYPE_CHEST)
                 {
-                    WS_Quests aLLQUESTS = WorldServiceLocator._WorldServer.ALLQUESTS;
-                    GameObjectObject gameobject = this;
-                    byte UsedForQuest = aLLQUESTS.IsGameObjectUsedForQuest(ref gameobject, ref Character);
+                    var aLLQUESTS = WorldServiceLocator._WorldServer.ALLQUESTS;
+                    var gameobject = this;
+                    var UsedForQuest = aLLQUESTS.IsGameObjectUsedForQuest(ref gameobject, ref Character);
                     if (UsedForQuest > 0)
                     {
                         Flags |= 4;
@@ -337,7 +337,7 @@ namespace Mangos.World.Objects
                 RespawnTimer = null;
                 if (!WorldServiceLocator._WorldServer.GAMEOBJECTSDatabase.ContainsKey(ID_))
                 {
-                    GameObjectInfo baseGameObject = new GameObjectInfo(ID_);
+                    var baseGameObject = new GameObjectInfo(ID_);
                 }
                 ID = ID_;
                 GUID = WorldServiceLocator._WS_GameObjects.GetNewGUID();
@@ -368,7 +368,7 @@ namespace Mangos.World.Objects
                 RespawnTimer = null;
                 if (!WorldServiceLocator._WorldServer.GAMEOBJECTSDatabase.ContainsKey(ID_))
                 {
-                    GameObjectInfo baseGameObject = new GameObjectInfo(ID_);
+                    var baseGameObject = new GameObjectInfo(ID_);
                 }
                 ID = ID_;
                 GUID = GUID_;
@@ -398,7 +398,7 @@ namespace Mangos.World.Objects
                 RespawnTimer = null;
                 if (!WorldServiceLocator._WorldServer.GAMEOBJECTSDatabase.ContainsKey(ID_))
                 {
-                    GameObjectInfo baseGameObject = new GameObjectInfo(ID_);
+                    var baseGameObject = new GameObjectInfo(ID_);
                 }
                 ID = ID_;
                 GUID = WorldServiceLocator._WS_GameObjects.GetNewGUID();
@@ -440,7 +440,7 @@ namespace Mangos.World.Objects
                 RespawnTimer = null;
                 if (Info == null)
                 {
-                    DataTable MySQLQuery = new DataTable();
+                    var MySQLQuery = new DataTable();
                     WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM gameobject LEFT OUTER JOIN game_event_gameobject ON gameobject.guid = game_event_gameobject.guid WHERE gameobject.guid = {cGUID};", ref MySQLQuery);
                     if (MySQLQuery.Rows.Count <= 0)
                     {
@@ -464,7 +464,7 @@ namespace Mangos.World.Objects
                 State = (GameObjectLootState)Conversions.ToByte(Info["state"]);
                 if (!WorldServiceLocator._WorldServer.GAMEOBJECTSDatabase.ContainsKey(ID))
                 {
-                    GameObjectInfo baseGameObject = new GameObjectInfo(ID);
+                    var baseGameObject = new GameObjectInfo(ID);
                 }
                 Flags = WorldServiceLocator._WorldServer.GAMEOBJECTSDatabase[ID].Flags;
                 Faction = WorldServiceLocator._WorldServer.GAMEOBJECTSDatabase[ID].Faction;
@@ -520,15 +520,15 @@ namespace Mangos.World.Objects
                         {
                             if ((short)unchecked(CellX + i) >= 0 && (short)unchecked(CellX + i) <= 63 && (short)unchecked(CellY + j) >= 0 && (short)unchecked(CellY + j) <= 63 && WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)] != null && WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)].PlayersHere.Count > 0)
                             {
-                                WS_Maps.TMapTile tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)];
-                                ulong[] list = tMapTile.PlayersHere.ToArray();
-                                ulong[] array = list;
-                                foreach (ulong plGUID in array)
+                                var tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)];
+                                var list = tMapTile.PlayersHere.ToArray();
+                                var array = list;
+                                foreach (var plGUID in array)
                                 {
                                     int num;
                                     if (WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(plGUID))
                                     {
-                                        WS_PlayerData.CharacterObject characterObject = WorldServiceLocator._WorldServer.CHARACTERs[plGUID];
+                                        var characterObject = WorldServiceLocator._WorldServer.CHARACTERs[plGUID];
                                         WS_Base.BaseObject objCharacter = this;
                                         num = (characterObject.CanSee(ref objCharacter) ? 1 : 0);
                                     }
@@ -538,17 +538,17 @@ namespace Mangos.World.Objects
                                     }
                                     if (num != 0)
                                     {
-                                        Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                                        var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                                         packet.AddInt32(1);
                                         packet.AddInt8(0);
-                                        Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
+                                        var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
                                         Dictionary<ulong, WS_PlayerData.CharacterObject> cHARACTERs;
                                         ulong key;
-                                        WS_PlayerData.CharacterObject Character = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = plGUID];
+                                        var Character = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = plGUID];
                                         FillAllUpdateFlags(ref tmpUpdate, ref Character);
                                         cHARACTERs[key] = Character;
-                                        Packets.UpdateClass updateClass = tmpUpdate;
-                                        GameObjectObject updateObject = this;
+                                        var updateClass = tmpUpdate;
+                                        var updateObject = this;
                                         updateClass.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject);
                                         tmpUpdate.Dispose();
                                         WorldServiceLocator._WorldServer.CHARACTERs[plGUID].client.SendMultiplyPackets(ref packet);
@@ -575,8 +575,8 @@ namespace Mangos.World.Objects
                 }
                 WorldServiceLocator._WS_Maps.GetMapTile(positionX, positionY, ref CellX, ref CellY);
                 WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[CellX, CellY].GameObjectsHere.Remove(GUID);
-                ulong[] array = SeenBy.ToArray();
-                foreach (ulong plGUID in array)
+                var array = SeenBy.ToArray();
+                foreach (var plGUID in array)
                 {
                     if (WorldServiceLocator._WorldServer.CHARACTERs[plGUID].gameObjectsNear.Contains(GUID))
                     {
@@ -590,12 +590,12 @@ namespace Mangos.World.Objects
 
             public void SetState(GameObjectLootState State)
             {
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                 packet.AddInt32(1);
                 packet.AddInt8(0);
-                Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
+                var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
                 tmpUpdate.SetUpdateFlag(14, 0, (byte)State);
-                GameObjectObject updateObject = this;
+                var updateObject = this;
                 tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                 tmpUpdate.Dispose();
                 SendToNearPlayers(ref packet);
@@ -611,13 +611,13 @@ namespace Mangos.World.Objects
                 {
                     ThreadPool.RegisterWaitForSingleObject(new AutoResetEvent(initialState: false), CloseDoor, null, AutoCloseTime, executeOnlyOnce: true);
                 }
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                 packet.AddInt32(1);
                 packet.AddInt8(0);
-                Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
+                var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
                 tmpUpdate.SetUpdateFlag(9, Flags);
                 tmpUpdate.SetUpdateFlag(14, 0, (byte)State);
-                GameObjectObject updateObject = this;
+                var updateObject = this;
                 tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                 tmpUpdate.Dispose();
                 SendToNearPlayers(ref packet);
@@ -628,13 +628,13 @@ namespace Mangos.World.Objects
             {
                 Flags &= 254;
                 state = GameObjectLootState.DOOR_CLOSED;
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                 packet.AddInt32(1);
                 packet.AddInt8(0);
-                Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
+                var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
                 tmpUpdate.SetUpdateFlag(9, Flags);
                 tmpUpdate.SetUpdateFlag(14, 0, Conversions.ToByte(state));
-                GameObjectObject updateObject = this;
+                var updateObject = this;
                 tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                 tmpUpdate.Dispose();
                 SendToNearPlayers(ref packet);
@@ -681,7 +681,7 @@ namespace Mangos.World.Objects
 
             public void SetupFishingNode()
             {
-                int RandomTime = WorldServiceLocator._WorldServer.Rnd.Next(3000, 17000);
+                var RandomTime = WorldServiceLocator._WorldServer.Rnd.Next(3000, 17000);
                 ThreadPool.RegisterWaitForSingleObject(new AutoResetEvent(initialState: false), SetFishHooked, null, RandomTime, executeOnlyOnce: true);
                 State = GameObjectLootState.DOOR_CLOSED;
             }
@@ -696,26 +696,26 @@ namespace Mangos.World.Objects
                     {
                         LootOwner = Owner
                     };
-                    int AreaFlag = WorldServiceLocator._WS_Maps.GetAreaFlag(positionX, positionY, checked((int)MapID));
-                    int AreaID = WorldServiceLocator._WS_Maps.AreaTable[AreaFlag].ID;
+                    var AreaFlag = WorldServiceLocator._WS_Maps.GetAreaFlag(positionX, positionY, checked((int)MapID));
+                    var AreaID = WorldServiceLocator._WS_Maps.AreaTable[AreaFlag].ID;
                     WorldServiceLocator._WS_Loot.LootTemplates_Fishing.GetLoot(AreaID)?.Process(ref Loot, 0);
-                    Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                    var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                     packet.AddInt32(1);
                     packet.AddInt8(0);
-                    Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
+                    var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
                     tmpUpdate.SetUpdateFlag(9, Flags);
                     tmpUpdate.SetUpdateFlag(14, 0, Conversions.ToByte(state));
-                    GameObjectObject updateObject = this;
+                    var updateObject = this;
                     tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                     tmpUpdate.Dispose();
                     SendToNearPlayers(ref packet);
                     packet.Dispose();
-                    Packets.PacketClass packetAnim = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_CUSTOM_ANIM);
+                    var packetAnim = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_CUSTOM_ANIM);
                     packetAnim.AddUInt64(GUID);
                     packetAnim.AddInt32(0);
                     SendToNearPlayers(ref packetAnim);
                     packetAnim.Dispose();
-                    int FishEscapeTime = 2000;
+                    var FishEscapeTime = 2000;
                     ThreadPool.RegisterWaitForSingleObject(new AutoResetEvent(initialState: false), SetFishEscaped, null, FishEscapeTime, executeOnlyOnce: true);
                 }
             }
@@ -732,7 +732,7 @@ namespace Mangos.World.Objects
                     }
                     if (decimal.Compare(new decimal(Owner), 0m) > 0 && WorldServiceLocator._CommonGlobalFunctions.GuidIsPlayer(Owner) && WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(Owner))
                     {
-                        Packets.PacketClass fishEscaped = new Packets.PacketClass(Opcodes.SMSG_FISH_ESCAPED);
+                        var fishEscaped = new Packets.PacketClass(Opcodes.SMSG_FISH_ESCAPED);
                         WorldServiceLocator._WorldServer.CHARACTERs[Owner].client.Send(ref fishEscaped);
                         fishEscaped.Dispose();
                         WorldServiceLocator._WorldServer.CHARACTERs[Owner].FinishSpell(CurrentSpellTypes.CURRENT_CHANNELED_SPELL, OK: true);
@@ -746,7 +746,7 @@ namespace Mangos.World.Objects
                 {
                     return;
                 }
-                int i = 0;
+                var i = 0;
                 checked
                 {
                     do
@@ -767,7 +767,7 @@ namespace Mangos.World.Objects
 
             public void SpawnAnimation()
             {
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_SPAWN_ANIM);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_SPAWN_ANIM);
                 packet.AddUInt64(GUID);
                 SendToNearPlayers(ref packet);
                 packet.Dispose();
@@ -792,7 +792,7 @@ namespace Mangos.World.Objects
                 if (Delay == 0)
                 {
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Gameobject {0:X} despawning.", GUID);
-                    Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_DESPAWN_ANIM);
+                    var packet = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_DESPAWN_ANIM);
                     packet.AddUInt64(GUID);
                     SendToNearPlayers(ref packet);
                     packet.Dispose();
@@ -830,12 +830,12 @@ namespace Mangos.World.Objects
                 {
                     ToDespawn = false;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Gameobject {0:X} despawning.", GUID);
-                    Packets.PacketClass despawnPacket = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_DESPAWN_ANIM);
+                    var despawnPacket = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_DESPAWN_ANIM);
                     despawnPacket.AddUInt64(GUID);
                     SendToNearPlayers(ref despawnPacket);
                     despawnPacket.Dispose();
                 }
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_DESTROY_OBJECT);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_DESTROY_OBJECT);
                 packet.AddUInt64(GUID);
                 SendToNearPlayers(ref packet);
                 packet.Dispose();
@@ -854,16 +854,16 @@ namespace Mangos.World.Objects
                 Rotations[3] = (float)Math.Cos(orientation / 2f);
                 if (SeenBy.Count > 0)
                 {
-                    Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                    var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                     packet.AddInt32(2);
                     packet.AddInt8(0);
-                    Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
+                    var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
                     tmpUpdate.SetUpdateFlag(18, orientation);
                     tmpUpdate.SetUpdateFlag(10, Rotations[0]);
                     tmpUpdate.SetUpdateFlag(11, Rotations[1]);
                     tmpUpdate.SetUpdateFlag(12, Rotations[2]);
                     tmpUpdate.SetUpdateFlag(13, Rotations[3]);
-                    GameObjectObject updateObject = this;
+                    var updateObject = this;
                     tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                     tmpUpdate.Dispose();
                     SendToNearPlayers(ref packet);
@@ -875,23 +875,23 @@ namespace Mangos.World.Objects
         [MethodImpl(MethodImplOptions.Synchronized)]
         private ulong GetNewGUID()
         {
-            ref ulong gameObjectsGUIDCounter = ref WorldServiceLocator._WorldServer.GameObjectsGUIDCounter;
+            ref var gameObjectsGUIDCounter = ref WorldServiceLocator._WorldServer.GameObjectsGUIDCounter;
             gameObjectsGUIDCounter = Convert.ToUInt64(decimal.Add(new decimal(gameObjectsGUIDCounter), 1m));
             return WorldServiceLocator._WorldServer.GameObjectsGUIDCounter;
         }
 
         public GameObjectObject GetClosestGameobject(ref WS_Base.BaseUnit unit, int GameObjectEntry = 0)
         {
-            float minDistance = float.MaxValue;
+            var minDistance = float.MaxValue;
             GameObjectObject targetGameobject = null;
             if (unit is WS_PlayerData.CharacterObject @object)
             {
-                ulong[] array = @object.gameObjectsNear.ToArray();
-                foreach (ulong GUID2 in array)
+                var array = @object.gameObjectsNear.ToArray();
+                foreach (var GUID2 in array)
                 {
                     if (WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs.ContainsKey(GUID2) && (GameObjectEntry == 0 || WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GUID2].ID == GameObjectEntry))
                     {
-                        float tmpDistance = WorldServiceLocator._WS_Combat.GetDistance(WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GUID2], unit);
+                        var tmpDistance = WorldServiceLocator._WS_Combat.GetDistance(WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GUID2], unit);
                         if (tmpDistance < minDistance)
                         {
                             minDistance = tmpDistance;
@@ -904,23 +904,23 @@ namespace Mangos.World.Objects
             byte cellX = default;
             byte cellY = default;
             WorldServiceLocator._WS_Maps.GetMapTile(unit.positionX, unit.positionY, ref cellX, ref cellY);
-            int x = -1;
+            var x = -1;
             checked
             {
                 do
                 {
-                    int y = -1;
+                    var y = -1;
                     do
                     {
                         if (x + cellX > -1 && x + cellX < 64 && y + cellY > -1 && y + cellY < 64 && WorldServiceLocator._WS_Maps.Maps[unit.MapID].Tiles[x + cellX, y + cellY] != null)
                         {
-                            ulong[] gameobjects = WorldServiceLocator._WS_Maps.Maps[unit.MapID].Tiles[x + cellX, y + cellY].GameObjectsHere.ToArray();
-                            ulong[] array2 = gameobjects;
-                            foreach (ulong GUID in array2)
+                            var gameobjects = WorldServiceLocator._WS_Maps.Maps[unit.MapID].Tiles[x + cellX, y + cellY].GameObjectsHere.ToArray();
+                            var array2 = gameobjects;
+                            foreach (var GUID in array2)
                             {
                                 if (WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs.ContainsKey(GUID) && (GameObjectEntry == 0 || WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GUID].ID == GameObjectEntry))
                                 {
-                                    float tmpDistance = WorldServiceLocator._WS_Combat.GetDistance(WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GUID], unit);
+                                    var tmpDistance = WorldServiceLocator._WS_Combat.GetDistance(WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GUID], unit);
                                     if (tmpDistance < minDistance)
                                     {
                                         minDistance = tmpDistance;
@@ -947,10 +947,10 @@ namespace Mangos.World.Objects
                 {
                     return;
                 }
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_QUERY_RESPONSE);
+                var response = new Packets.PacketClass(Opcodes.SMSG_GAMEOBJECT_QUERY_RESPONSE);
                 packet.GetInt16();
-                int GameObjectID = packet.GetInt32();
-                ulong GameObjectGUID = packet.GetUInt64();
+                var GameObjectID = packet.GetInt32();
+                var GameObjectGUID = packet.GetUInt64();
                 try
                 {
                     if (!WorldServiceLocator._WorldServer.GAMEOBJECTSDatabase.ContainsKey(GameObjectID))
@@ -961,7 +961,7 @@ namespace Mangos.World.Objects
                         response.Dispose();
                         return;
                     }
-                    GameObjectInfo GameObject = WorldServiceLocator._WorldServer.GAMEOBJECTSDatabase[GameObjectID];
+                    var GameObject = WorldServiceLocator._WorldServer.GAMEOBJECTSDatabase[GameObjectID];
                     response.AddInt32(GameObject.ID);
                     response.AddInt32((int)GameObject.Type);
                     response.AddInt32(GameObject.Model);
@@ -997,22 +997,22 @@ namespace Mangos.World.Objects
                     return;
                 }
                 packet.GetInt16();
-                ulong GameObjectGUID = packet.GetUInt64();
+                var GameObjectGUID = packet.GetUInt64();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_GAMEOBJ_USE [GUID={2:X}]", client.IP, client.Port, GameObjectGUID);
                 if (!WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs.ContainsKey(GameObjectGUID))
                 {
                     return;
                 }
-                GameObjectObject GO = WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GameObjectGUID];
+                var GO = WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GameObjectGUID];
                 client.Character.RemoveAurasByInterruptFlag(2048);
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "GameObjectType: {0}", WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GameObjectGUID].Type);
-                GameObjectType type = GO.Type;
+                var type = GO.Type;
                 switch (type)
                 {
                     case GameObjectType.GAMEOBJECT_TYPE_QUESTGIVER:
                         if (type == GameObjectType.GAMEOBJECT_TYPE_QUESTGIVER)
                         {
-                            QuestMenu qm = WorldServiceLocator._WorldServer.ALLQUESTS.GetQuestMenuGO(ref client.Character, GameObjectGUID);
+                            var qm = WorldServiceLocator._WorldServer.ALLQUESTS.GetQuestMenuGO(ref client.Character, GameObjectGUID);
                             WorldServiceLocator._WorldServer.ALLQUESTS.SendQuestMenu(ref client.Character, GameObjectGUID, "Available quests", qm);
                         }
                         break;
@@ -1022,7 +1022,7 @@ namespace Mangos.World.Objects
                         break;
                     case GameObjectType.GAMEOBJECT_TYPE_CHAIR:
                         {
-                            Packets.PacketClass StandState = new Packets.PacketClass(Opcodes.CMSG_STANDSTATECHANGE);
+                            var StandState = new Packets.PacketClass(Opcodes.CMSG_STANDSTATECHANGE);
                             try
                             {
                                 StandState.AddInt8((byte)(4L + WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GameObjectGUID].GetSound(1)));
@@ -1033,7 +1033,7 @@ namespace Mangos.World.Objects
                             {
                                 StandState.Dispose();
                             }
-                            Packets.PacketClass packetACK = new Packets.PacketClass(Opcodes.SMSG_STANDSTATE_CHANGE_ACK);
+                            var packetACK = new Packets.PacketClass(Opcodes.SMSG_STANDSTATE_CHANGE_ACK);
                             try
                             {
                                 packetACK.AddInt8((byte)(4L + GO.GetSound(1)));
@@ -1047,7 +1047,7 @@ namespace Mangos.World.Objects
                         }
                     case GameObjectType.GAMEOBJECT_TYPE_CAMERA:
                         {
-                            Packets.PacketClass cinematicPacket = new Packets.PacketClass(Opcodes.SMSG_TRIGGER_CINEMATIC);
+                            var cinematicPacket = new Packets.PacketClass(Opcodes.SMSG_TRIGGER_CINEMATIC);
                             cinematicPacket.AddUInt32(GO.GetSound(1));
                             client.Send(ref cinematicPacket);
                             cinematicPacket.Dispose();
@@ -1100,16 +1100,16 @@ namespace Mangos.World.Objects
                             if (GO.State == GameObjectLootState.DOOR_CLOSED)
                             {
                                 GO.State = GameObjectLootState.DOOR_OPEN;
-                                Packets.PacketClass fishNotHookedPacket = new Packets.PacketClass(Opcodes.SMSG_FISH_NOT_HOOKED);
+                                var fishNotHookedPacket = new Packets.PacketClass(Opcodes.SMSG_FISH_NOT_HOOKED);
                                 client.Send(ref fishNotHookedPacket);
                                 fishNotHookedPacket.Dispose();
                             }
                         }
                         else
                         {
-                            int AreaFlag = WorldServiceLocator._WS_Maps.GetAreaFlag(GO.positionX, GO.positionY, (int)GO.MapID);
-                            int AreaID = WorldServiceLocator._WS_Maps.AreaTable[AreaFlag].ID;
-                            DataTable MySQLQuery = new DataTable();
+                            var AreaFlag = WorldServiceLocator._WS_Maps.GetAreaFlag(GO.positionX, GO.positionY, (int)GO.MapID);
+                            var AreaID = WorldServiceLocator._WS_Maps.AreaTable[AreaFlag].ID;
+                            var MySQLQuery = new DataTable();
                             WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM skill_fishing_base_level WHERE entry = {AreaID};", ref MySQLQuery);
                             if (MySQLQuery.Rows.Count == 0)
                             {
@@ -1117,7 +1117,7 @@ namespace Mangos.World.Objects
                                 MySQLQuery.Clear();
                                 WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM skill_fishing_base_level WHERE entry = {AreaID};", ref MySQLQuery);
                             }
-                            int zoneSkill = 0;
+                            var zoneSkill = 0;
                             if (MySQLQuery.Rows.Count > 0)
                             {
                                 zoneSkill = MySQLQuery.Rows[0].As<int>("skill");
@@ -1127,8 +1127,8 @@ namespace Mangos.World.Objects
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "No fishing entry in 'skill_fishing_base_level' for area [{0}] in zone [{1}]", WorldServiceLocator._WS_Maps.AreaTable[AreaFlag].ID, WorldServiceLocator._WS_Maps.AreaTable[AreaFlag].Zone);
                             }
                             int skill = client.Character.Skills[356].CurrentWithBonus;
-                            int chance = skill - zoneSkill + 5;
-                            int roll = WorldServiceLocator._WorldServer.Rnd.Next(1, 101);
+                            var chance = skill - zoneSkill + 5;
+                            var roll = WorldServiceLocator._WorldServer.Rnd.Next(1, 101);
                             if (skill > zoneSkill && roll >= chance)
                             {
                                 GO.State = GameObjectLootState.DOOR_CLOSED;
@@ -1138,7 +1138,7 @@ namespace Mangos.World.Objects
                             else
                             {
                                 GO.State = GameObjectLootState.DOOR_CLOSED;
-                                Packets.PacketClass fishEscaped = new Packets.PacketClass(Opcodes.SMSG_FISH_ESCAPED);
+                                var fishEscaped = new Packets.PacketClass(Opcodes.SMSG_FISH_ESCAPED);
                                 client.Send(ref fishEscaped);
                                 fishEscaped.Dispose();
                             }

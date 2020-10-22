@@ -75,48 +75,48 @@ namespace Mangos.World.Maps
                     CellX = tileX;
                     CellY = tileY;
                     CellMap = tileMap;
-                    string fileName = string.Format("{0}{1}{2}.map", Strings.Format(tileMap, "000"), Strings.Format(tileX, "00"), Strings.Format(tileY, "00"));
+                    var fileName = string.Format("{0}{1}{2}.map", Strings.Format(tileMap, "000"), Strings.Format(tileX, "00"), Strings.Format(tileY, "00"));
                     if (!File.Exists("maps\\" + fileName))
                     {
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "Map file [{0}] not found", fileName);
                         return;
                     }
-                    FileStream f = new FileStream("maps\\" + fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 82704, FileOptions.SequentialScan);
-                    BinaryReader b = new BinaryReader(f);
-                    string fileVersion = Encoding.ASCII.GetString(b.ReadBytes(8), 0, 8);
+                    var f = new FileStream("maps\\" + fileName, FileMode.Open, FileAccess.Read, FileShare.ReadWrite, 82704, FileOptions.SequentialScan);
+                    var b = new BinaryReader(f);
+                    var fileVersion = Encoding.ASCII.GetString(b.ReadBytes(8), 0, 8);
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.INFORMATION, "Loading map file [{0}] version [{1}]", fileName, fileVersion);
-                    int rESOLUTION_FLAGS = WorldServiceLocator._Global_Constants.RESOLUTION_FLAGS;
-                    for (int x = 0; x <= rESOLUTION_FLAGS; x++)
+                    var rESOLUTION_FLAGS = WorldServiceLocator._Global_Constants.RESOLUTION_FLAGS;
+                    for (var x = 0; x <= rESOLUTION_FLAGS; x++)
                     {
-                        int rESOLUTION_FLAGS2 = WorldServiceLocator._Global_Constants.RESOLUTION_FLAGS;
-                        for (int y = 0; y <= rESOLUTION_FLAGS2; y++)
+                        var rESOLUTION_FLAGS2 = WorldServiceLocator._Global_Constants.RESOLUTION_FLAGS;
+                        for (var y = 0; y <= rESOLUTION_FLAGS2; y++)
                         {
                             AreaFlag[x, y] = b.ReadUInt16();
                         }
                     }
-                    int rESOLUTION_TERRAIN = WorldServiceLocator._Global_Constants.RESOLUTION_TERRAIN;
-                    for (int x = 0; x <= rESOLUTION_TERRAIN; x++)
+                    var rESOLUTION_TERRAIN = WorldServiceLocator._Global_Constants.RESOLUTION_TERRAIN;
+                    for (var x = 0; x <= rESOLUTION_TERRAIN; x++)
                     {
-                        int rESOLUTION_TERRAIN2 = WorldServiceLocator._Global_Constants.RESOLUTION_TERRAIN;
-                        for (int y = 0; y <= rESOLUTION_TERRAIN2; y++)
+                        var rESOLUTION_TERRAIN2 = WorldServiceLocator._Global_Constants.RESOLUTION_TERRAIN;
+                        for (var y = 0; y <= rESOLUTION_TERRAIN2; y++)
                         {
                             AreaTerrain[x, y] = b.ReadByte();
                         }
                     }
-                    int rESOLUTION_WATER = WorldServiceLocator._Global_Constants.RESOLUTION_WATER;
-                    for (int x = 0; x <= rESOLUTION_WATER; x++)
+                    var rESOLUTION_WATER = WorldServiceLocator._Global_Constants.RESOLUTION_WATER;
+                    for (var x = 0; x <= rESOLUTION_WATER; x++)
                     {
-                        int rESOLUTION_WATER2 = WorldServiceLocator._Global_Constants.RESOLUTION_WATER;
-                        for (int y = 0; y <= rESOLUTION_WATER2; y++)
+                        var rESOLUTION_WATER2 = WorldServiceLocator._Global_Constants.RESOLUTION_WATER;
+                        for (var y = 0; y <= rESOLUTION_WATER2; y++)
                         {
                             WaterLevel[x, y] = b.ReadSingle();
                         }
                     }
-                    int rESOLUTION_ZMAP = WorldServiceLocator._WS_Maps.RESOLUTION_ZMAP;
-                    for (int x = 0; x <= rESOLUTION_ZMAP; x++)
+                    var rESOLUTION_ZMAP = WorldServiceLocator._WS_Maps.RESOLUTION_ZMAP;
+                    for (var x = 0; x <= rESOLUTION_ZMAP; x++)
                     {
-                        int rESOLUTION_ZMAP2 = WorldServiceLocator._WS_Maps.RESOLUTION_ZMAP;
-                        for (int y = 0; y <= rESOLUTION_ZMAP2; y++)
+                        var rESOLUTION_ZMAP2 = WorldServiceLocator._WS_Maps.RESOLUTION_ZMAP;
+                        for (var y = 0; y <= rESOLUTION_ZMAP2; y++)
                         {
                             ZCoord[x, y] = b.ReadSingle();
                         }

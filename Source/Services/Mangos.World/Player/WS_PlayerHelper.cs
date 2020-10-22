@@ -293,7 +293,7 @@ namespace Mangos.World.Player
 
             public void Save()
             {
-                string tmp = "UPDATE characters_honor SET";
+                var tmp = "UPDATE characters_honor SET";
                 tmp = tmp + " honor_points =\"" + Conversions.ToString((int)HonorPoints) + "\"";
                 tmp = tmp + ", honor_rank =" + Conversions.ToString(HonorRank);
                 tmp = tmp + ", honor_hightestRank =" + Conversions.ToString(HonorHightestRank);
@@ -454,7 +454,7 @@ namespace Mangos.World.Player
 
         public void SendBindPointUpdate(ref WS_Network.ClientClass client, ref WS_PlayerData.CharacterObject Character)
         {
-            Packets.PacketClass SMSG_BINDPOINTUPDATE = new Packets.PacketClass(Opcodes.SMSG_BINDPOINTUPDATE);
+            var SMSG_BINDPOINTUPDATE = new Packets.PacketClass(Opcodes.SMSG_BINDPOINTUPDATE);
             try
             {
                 SMSG_BINDPOINTUPDATE.AddSingle(Character.bindpoint_positionX);
@@ -472,7 +472,7 @@ namespace Mangos.World.Player
 
         public void Send_SMSG_SET_REST_START(ref WS_Network.ClientClass client, ref WS_PlayerData.CharacterObject Character)
         {
-            Packets.PacketClass SMSG_SET_REST_START = new Packets.PacketClass(Opcodes.SMSG_SET_REST_START);
+            var SMSG_SET_REST_START = new Packets.PacketClass(Opcodes.SMSG_SET_REST_START);
             try
             {
                 SMSG_SET_REST_START.AddInt32(WorldServiceLocator._WS_Network.MsTime());
@@ -486,7 +486,7 @@ namespace Mangos.World.Player
 
         public void SendTutorialFlags(ref WS_Network.ClientClass client, ref WS_PlayerData.CharacterObject Character)
         {
-            Packets.PacketClass SMSG_TUTORIAL_FLAGS = new Packets.PacketClass(Opcodes.SMSG_TUTORIAL_FLAGS);
+            var SMSG_TUTORIAL_FLAGS = new Packets.PacketClass(Opcodes.SMSG_TUTORIAL_FLAGS);
             try
             {
                 SMSG_TUTORIAL_FLAGS.AddByteArray(Character.TutorialFlags);
@@ -500,7 +500,7 @@ namespace Mangos.World.Player
 
         public void SendFactions(ref WS_Network.ClientClass client, ref WS_PlayerData.CharacterObject Character)
         {
-            Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_INITIALIZE_FACTIONS);
+            var packet = new Packets.PacketClass(Opcodes.SMSG_INITIALIZE_FACTIONS);
             try
             {
                 packet.AddInt32(64);
@@ -528,7 +528,7 @@ namespace Mangos.World.Player
 
         public void SendActionButtons(ref WS_Network.ClientClass client, ref WS_PlayerData.CharacterObject Character)
         {
-            Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_ACTION_BUTTONS);
+            var packet = new Packets.PacketClass(Opcodes.SMSG_ACTION_BUTTONS);
             try
             {
                 byte i = 0;
@@ -614,7 +614,7 @@ namespace Mangos.World.Player
                     NumberOfFields = 10;
                     break;
             }
-            Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_INIT_WORLD_STATES);
+            var packet = new Packets.PacketClass(Opcodes.SMSG_INIT_WORLD_STATES);
             try
             {
                 packet.AddUInt32(Character.MapID);
@@ -678,16 +678,16 @@ namespace Mangos.World.Player
 
         public void SendInitialSpells(ref WS_Network.ClientClass client, ref WS_PlayerData.CharacterObject Character)
         {
-            Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_INITIAL_SPELLS);
+            var packet = new Packets.PacketClass(Opcodes.SMSG_INITIAL_SPELLS);
             checked
             {
                 try
                 {
                     packet.AddInt8(0);
-                    int countPos = packet.Data.Length;
+                    var countPos = packet.Data.Length;
                     packet.AddInt16(0);
-                    int spellCount = 0;
-                    Dictionary<int, KeyValuePair<uint, int>> spellCooldowns = new Dictionary<int, KeyValuePair<uint, int>>();
+                    var spellCount = 0;
+                    var spellCooldowns = new Dictionary<int, KeyValuePair<uint, int>>();
                     foreach (KeyValuePair<int, WS_Spells.CharacterSpell> Spell in Character.Spells)
                     {
                         if (Spell.Value.Active == 1)
@@ -705,12 +705,12 @@ namespace Mangos.World.Player
                     spellCount = 0;
                     countPos = packet.Data.Length;
                     packet.AddInt16(0);
-                    foreach (KeyValuePair<int, KeyValuePair<uint, int>> Cooldown in spellCooldowns)
+                    foreach (var Cooldown in spellCooldowns)
                     {
                         if (WorldServiceLocator._WS_Spells.SPELLs.ContainsKey(Cooldown.Key))
                         {
                             packet.AddUInt16((ushort)Cooldown.Key);
-                            int timeLeft = 0;
+                            var timeLeft = 0;
                             if (Cooldown.Value.Key > WorldServiceLocator._Functions.GetTimestamp(DateAndTime.Now))
                             {
                                 timeLeft = (int)(checked(Cooldown.Value.Key - WorldServiceLocator._Functions.GetTimestamp(DateAndTime.Now)) * 1000L);
@@ -742,7 +742,7 @@ namespace Mangos.World.Player
 
         public void InitializeTalentSpells(WS_PlayerData.CharacterObject objCharacter)
         {
-            WS_Spells.SpellTargets t = new WS_Spells.SpellTargets();
+            var t = new WS_Spells.SpellTargets();
             WS_Base.BaseUnit objCharacter2 = objCharacter;
             t.SetTarget_SELF(ref objCharacter2);
             objCharacter = (WS_PlayerData.CharacterObject)objCharacter2;
@@ -752,7 +752,7 @@ namespace Mangos.World.Player
                 {
                     if (!objCharacter.HavePassiveAura(Spell.Key) && WorldServiceLocator._WS_Spells.SPELLs[Spell.Key].CanCast(ref objCharacter, t, FirstCheck: false) == SpellFailedReason.SPELL_NO_ERROR)
                     {
-                        WS_Spells.SpellInfo spellInfo = WorldServiceLocator._WS_Spells.SPELLs[Spell.Key];
+                        var spellInfo = WorldServiceLocator._WS_Spells.SPELLs[Spell.Key];
                         WS_Base.BaseObject caster = objCharacter;
                         spellInfo.Apply(ref caster, t);
                         objCharacter = (WS_PlayerData.CharacterObject)caster;

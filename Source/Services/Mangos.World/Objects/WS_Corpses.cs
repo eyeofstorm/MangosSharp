@@ -63,7 +63,7 @@ namespace Mangos.World.Objects
                 Update.SetUpdateFlag(10, positionY);
                 Update.SetUpdateFlag(11, positionZ);
                 Update.SetUpdateFlag(12, Model);
-                int i = 0;
+                var i = 0;
                 checked
                 {
                     do
@@ -85,7 +85,7 @@ namespace Mangos.World.Objects
                 WorldServiceLocator._WorldServer.CharacterDatabase.Update($"DELETE FROM corpse WHERE player = \"{Owner}\";");
                 Flags = 5;
                 Owner = 0uL;
-                int j = 0;
+                var j = 0;
                 checked
                 {
                     do
@@ -94,24 +94,24 @@ namespace Mangos.World.Objects
                         j++;
                     }
                     while (j <= 18);
-                    Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                    var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                     try
                     {
                         packet.AddInt32(1);
                         packet.AddInt8(0);
-                        Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_CORPSE);
+                        var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_CORPSE);
                         try
                         {
                             tmpUpdate.SetUpdateFlag(6, 0);
                             tmpUpdate.SetUpdateFlag(35, 5);
-                            int i = 0;
+                            var i = 0;
                             do
                             {
                                 tmpUpdate.SetUpdateFlag(13 + i, 0);
                                 i++;
                             }
                             while (i <= 18);
-                            CorpseObject updateObject = this;
+                            var updateObject = this;
                             tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                             SendToNearPlayers(ref packet);
                         }
@@ -129,8 +129,8 @@ namespace Mangos.World.Objects
 
             public void Save()
             {
-                string tmpCmd = "INSERT INTO corpse (guid";
-                string tmpValues = " VALUES (" + Conversions.ToString(checked(GUID - WorldServiceLocator._Global_Constants.GUID_CORPSE));
+                var tmpCmd = "INSERT INTO corpse (guid";
+                var tmpValues = " VALUES (" + Conversions.ToString(checked(GUID - WorldServiceLocator._Global_Constants.GUID_CORPSE));
                 tmpCmd += ", player";
                 tmpValues = tmpValues + ", " + Conversions.ToString(Owner);
                 tmpCmd += ", position_x";
@@ -155,7 +155,7 @@ namespace Mangos.World.Objects
 
             public void Destroy()
             {
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_DESTROY_OBJECT);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_DESTROY_OBJECT);
                 try
                 {
                     packet.AddUInt64(GUID);
@@ -257,7 +257,7 @@ namespace Mangos.World.Objects
                 Items = new int[19];
                 if (Info == null)
                 {
-                    DataTable MySQLQuery = new DataTable();
+                    var MySQLQuery = new DataTable();
                     WorldServiceLocator._WorldServer.CharacterDatabase.Query($"SELECT * FROM corpse WHERE guid = {cGUID};", ref MySQLQuery);
                     if (MySQLQuery.Rows.Count <= 0)
                     {
@@ -287,19 +287,19 @@ namespace Mangos.World.Objects
                     WorldServiceLocator._WS_CharMovement.MAP_Load(CellX, CellY, MapID);
                 }
                 WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[CellX, CellY].CorpseObjectsHere.Add(GUID);
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                 checked
                 {
                     try
                     {
-                        Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_CORPSE);
+                        var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_CORPSE);
                         try
                         {
                             packet.AddInt32(1);
                             packet.AddInt8(0);
                             FillAllUpdateFlags(ref tmpUpdate);
-                            Packets.UpdateClass updateClass = tmpUpdate;
-                            CorpseObject updateObject = this;
+                            var updateClass = tmpUpdate;
+                            var updateObject = this;
                             updateClass.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject);
                         }
                         finally
@@ -314,15 +314,15 @@ namespace Mangos.World.Objects
                             {
                                 if ((short)unchecked(CellX + i) >= 0 && (short)unchecked(CellX + i) <= 63 && (short)unchecked(CellY + j) >= 0 && (short)unchecked(CellY + j) <= 63 && WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)] != null && WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)].PlayersHere.Count > 0)
                                 {
-                                    WS_Maps.TMapTile tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)];
-                                    ulong[] list = tMapTile.PlayersHere.ToArray();
-                                    ulong[] array = list;
-                                    foreach (ulong plGUID in array)
+                                    var tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[(short)unchecked(CellX + i), (short)unchecked(CellY + j)];
+                                    var list = tMapTile.PlayersHere.ToArray();
+                                    var array = list;
+                                    foreach (var plGUID in array)
                                     {
                                         int num;
                                         if (WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(plGUID))
                                         {
-                                            WS_PlayerData.CharacterObject characterObject = WorldServiceLocator._WorldServer.CHARACTERs[plGUID];
+                                            var characterObject = WorldServiceLocator._WorldServer.CHARACTERs[plGUID];
                                             WS_Base.BaseObject objCharacter = this;
                                             num = (characterObject.CanSee(ref objCharacter) ? 1 : 0);
                                         }
@@ -360,10 +360,10 @@ namespace Mangos.World.Objects
                 {
                     return;
                 }
-                WS_Maps.TMapTile tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[CellX, CellY];
-                ulong[] list = tMapTile.PlayersHere.ToArray();
-                ulong[] array = list;
-                foreach (ulong plGUID in array)
+                var tMapTile = WorldServiceLocator._WS_Maps.Maps[MapID].Tiles[CellX, CellY];
+                var list = tMapTile.PlayersHere.ToArray();
+                var array = list;
+                foreach (var plGUID in array)
                 {
                     if (WorldServiceLocator._WorldServer.CHARACTERs[plGUID].corpseObjectsNear.Contains(GUID))
                     {
@@ -379,7 +379,7 @@ namespace Mangos.World.Objects
         [MethodImpl(MethodImplOptions.Synchronized)]
         private ulong GetNewGUID()
         {
-            ref ulong corpseGUIDCounter = ref WorldServiceLocator._WorldServer.CorpseGUIDCounter;
+            ref var corpseGUIDCounter = ref WorldServiceLocator._WorldServer.CorpseGUIDCounter;
             corpseGUIDCounter = Convert.ToUInt64(decimal.Add(new decimal(corpseGUIDCounter), 1m));
             return WorldServiceLocator._WorldServer.CorpseGUIDCounter;
         }

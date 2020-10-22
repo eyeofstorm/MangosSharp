@@ -141,7 +141,7 @@ namespace Mangos.World.Objects
 
             public void SendPlaySound(int SoundID, bool OnlyToSelf = false)
             {
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_PLAY_OBJECT_SOUND);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_PLAY_OBJECT_SOUND);
                 try
                 {
                     packet.AddInt32(SoundID);
@@ -167,8 +167,8 @@ namespace Mangos.World.Objects
                 {
                     @object.client.SendMultiplyPackets(ref packet);
                 }
-                ulong[] array = SeenBy.ToArray();
-                foreach (ulong objCharacter in array)
+                var array = SeenBy.ToArray();
+                foreach (var objCharacter in array)
                 {
                     if (objCharacter != NotTo && WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(objCharacter) && WorldServiceLocator._WorldServer.CHARACTERs[objCharacter].client != null)
                     {
@@ -415,10 +415,10 @@ namespace Mangos.World.Objects
                 {
                     return;
                 }
-                int AuraLevel_Slot = Slot / 4;
-                int AuraFlag_Slot = Slot >> 3;
-                int AuraFlag_SubSlot = (Slot & 7) << 2;
-                int AuraFlag_Value = 9 << AuraFlag_SubSlot;
+                var AuraLevel_Slot = Slot / 4;
+                var AuraFlag_Slot = Slot >> 3;
+                var AuraFlag_SubSlot = (Slot & 7) << 2;
+                var AuraFlag_Value = 9 << AuraFlag_SubSlot;
                 ActiveSpells_Flags[AuraFlag_Slot] &= ~AuraFlag_Value;
                 if (SpellID != 0)
                 {
@@ -444,7 +444,7 @@ namespace Mangos.World.Objects
                         @object.SetUpdateFlag(113 + AuraLevel_Slot, ActiveSpells_Count[AuraLevel_Slot]);
                         @object.SetUpdateFlag(101 + AuraLevel_Slot, ActiveSpells_Level[AuraLevel_Slot]);
                         @object.SendCharacterUpdate();
-                        Packets.PacketClass SMSG_UPDATE_AURA_DURATION = new Packets.PacketClass(Opcodes.SMSG_UPDATE_AURA_DURATION);
+                        var SMSG_UPDATE_AURA_DURATION = new Packets.PacketClass(Opcodes.SMSG_UPDATE_AURA_DURATION);
                         try
                         {
                             SMSG_UPDATE_AURA_DURATION.AddInt8((byte)Slot);
@@ -457,8 +457,8 @@ namespace Mangos.World.Objects
                         }
                         return;
                     }
-                    Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
-                    Packets.UpdatePacketClass tmpPacket = new Packets.UpdatePacketClass();
+                    var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
+                    var tmpPacket = new Packets.UpdatePacketClass();
                     try
                     {
                         tmpUpdate.SetUpdateFlag(47 + Slot, SpellID);
@@ -466,7 +466,7 @@ namespace Mangos.World.Objects
                         tmpUpdate.SetUpdateFlag(113 + AuraLevel_Slot, ActiveSpells_Count[AuraLevel_Slot]);
                         tmpUpdate.SetUpdateFlag(101 + AuraLevel_Slot, ActiveSpells_Level[AuraLevel_Slot]);
                         Packets.PacketClass packet = tmpPacket;
-                        WS_Creatures.CreatureObject updateObject = (WS_Creatures.CreatureObject)this;
+                        var updateObject = (WS_Creatures.CreatureObject)this;
                         tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                         tmpPacket = (Packets.UpdatePacketClass)packet;
                         packet = tmpPacket;
@@ -483,10 +483,10 @@ namespace Mangos.World.Objects
 
             public void SetAuraStackCount(int Slot, byte Count)
             {
-                int AuraFlag_Slot = Slot / 4;
+                var AuraFlag_Slot = Slot / 4;
                 checked
                 {
-                    int AuraFlag_SubSlot = Slot % 4 * 8;
+                    var AuraFlag_SubSlot = Slot % 4 * 8;
                     ActiveSpells_Count[AuraFlag_Slot] &= ~(255 << AuraFlag_SubSlot);
                     ActiveSpells_Count[AuraFlag_Slot] |= Count << AuraFlag_SubSlot;
                 }
@@ -494,10 +494,10 @@ namespace Mangos.World.Objects
 
             public void SetAuraSlotLevel(int Slot, int Level)
             {
-                int AuraFlag_Slot = Slot / 4;
+                var AuraFlag_Slot = Slot / 4;
                 checked
                 {
-                    int AuraFlag_SubSlot = Slot % 4 * 8;
+                    var AuraFlag_SubSlot = Slot % 4 * 8;
                     ActiveSpells_Level[AuraFlag_Slot] &= ~(255 << AuraFlag_SubSlot);
                     ActiveSpells_Level[AuraFlag_Slot] |= Level << AuraFlag_SubSlot;
                 }
@@ -507,7 +507,7 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    byte b = (byte)(WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs - 1);
+                    var b = (byte)(WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs - 1);
                     byte i = 0;
                     while (i <= (uint)b)
                     {
@@ -525,8 +525,8 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (ActiveSpells[i] == null)
                         {
@@ -551,7 +551,7 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    byte b = (byte)(WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1);
+                    var b = (byte)(WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1);
                     byte i = 0;
                     while (i <= (uint)b)
                     {
@@ -569,9 +569,9 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    byte b = (byte)WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE;
-                    byte b2 = (byte)(WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs - 1);
-                    byte i = b;
+                    var b = (byte)WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE;
+                    var b2 = (byte)(WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs - 1);
+                    var i = b;
                     while (i <= (uint)b2)
                     {
                         if (ActiveSpells[i] != null && ActiveSpells[i].SpellID == SpellID)
@@ -586,7 +586,7 @@ namespace Mangos.World.Objects
 
             public void RemoveAura(int Slot, ref BaseUnit Caster, bool RemovedByDuration = false, bool SendUpdate = true)
             {
-                AuraAction RemoveAction = AuraAction.AURA_REMOVE;
+                var RemoveAction = AuraAction.AURA_REMOVE;
                 if (RemovedByDuration)
                 {
                     RemoveAction = AuraAction.AURA_REMOVEBYDURATION;
@@ -600,8 +600,8 @@ namespace Mangos.World.Objects
                         {
                             if (ActiveSpells[Slot].Aura[i] != null)
                             {
-                                WS_Spells.ApplyAuraHandler obj = ActiveSpells[Slot].Aura[i];
-                                BaseUnit Target = this;
+                                var obj = ActiveSpells[Slot].Aura[i];
+                                var Target = this;
                                 BaseObject Caster2 = Caster;
                                 obj(ref Target, ref Caster2, ref ActiveSpells[Slot].Aura_Info[i], ActiveSpells[Slot].SpellID, ActiveSpells[Slot].StackCount + 1, RemoveAction);
                                 Caster = (BaseUnit)Caster2;
@@ -622,8 +622,8 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (ActiveSpells[i] != null && ActiveSpells[i].SpellID == SpellID)
                         {
@@ -643,8 +643,8 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (ActiveSpells[i] == null || ActiveSpells[i].SpellID == NotSpellID)
                         {
@@ -669,8 +669,8 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (ActiveSpells[i] != null && WorldServiceLocator._WS_Spells.SPELLs[ActiveSpells[i].SpellID].Mechanic == Mechanic)
                         {
@@ -684,8 +684,8 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (ActiveSpells[i] != null && WorldServiceLocator._WS_Spells.SPELLs[ActiveSpells[i].SpellID].DispellType == DispellType)
                         {
@@ -704,8 +704,8 @@ namespace Mangos.World.Objects
             {
                 checked
                 {
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (ActiveSpells[i] != null && WorldServiceLocator._WS_Spells.SPELLs.ContainsKey(ActiveSpells[i].SpellID) && (WorldServiceLocator._WS_Spells.SPELLs[ActiveSpells[i].SpellID].auraInterruptFlags & AuraInterruptFlag) != 0 && (WorldServiceLocator._WS_Spells.SPELLs[ActiveSpells[i].SpellID].procFlags & 0x8000000) == 0)
                         {
@@ -731,11 +731,11 @@ namespace Mangos.World.Objects
 
             public int GetAuraModifier(AuraEffects_Names AuraIndex)
             {
-                int Modifier = 0;
+                var Modifier = 0;
                 checked
                 {
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (ActiveSpells[i] == null)
                         {
@@ -758,11 +758,11 @@ namespace Mangos.World.Objects
 
             public int GetAuraModifierByMiscMask(AuraEffects_Names AuraIndex, int Mask)
             {
-                int Modifier = 0;
+                var Modifier = 0;
                 checked
                 {
-                    int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (ActiveSpells[i] == null)
                         {
@@ -785,10 +785,10 @@ namespace Mangos.World.Objects
 
             public void AddAura(int SpellID, int Duration, ref BaseUnit Caster)
             {
-                int AuraStart = 0;
+                var AuraStart = 0;
                 checked
                 {
-                    int AuraEnd = WorldServiceLocator._Global_Constants.MAX_POSITIVE_AURA_EFFECTs - 1;
+                    var AuraEnd = WorldServiceLocator._Global_Constants.MAX_POSITIVE_AURA_EFFECTs - 1;
                     if (WorldServiceLocator._WS_Spells.SPELLs[SpellID].IsPassive)
                     {
                         AuraStart = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE;
@@ -803,9 +803,9 @@ namespace Mangos.World.Objects
                     {
                         if (!WorldServiceLocator._WS_Spells.SPELLs[SpellID].IsPassive)
                         {
-                            WS_Spells.SpellInfo SpellInfo = WorldServiceLocator._WS_Spells.SPELLs[SpellID];
-                            int num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
-                            for (int slot2 = 0; slot2 <= num; slot2++)
+                            var SpellInfo = WorldServiceLocator._WS_Spells.SPELLs[SpellID];
+                            var num = WorldServiceLocator._Global_Constants.MAX_AURA_EFFECTs_VISIBLE - 1;
+                            for (var slot2 = 0; slot2 <= num; slot2++)
                             {
                                 if (ActiveSpells[slot2] != null && ActiveSpells[slot2].GetSpellInfo.Target == SpellInfo.Target && ActiveSpells[slot2].GetSpellInfo.Category == SpellInfo.Category && ActiveSpells[slot2].GetSpellInfo.SpellIconID == SpellInfo.SpellIconID && ActiveSpells[slot2].GetSpellInfo.SpellVisual == SpellInfo.SpellVisual && ActiveSpells[slot2].GetSpellInfo.Attributes == SpellInfo.Attributes && ActiveSpells[slot2].GetSpellInfo.AttributesEx == SpellInfo.AttributesEx && ActiveSpells[slot2].GetSpellInfo.AttributesEx2 == SpellInfo.AttributesEx2)
                                 {
@@ -817,13 +817,13 @@ namespace Mangos.World.Objects
                     catch (Exception ex2)
                     {
                         ProjectData.SetProjectError(ex2);
-                        Exception ex = ex2;
+                        var ex = ex2;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "ERROR ADDING AURA!{0}{1}", Environment.NewLine, ex.ToString());
                         ProjectData.ClearProjectError();
                     }
-                    int num2 = AuraStart;
-                    int num3 = AuraEnd;
-                    for (int slot = num2; slot <= num3; slot++)
+                    var num2 = AuraStart;
+                    var num3 = AuraEnd;
+                    for (var slot = num2; slot <= num3; slot++)
                     {
                         if (ActiveSpells[slot] == null)
                         {
@@ -856,16 +856,16 @@ namespace Mangos.World.Objects
                 {
                     return;
                 }
-                int AuraFlag_Slot = Slot / 4;
+                var AuraFlag_Slot = Slot / 4;
                 checked
                 {
-                    int AuraFlag_SubSlot = Slot % 4 * 8;
+                    var AuraFlag_SubSlot = Slot % 4 * 8;
                     SetAuraStackCount(Slot, (byte)ActiveSpells[Slot].StackCount);
                     if (this is WS_PlayerData.CharacterObject @object)
                     {
                         @object.SetUpdateFlag(113 + AuraFlag_Slot, ActiveSpells_Count[AuraFlag_Slot]);
                         @object.SendCharacterUpdate();
-                        Packets.PacketClass SMSG_UPDATE_AURA_DURATION = new Packets.PacketClass(Opcodes.SMSG_UPDATE_AURA_DURATION);
+                        var SMSG_UPDATE_AURA_DURATION = new Packets.PacketClass(Opcodes.SMSG_UPDATE_AURA_DURATION);
                         try
                         {
                             SMSG_UPDATE_AURA_DURATION.AddInt8((byte)Slot);
@@ -878,13 +878,13 @@ namespace Mangos.World.Objects
                         }
                         return;
                     }
-                    Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
-                    Packets.UpdatePacketClass tmpPacket = new Packets.UpdatePacketClass();
+                    var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
+                    var tmpPacket = new Packets.UpdatePacketClass();
                     try
                     {
                         tmpUpdate.SetUpdateFlag(113 + AuraFlag_Slot, ActiveSpells_Count[AuraFlag_Slot]);
                         Packets.PacketClass packet = tmpPacket;
-                        WS_Creatures.CreatureObject updateObject = (WS_Creatures.CreatureObject)this;
+                        var updateObject = (WS_Creatures.CreatureObject)this;
                         tmpUpdate.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                         tmpPacket = (Packets.UpdatePacketClass)packet;
                         packet = tmpPacket;
@@ -901,7 +901,7 @@ namespace Mangos.World.Objects
 
             public void DoEmote(int EmoteID)
             {
-                Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_EMOTE);
+                var packet = new Packets.PacketClass(Opcodes.SMSG_EMOTE);
                 try
                 {
                     packet.AddInt32(EmoteID);
@@ -916,8 +916,8 @@ namespace Mangos.World.Objects
 
             public void DealSpellDamage(ref BaseUnit Caster, ref WS_Spells.SpellEffect EffectInfo, int SpellID, int Damage, DamageTypes DamageType, SpellType SpellType)
             {
-                bool IsHeal = false;
-                bool IsDot = false;
+                var IsHeal = false;
+                var IsDot = false;
                 switch (SpellType)
                 {
                     case SpellType.SPELL_TYPE_HEAL:
@@ -931,7 +931,7 @@ namespace Mangos.World.Objects
                         IsDot = true;
                         break;
                 }
-                int SpellDamageBenefit = 0;
+                var SpellDamageBenefit = 0;
                 bool IsCrit;
                 int Resist;
                 int Absorb;
@@ -939,9 +939,9 @@ namespace Mangos.World.Objects
                 {
                     if (Caster is WS_PlayerData.CharacterObject @object)
                     {
-                        int PenaltyFactor = 0;
-                        int EffectCount = 0;
-                        int i = 0;
+                        var PenaltyFactor = 0;
+                        var EffectCount = 0;
+                        var i = 0;
                         do
                         {
                             if (WorldServiceLocator._WS_Spells.SPELLs[SpellID].SpellEffects[i] != null)
@@ -955,10 +955,10 @@ namespace Mangos.World.Objects
                         {
                             PenaltyFactor = 5;
                         }
-                        int SpellDamage = ((!IsHeal) ? @object.spellDamage[(uint)DamageType].Value : @object.healing.Value);
+                        var SpellDamage = ((!IsHeal) ? @object.spellDamage[(uint)DamageType].Value : @object.healing.Value);
                         if (IsDot)
                         {
-                            int TickAmount = (int)Math.Round(WorldServiceLocator._WS_Spells.SPELLs[SpellID].GetDuration / (double)EffectInfo.Amplitude);
+                            var TickAmount = (int)Math.Round(WorldServiceLocator._WS_Spells.SPELLs[SpellID].GetDuration / (double)EffectInfo.Amplitude);
                             if (TickAmount < 5)
                             {
                                 TickAmount = 5;
@@ -967,7 +967,7 @@ namespace Mangos.World.Objects
                         }
                         else
                         {
-                            int CastTime = WorldServiceLocator._WS_Spells.SPELLs[SpellID].GetCastTime;
+                            var CastTime = WorldServiceLocator._WS_Spells.SPELLs[SpellID].GetCastTime;
                             if (CastTime < 1500)
                             {
                                 CastTime = 1500;
@@ -994,7 +994,7 @@ namespace Mangos.World.Objects
                     Absorb = 0;
                     if (!IsHeal)
                     {
-                        float DamageReduction = GetDamageReduction(ref Caster, DamageType, Damage);
+                        var DamageReduction = GetDamageReduction(ref Caster, DamageType, Damage);
                         Damage = (int)Math.Round(Damage - Damage * DamageReduction);
                         if (Damage > 0)
                         {
@@ -1023,29 +1023,29 @@ namespace Mangos.World.Objects
                 {
                     case SpellType.SPELL_TYPE_NONMELEE:
                         {
-                            WS_Spells wS_Spells4 = WorldServiceLocator._WS_Spells;
-                            BaseUnit Target = this;
+                            var wS_Spells4 = WorldServiceLocator._WS_Spells;
+                            var Target = this;
                             wS_Spells4.SendNonMeleeDamageLog(ref Caster, ref Target, SpellID, (int)DamageType, Damage, Resist, Absorb, IsCrit);
                             break;
                         }
                     case SpellType.SPELL_TYPE_DOT:
                         {
-                            WS_Spells wS_Spells3 = WorldServiceLocator._WS_Spells;
-                            BaseUnit Target = this;
+                            var wS_Spells3 = WorldServiceLocator._WS_Spells;
+                            var Target = this;
                             wS_Spells3.SendPeriodicAuraLog(ref Caster, ref Target, SpellID, (int)DamageType, Damage, EffectInfo.ApplyAuraIndex);
                             break;
                         }
                     case SpellType.SPELL_TYPE_HEAL:
                         {
-                            WS_Spells wS_Spells2 = WorldServiceLocator._WS_Spells;
-                            BaseUnit Target = this;
+                            var wS_Spells2 = WorldServiceLocator._WS_Spells;
+                            var Target = this;
                             wS_Spells2.SendHealSpellLog(ref Caster, ref Target, SpellID, Damage, IsCrit);
                             break;
                         }
                     case SpellType.SPELL_TYPE_HEALDOT:
                         {
-                            WS_Spells wS_Spells = WorldServiceLocator._WS_Spells;
-                            BaseUnit Target = this;
+                            var wS_Spells = WorldServiceLocator._WS_Spells;
+                            var Target = this;
                             wS_Spells.SendPeriodicAuraLog(ref Caster, ref Target, SpellID, (int)DamageType, Damage, EffectInfo.ApplyAuraIndex);
                             break;
                         }
@@ -1058,11 +1058,11 @@ namespace Mangos.World.Objects
                 {
                     return SpellMissInfo.SPELL_MISS_NONE;
                 }
-                int lchance = ((this is WS_PlayerData.CharacterObject) ? 7 : 11);
+                var lchance = ((this is WS_PlayerData.CharacterObject) ? 7 : 11);
                 checked
                 {
-                    int leveldiff = Level - Caster.Level;
-                    int modHitChance = ((leveldiff >= 3) ? (94 - (leveldiff - 2) * lchance) : (96 - leveldiff));
+                    var leveldiff = Level - Caster.Level;
+                    var modHitChance = ((leveldiff >= 3) ? (94 - (leveldiff - 2) * lchance) : (96 - leveldiff));
                     modHitChance += Caster.GetAuraModifierByMiscMask(AuraEffects_Names.SPELL_AURA_MOD_INCREASES_SPELL_PCT_TO_HIT, (int)Spell.SchoolMask);
                     modHitChance += GetAuraModifierByMiscMask(AuraEffects_Names.SPELL_AURA_MOD_ATTACKER_SPELL_HIT_CHANCE, (int)Spell.SchoolMask);
                     if (Spell.IsAOE)
@@ -1073,17 +1073,17 @@ namespace Mangos.World.Objects
                     {
                         modHitChance -= GetAuraModifier(AuraEffects_Names.SPELL_AURA_MOD_DISPEL_RESIST);
                     }
-                    int resist_mech = 0;
+                    var resist_mech = 0;
                     if (Spell.Mechanic > 0)
                     {
                         resist_mech = GetAuraModifierByMiscMask(AuraEffects_Names.SPELL_AURA_MOD_MECHANIC_RESISTANCE, Spell.Mechanic);
                     }
-                    int i = 0;
+                    var i = 0;
                     do
                     {
                         if (Spell.SpellEffects[i] != null && Spell.SpellEffects[i].Mechanic > 0)
                         {
-                            int temp = GetAuraModifierByMiscMask(AuraEffects_Names.SPELL_AURA_MOD_MECHANIC_RESISTANCE, Spell.SpellEffects[i].Mechanic);
+                            var temp = GetAuraModifierByMiscMask(AuraEffects_Names.SPELL_AURA_MOD_MECHANIC_RESISTANCE, Spell.SpellEffects[i].Mechanic);
                             if (resist_mech < temp)
                             {
                                 resist_mech = temp;
@@ -1094,7 +1094,7 @@ namespace Mangos.World.Objects
                     while (i <= 2);
                     modHitChance -= resist_mech;
                     modHitChance -= GetAuraModifierByMiscMask(AuraEffects_Names.SPELL_AURA_MOD_DEBUFF_RESISTANCE, Spell.DispellType);
-                    int HitChance = modHitChance * 100;
+                    var HitChance = modHitChance * 100;
                     if (HitChance < 100)
                     {
                         HitChance = 100;
@@ -1103,8 +1103,8 @@ namespace Mangos.World.Objects
                     {
                         HitChance = 10000;
                     }
-                    int tmp = 10000 - HitChance;
-                    int rand = WorldServiceLocator._WorldServer.Rnd.Next(0, 10001);
+                    var tmp = 10000 - HitChance;
+                    var rand = WorldServiceLocator._WorldServer.Rnd.Next(0, 10001);
                     if (rand < tmp)
                     {
                         return SpellMissInfo.SPELL_MISS_RESIST;
@@ -1115,37 +1115,37 @@ namespace Mangos.World.Objects
 
             public SpellMissInfo GetMeleeSpellHitResult(ref BaseUnit Caster, WS_Spells.SpellInfo Spell)
             {
-                WeaponAttackType attType = WeaponAttackType.BASE_ATTACK;
+                var attType = WeaponAttackType.BASE_ATTACK;
                 if (Spell.DamageType == 3)
                 {
                     attType = WeaponAttackType.RANGED_ATTACK;
                 }
-                BaseUnit obj = Caster;
-                WeaponAttackType attType2 = attType;
-                BaseUnit Victim = this;
-                int attackerWeaponSkill = obj.GetWeaponSkill(attType2, ref Victim);
+                var obj = Caster;
+                var attType2 = attType;
+                var Victim = this;
+                var attackerWeaponSkill = obj.GetWeaponSkill(attType2, ref Victim);
                 checked
                 {
-                    int skillDiff = attackerWeaponSkill - Level * 5;
-                    int fullSkillDiff = attackerWeaponSkill - GetDefenceSkill(ref Caster);
-                    int roll = WorldServiceLocator._WorldServer.Rnd.Next(0, 10001);
-                    int missChance = 0;
-                    int tmp = missChance;
+                    var skillDiff = attackerWeaponSkill - Level * 5;
+                    var fullSkillDiff = attackerWeaponSkill - GetDefenceSkill(ref Caster);
+                    var roll = WorldServiceLocator._WorldServer.Rnd.Next(0, 10001);
+                    var missChance = 0;
+                    var tmp = missChance;
                     if (roll < tmp)
                     {
                         return SpellMissInfo.SPELL_MISS_MISS;
                     }
-                    int resist_mech = 0;
+                    var resist_mech = 0;
                     if (Spell.Mechanic > 0)
                     {
                         resist_mech = GetAuraModifierByMiscMask(AuraEffects_Names.SPELL_AURA_MOD_MECHANIC_RESISTANCE, Spell.Mechanic);
                     }
-                    int i = 0;
+                    var i = 0;
                     do
                     {
                         if (Spell.SpellEffects[i] != null && Spell.SpellEffects[i].Mechanic > 0)
                         {
-                            int temp = GetAuraModifierByMiscMask(AuraEffects_Names.SPELL_AURA_MOD_MECHANIC_RESISTANCE, Spell.SpellEffects[i].Mechanic);
+                            var temp = GetAuraModifierByMiscMask(AuraEffects_Names.SPELL_AURA_MOD_MECHANIC_RESISTANCE, Spell.SpellEffects[i].Mechanic);
                             if (resist_mech < temp)
                             {
                                 resist_mech = temp;
@@ -1171,7 +1171,7 @@ namespace Mangos.World.Objects
             {
                 if (this is WS_PlayerData.CharacterObject characterObject)
                 {
-                    int value = ((!Attacker.IsPlayer) ? characterObject.Skills[95].CurrentWithBonus : characterObject.Skills[95].MaximumWithBonus);
+                    var value = ((!Attacker.IsPlayer) ? characterObject.Skills[95].CurrentWithBonus : characterObject.Skills[95].MaximumWithBonus);
                     return value;
                 }
                 checked
@@ -1216,8 +1216,8 @@ namespace Mangos.World.Objects
                         {
                             return Level * 5;
                         }
-                        int skill = item?.GetSkill ?? 162;
-                        int value = ((!Victim.IsPlayer) ? characterObject.Skills[skill].CurrentWithBonus : characterObject.Skills[skill].MaximumWithBonus);
+                        var skill = item?.GetSkill ?? 162;
+                        var value = ((!Victim.IsPlayer) ? characterObject.Skills[skill].CurrentWithBonus : characterObject.Skills[skill].MaximumWithBonus);
                         return value;
                     }
                     return Level * 5;
@@ -1235,7 +1235,7 @@ namespace Mangos.World.Objects
                     }
                     else
                     {
-                        int effectiveResistanceRating = t.Resistances[(uint)School].Base + Math.Max((t.Level - Level) * 5, 0);
+                        var effectiveResistanceRating = t.Resistances[(uint)School].Base + Math.Max((t.Level - Level) * 5, 0);
                         DamageReduction = (float)(effectiveResistanceRating / (double)(Level * 5) * 0.75);
                     }
                     if (DamageReduction > 0.75f)
@@ -1252,8 +1252,8 @@ namespace Mangos.World.Objects
 
             public float GetResist(ref BaseUnit t, DamageTypes School, int Damage)
             {
-                float damageReduction = GetDamageReduction(ref t, School, Damage);
-                int[] partialChances = ((damageReduction < 0.15f) ? new int[4]
+                var damageReduction = GetDamageReduction(ref t, School, Damage);
+                var partialChances = ((damageReduction < 0.15f) ? new int[4]
                 {
                     33,
                     11,
@@ -1284,10 +1284,10 @@ namespace Mangos.World.Objects
                     34,
                     11
                 }))));
-                int ran = WorldServiceLocator._WorldServer.Rnd.Next(0, 101);
-                int j = 0;
-                int val = 0;
-                int i = 0;
+                var ran = WorldServiceLocator._WorldServer.Rnd.Next(0, 101);
+                var j = 0;
+                var val = 0;
+                var i = 0;
                 checked
                 {
                     do
@@ -1313,15 +1313,15 @@ namespace Mangos.World.Objects
 
             public int GetAbsorb(DamageTypes School, int Damage)
             {
-                Dictionary<int, uint> ListChange = new Dictionary<int, uint>();
-                int StartDmg = Damage;
+                var ListChange = new Dictionary<int, uint>();
+                var StartDmg = Damage;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Damage: {0} [{1}]", Damage, School);
                 checked
                 {
-                    foreach (KeyValuePair<int, uint> tmpSpell in AbsorbSpellLeft)
+                    foreach (var tmpSpell in AbsorbSpellLeft)
                     {
-                        int Schools = (int)(tmpSpell.Value >> 23);
-                        int AbsorbDamage = (int)(tmpSpell.Value & 0x7FFFFFL);
+                        var Schools = (int)(tmpSpell.Value >> 23);
+                        var AbsorbDamage = (int)(tmpSpell.Value & 0x7FFFFFL);
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Spell: {0} [{1}]", AbsorbDamage, Schools);
                         if (WorldServiceLocator._Functions.HaveFlag((uint)Schools, (byte)School))
                         {
@@ -1348,7 +1348,7 @@ namespace Mangos.World.Objects
                         }
                     }
                 }
-                foreach (KeyValuePair<int, uint> Change2 in ListChange)
+                foreach (var Change2 in ListChange)
                 {
                     if ((ulong)Change2.Value == 0)
                     {
@@ -1359,7 +1359,7 @@ namespace Mangos.World.Objects
                         }
                     }
                 }
-                foreach (KeyValuePair<int, uint> Change in ListChange)
+                foreach (var Change in ListChange)
                 {
                     if ((ulong)Change.Value != 0)
                     {

@@ -52,9 +52,9 @@ namespace Mangos.World.Loots
 
             private LootTemplate CreateTemplate(int Entry)
             {
-                LootTemplate newTemplate = new LootTemplate();
+                var newTemplate = new LootTemplate();
                 Templates.Add(Entry, newTemplate);
-                DataTable MysqlQuery = new DataTable();
+                var MysqlQuery = new DataTable();
                 WorldServiceLocator._WorldServer.WorldDatabase.Query(string.Format("SELECT {0}.*,conditions.type,conditions.value1, conditions.value2 FROM {0} LEFT JOIN conditions ON {0}.`condition_id`=conditions.`condition_entry` WHERE entry = {1};", Name, Entry), ref MysqlQuery);
                 if (MysqlQuery.Rows.Count == 0)
                 {
@@ -67,28 +67,28 @@ namespace Mangos.World.Loots
                     enumerator = MysqlQuery.Rows.GetEnumerator();
                     while (enumerator.MoveNext())
                     {
-                        DataRow row = (DataRow)enumerator.Current;
-                        int Item = row.As<int>("item");
-                        float ChanceOrQuestChance = row.As<float>("ChanceOrQuestChance");
-                        byte GroupID = row.As<byte>("groupid");
-                        int MinCountOrRef = row.As<int>("mincountOrRef");
-                        byte MaxCount = row.As<byte>("maxcount");
-                        ConditionType LootCondition = ConditionType.CONDITION_NONE;
+                        var row = (DataRow)enumerator.Current;
+                        var Item = row.As<int>("item");
+                        var ChanceOrQuestChance = row.As<float>("ChanceOrQuestChance");
+                        var GroupID = row.As<byte>("groupid");
+                        var MinCountOrRef = row.As<int>("mincountOrRef");
+                        var MaxCount = row.As<byte>("maxcount");
+                        var LootCondition = ConditionType.CONDITION_NONE;
                         if (!Information.IsDBNull(RuntimeHelpers.GetObjectValue(row["type"])))
                         {
                             LootCondition = (ConditionType)row.As<int>("type");
                         }
-                        int ConditionValue1 = 0;
+                        var ConditionValue1 = 0;
                         if (!Information.IsDBNull(RuntimeHelpers.GetObjectValue(row["value1"])))
                         {
                             ConditionValue1 = row.As<int>("value1");
                         }
-                        int ConditionValue2 = 0;
+                        var ConditionValue2 = 0;
                         if (!Information.IsDBNull(RuntimeHelpers.GetObjectValue(row["value2"])))
                         {
                             ConditionValue2 = row.As<int>("value2");
                         }
-                        LootStoreItem newItem = new LootStoreItem(Item, Math.Abs(ChanceOrQuestChance), GroupID, MinCountOrRef, MaxCount, LootCondition, ConditionValue1, ConditionValue2, ChanceOrQuestChance < 0f);
+                        var newItem = new LootStoreItem(Item, Math.Abs(ChanceOrQuestChance), GroupID, MinCountOrRef, MaxCount, LootCondition, ConditionValue1, ConditionValue2, ChanceOrQuestChance < 0f);
                         newTemplate.AddItem(ref newItem);
                     }
                 }

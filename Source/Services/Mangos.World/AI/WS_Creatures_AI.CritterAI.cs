@@ -135,7 +135,7 @@ namespace Mangos.World.AI
                                 }
                                 State = AIState.AI_RESPAWN;
                                 WasAlive = true;
-                                int RespawnTime = aiCreature.SpawnTime;
+                                var RespawnTime = aiCreature.SpawnTime;
                                 if (RespawnTime > 0)
                                 {
                                     aiTimer = RespawnTime * 1000;
@@ -218,8 +218,8 @@ namespace Mangos.World.AI
                                 DoRun = true;
                             }
                         }
-                        float distance = (!DoRun) ? ((float)(3.0 * aiCreature.CreatureInfo.WalkSpeed)) : ((float)(3.0 * aiCreature.CreatureInfo.RunSpeed * aiCreature.SpeedMod));
-                        float angle = (float)(WorldServiceLocator._WorldServer.Rnd.NextDouble() * 6.2831854820251465);
+                        var distance = (!DoRun) ? ((float)(3.0 * aiCreature.CreatureInfo.WalkSpeed)) : ((float)(3.0 * aiCreature.CreatureInfo.RunSpeed * aiCreature.SpeedMod));
+                        var angle = (float)(WorldServiceLocator._WorldServer.Rnd.NextDouble() * 6.2831854820251465);
                         aiCreature.SetToRealPosition();
                         aiCreature.orientation = angle;
                         selectedX = (float)(aiCreature.positionX + Math.Cos(angle) * distance);
@@ -228,10 +228,10 @@ namespace Mangos.World.AI
                         MoveTries = (byte)(MoveTries + 1);
                         if (!(Math.Abs(aiCreature.positionZ - selectedZ) > 5f))
                         {
-                            WS_Maps wS_Maps = WorldServiceLocator._WS_Maps;
-                            ref WS_Creatures.CreatureObject reference = ref aiCreature;
+                            var wS_Maps = WorldServiceLocator._WS_Maps;
+                            ref var reference = ref aiCreature;
                             WS_Base.BaseObject obj = reference;
-                            bool flag = wS_Maps.IsInLineOfSight(ref obj, selectedX, selectedY, selectedZ + 2f);
+                            var flag = wS_Maps.IsInLineOfSight(ref obj, selectedX, selectedY, selectedZ + 2f);
                             reference = (WS_Creatures.CreatureObject)obj;
                             if (flag)
                             {

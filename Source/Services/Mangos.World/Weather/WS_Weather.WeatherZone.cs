@@ -58,13 +58,13 @@ namespace Mangos.World.Weather
 
             public bool ChangeWeather()
             {
-                int u = WorldServiceLocator._WorldServer.Rnd.Next(0, 100);
+                var u = WorldServiceLocator._WorldServer.Rnd.Next(0, 100);
                 if (u >= 30)
                 {
-                    WeatherType oldWeather = CurrentWeather;
-                    float oldIntensity = Intensity;
-                    int TimeSince1Jan = checked((int)DateAndTime.Now.Subtract(new DateTime(DateAndTime.Now.Year, 1, 1)).TotalDays);
-                    int Season = checked(TimeSince1Jan - 78 + 365) / 91 % 4;
+                    var oldWeather = CurrentWeather;
+                    var oldIntensity = Intensity;
+                    var TimeSince1Jan = checked((int)DateAndTime.Now.Subtract(new DateTime(DateAndTime.Now.Year, 1, 1)).TotalDays);
+                    var Season = checked(TimeSince1Jan - 78 + 365) / 91 % 4;
                     if (u < 60 && Intensity < 0.333333343f)
                     {
                         CurrentWeather = WeatherType.WEATHER_FINE;
@@ -89,7 +89,7 @@ namespace Mangos.World.Weather
                         }
                         if (Intensity > 2f / 3f)
                         {
-                            int v = WorldServiceLocator._WorldServer.Rnd.Next(0, 100);
+                            var v = WorldServiceLocator._WorldServer.Rnd.Next(0, 100);
                             if (v < 50)
                             {
                                 Intensity -= 2f / 3f;
@@ -99,12 +99,12 @@ namespace Mangos.World.Weather
                         CurrentWeather = WeatherType.WEATHER_FINE;
                         Intensity = 0f;
                     }
-                    int chance1 = Seasons[Season].RainChance;
+                    var chance1 = Seasons[Season].RainChance;
                     checked
                     {
-                        int chance2 = chance1 + Seasons[Season].SnowChance;
-                        int chance3 = chance2 + Seasons[Season].StormChance;
-                        int r = WorldServiceLocator._WorldServer.Rnd.Next(0, 100);
+                        var chance2 = chance1 + Seasons[Season].SnowChance;
+                        var chance3 = chance2 + Seasons[Season].StormChance;
+                        var r = WorldServiceLocator._WorldServer.Rnd.Next(0, 100);
                         if (r < chance1)
                         {
                             CurrentWeather = WeatherType.WEATHER_RAIN;
@@ -189,7 +189,7 @@ namespace Mangos.World.Weather
 
             public void SendUpdate()
             {
-                Packets.PacketClass SMSG_WEATHER = new Packets.PacketClass(Opcodes.SMSG_WEATHER);
+                var SMSG_WEATHER = new Packets.PacketClass(Opcodes.SMSG_WEATHER);
                 SMSG_WEATHER.AddInt32((int)CurrentWeather);
                 SMSG_WEATHER.AddSingle(Intensity);
                 SMSG_WEATHER.AddInt32(GetSound());
@@ -198,7 +198,7 @@ namespace Mangos.World.Weather
                     WorldServiceLocator._WorldServer.CHARACTERs_Lock.AcquireReaderLock(WorldServiceLocator._Global_Constants.DEFAULT_LOCK_TIMEOUT);
                     try
                     {
-                        foreach (KeyValuePair<ulong, WS_PlayerData.CharacterObject> Character in WorldServiceLocator._WorldServer.CHARACTERs)
+                        foreach (var Character in WorldServiceLocator._WorldServer.CHARACTERs)
                         {
                             if (Character.Value.client != null && Character.Value.ZoneID == ZoneID)
                             {
@@ -209,7 +209,7 @@ namespace Mangos.World.Weather
                     catch (Exception ex4)
                     {
                         ProjectData.SetProjectError(ex4);
-                        Exception ex3 = ex4;
+                        var ex3 = ex4;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error updating Weather.{0}{1}", Environment.NewLine, ex3.ToString());
                         ProjectData.ClearProjectError();
                     }
@@ -221,14 +221,14 @@ namespace Mangos.World.Weather
                 catch (ApplicationException ex5)
                 {
                     ProjectData.SetProjectError(ex5);
-                    ApplicationException ex2 = ex5;
+                    var ex2 = ex5;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "Update: Weather Manager timed out");
                     ProjectData.ClearProjectError();
                 }
                 catch (Exception ex6)
                 {
                     ProjectData.SetProjectError(ex6);
-                    Exception ex = ex6;
+                    var ex = ex6;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error updating Weather.{0}{1}", Environment.NewLine, ex.ToString());
                     ProjectData.ClearProjectError();
                 }

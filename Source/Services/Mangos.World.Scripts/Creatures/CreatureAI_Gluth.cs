@@ -90,7 +90,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastDecimate()
         {
-            for (int i = 0; i <= 3; i++)
+            for (var i = 0; i <= 3; i++)
             {
                 WS_Base.BaseUnit Target = aiCreature;
                 if (Target is null)
@@ -108,7 +108,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastFrenzy()
         {
-            for (int i = 1; i <= 3; i++)
+            for (var i = 1; i <= 3; i++)
             {
                 WS_Base.BaseUnit Target = aiCreature;
                 if (Target is null)
@@ -126,7 +126,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastMortalWound()
         {
-            for (int i = 2; i <= 3; i++)
+            for (var i = 2; i <= 3; i++)
             {
                 WS_Base.BaseUnit target = aiCreature;
                 if (target is null)
@@ -144,7 +144,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastTerrifyingRoar()
         {
-            for (int i = 3; i <= 3; i++)
+            for (var i = 3; i <= 3; i++)
             {
                 WS_Base.BaseUnit target = aiCreature;
                 if (target is null)

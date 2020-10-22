@@ -77,7 +77,7 @@ namespace Mangos.Common.Legacy
         {
             get
             {
-                DB_Type SQLTypeServerRet = v_SQLType;
+                var SQLTypeServerRet = v_SQLType;
                 return SQLTypeServerRet;
             }
 
@@ -92,7 +92,7 @@ namespace Mangos.Common.Legacy
         {
             get
             {
-                string SQLHostRet = v_SQLHost;
+                var SQLHostRet = v_SQLHost;
                 return SQLHostRet;
             }
 
@@ -107,7 +107,7 @@ namespace Mangos.Common.Legacy
         {
             get
             {
-                string SQLPortRet = v_SQLPort;
+                var SQLPortRet = v_SQLPort;
                 return SQLPortRet;
             }
 
@@ -122,7 +122,7 @@ namespace Mangos.Common.Legacy
         {
             get
             {
-                string SQLUserRet = v_SQLUser;
+                var SQLUserRet = v_SQLUser;
                 return SQLUserRet;
             }
 
@@ -137,7 +137,7 @@ namespace Mangos.Common.Legacy
         {
             get
             {
-                string SQLPassRet = v_SQLPass;
+                var SQLPassRet = v_SQLPass;
                 return SQLPassRet;
             }
 
@@ -152,7 +152,7 @@ namespace Mangos.Common.Legacy
         {
             get
             {
-                string SQLDBNameRet = v_SQLDBName;
+                var SQLDBNameRet = v_SQLDBName;
                 return SQLDBNameRet;
             }
 
@@ -347,7 +347,7 @@ namespace Mangos.Common.Legacy
                     }
             }
 
-            int ExitCode = (int)ReturnState.Success;
+            var ExitCode = (int)ReturnState.Success;
             try
             {
                 switch (v_SQLType)

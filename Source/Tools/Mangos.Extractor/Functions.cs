@@ -74,7 +74,7 @@ namespace Mangos.Extractor
 
         public static string ReadString(FileStream f)
         {
-            string r = "";
+            var r = "";
             byte t;
 
             // Read if there are zeros
@@ -94,7 +94,7 @@ namespace Mangos.Extractor
 
         public static string ReadString(FileStream f, long pos)
         {
-            string r = "";
+            var r = "";
             byte t;
             if (pos == -1)
                 return "*Nothing*";
@@ -123,7 +123,7 @@ namespace Mangos.Extractor
         public static string ToField(string sField)
         {
             // Make the first letter in upper case and the rest in lower case
-            string tmp = sField.Substring(0, 1).ToUpper() + sField.Substring(1).ToLower();
+            var tmp = sField.Substring(0, 1).ToUpper() + sField.Substring(1).ToLower();
             // Replace lowercase object with Object (used in f.ex Gameobject -> GameObject)
             if (tmp.IndexOf("object", StringComparison.OrdinalIgnoreCase) > 0)
             {
@@ -186,7 +186,7 @@ namespace Mangos.Extractor
 
         public static string ToFlags(int iFlags)
         {
-            string tmp = "";
+            var tmp = "";
             if (iFlags == 0)
                 tmp = "NONE";
             if (Conversions.ToBoolean(iFlags & 1))
@@ -238,9 +238,9 @@ namespace Mangos.Extractor
             var r2 = new StreamReader(f);
             var o = new FileStream("Global.UpdateFields.vb", FileMode.Create, FileAccess.Write, FileShare.None, 1024);
             var w = new StreamWriter(o);
-            int FIELD_NAME_OFFSET = SearchInFile(f, "CORPSE_FIELD_PAD");
-            int OBJECT_FIELD_GUID = SearchInFile(f, "OBJECT_FIELD_GUID") + 0x400000;
-            int FIELD_TYPE_OFFSET = SearchInFile(f, OBJECT_FIELD_GUID);
+            var FIELD_NAME_OFFSET = SearchInFile(f, "CORPSE_FIELD_PAD");
+            var OBJECT_FIELD_GUID = SearchInFile(f, "OBJECT_FIELD_GUID") + 0x400000;
+            var FIELD_TYPE_OFFSET = SearchInFile(f, OBJECT_FIELD_GUID);
             if (FIELD_NAME_OFFSET == -1 | FIELD_TYPE_OFFSET == -1)
             {
                 MessageBox.Show("Wrong offsets! " + FIELD_NAME_OFFSET + "  " + FIELD_TYPE_OFFSET);
@@ -248,8 +248,8 @@ namespace Mangos.Extractor
             else
             {
                 var Names = new List<string>();
-                string Last = "";
-                int Offset = FIELD_NAME_OFFSET;
+                var Last = "";
+                var Offset = FIELD_NAME_OFFSET;
                 f.Seek(Offset, SeekOrigin.Begin);
                 while (Last != "OBJECT_FIELD_GUID")
                 {
@@ -297,11 +297,11 @@ namespace Mangos.Extractor
                 w.WriteLine("' Auto generated file");
                 w.WriteLine("' {0}", DateAndTime.Now);
                 w.WriteLine();
-                string LastFieldType = "";
+                var LastFieldType = "";
                 string sName;
                 string sField;
-                int BasedOn = 0;
-                string BasedOnName = "";
+                var BasedOn = 0;
+                var BasedOnName = "";
                 var EndNum = new Dictionary<string, int>();
                 for (int j = 0, loopTo1 = Info.Count - 1; j <= loopTo1; j++)
                 {
@@ -377,7 +377,7 @@ namespace Mangos.Extractor
             var o = new FileStream("Global.Opcodes.vb", FileMode.Create, FileAccess.Write, FileShare.None, 1024);
             var w = new StreamWriter(o);
             MessageBox.Show(ReadString(f, SearchInFile(f, "CMSG_REQUEST_PARTY_MEMBER_STATS")));
-            int START = SearchInFile(f, "NUM_MSG_TYPES");
+            var START = SearchInFile(f, "NUM_MSG_TYPES");
             if (START == -1)
             {
                 MessageBox.Show("Wrong offsets!");
@@ -385,7 +385,7 @@ namespace Mangos.Extractor
             else
             {
                 var Names = new Stack<string>();
-                string Last = "";
+                var Last = "";
                 f.Seek(START, SeekOrigin.Begin);
                 while (Last != "MSG_NULL_ACTION")
                 {
@@ -398,7 +398,7 @@ namespace Mangos.Extractor
                 w.WriteLine("' {0}", DateAndTime.Now);
                 w.WriteLine();
                 w.WriteLine("Public Enum OPCODES");
-                int i = 0;
+                var i = 0;
                 while (Names.Count > 0)
                 {
                     w.WriteLine("    {0,-64}' 0x{1:X3}", Names.Pop() + "=" + i, i);
@@ -420,7 +420,7 @@ namespace Mangos.Extractor
             var r2 = new StreamReader(f);
             var o = new FileStream("Global.SpellFailedReasons.vb", FileMode.Create, FileAccess.Write, FileShare.None, 1024);
             var w = new StreamWriter(o);
-            int REASON_NAME_OFFSET = SearchInFile(f, "SPELL_FAILED_UNKNOWN");
+            var REASON_NAME_OFFSET = SearchInFile(f, "SPELL_FAILED_UNKNOWN");
             if (REASON_NAME_OFFSET == -1)
             {
                 MessageBox.Show("Wrong offsets!");
@@ -428,8 +428,8 @@ namespace Mangos.Extractor
             else
             {
                 var Names = new Stack<string>();
-                string Last = "";
-                int Offset = REASON_NAME_OFFSET;
+                var Last = "";
+                var Offset = REASON_NAME_OFFSET;
                 f.Seek(Offset, SeekOrigin.Begin);
                 while (Last.Length == 0 || Last.Substring(0, 13) == "SPELL_FAILED_")
                 {
@@ -443,7 +443,7 @@ namespace Mangos.Extractor
                 w.WriteLine("' {0}", DateAndTime.Now);
                 w.WriteLine();
                 w.WriteLine("Public Enum SpellFailedReason As Byte");
-                int i = 0;
+                var i = 0;
                 while (Names.Count > 0)
                 {
                     w.WriteLine("    {0,-64}' 0x{1:X3}", Names.Pop() + " = &H" + Conversion.Hex(i), i);
@@ -466,7 +466,7 @@ namespace Mangos.Extractor
             var r2 = new StreamReader(f);
             var o = new FileStream("Global.ChatTypes.vb", FileMode.Create, FileAccess.Write, FileShare.None, 1024);
             var w = new StreamWriter(o);
-            int START = SearchInFile(f, "CHAT_MSG_RAID_WARNING");
+            var START = SearchInFile(f, "CHAT_MSG_RAID_WARNING");
             if (START == -1)
             {
                 MessageBox.Show("Wrong offsets!");
@@ -474,8 +474,8 @@ namespace Mangos.Extractor
             else
             {
                 var Names = new Stack<string>();
-                string Last = "";
-                int Offset = START;
+                var Last = "";
+                var Offset = START;
                 f.Seek(Offset, SeekOrigin.Begin);
                 while (Last.Length == 0 || Last.Substring(0, 9) == "CHAT_MSG_")
                 {
@@ -489,7 +489,7 @@ namespace Mangos.Extractor
                 w.WriteLine("' {0}", DateAndTime.Now);
                 w.WriteLine();
                 w.WriteLine("Public Enum ChatMsg As Integer");
-                int i = 0;
+                var i = 0;
                 while (Names.Count > 0)
                 {
                     w.WriteLine("    {0,-64}' 0x{1:X3}", Names.Pop() + " = &H" + Conversion.Hex(i), i);

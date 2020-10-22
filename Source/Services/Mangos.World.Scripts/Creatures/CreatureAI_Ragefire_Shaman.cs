@@ -60,7 +60,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastHeal()
         {
-            for (int i = 0; i <= 1; i++)
+            for (var i = 0; i <= 1; i++)
             {
                 WS_Base.BaseUnit Target = aiCreature;
                 if (Target is null)
@@ -71,7 +71,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastBolt()
         {
-            for (int i = 1; i <= 1; i++)
+            for (var i = 1; i <= 1; i++)
             {
                 WS_Base.BaseUnit Target = aiCreature;
                 if (Target is null)

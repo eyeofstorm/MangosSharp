@@ -54,14 +54,14 @@ namespace Mangos.World
     {
         public static async Task Main()
         {
-            IContainer container = WorldServiceLocator._Container;
-            WorldServer worldServer = container.Resolve<WorldServer>();
+            var container = WorldServiceLocator._Container;
+            var worldServer = container.Resolve<WorldServer>();
             await worldServer.StartAsync();
         }
 
         public static IContainer CreateContainer()
         {
-            ContainerBuilder builder = new ContainerBuilder();
+            var builder = new ContainerBuilder();
             RegisterLoggers(builder);
             RegisterConfiguration(builder);
             RegisterServices(builder);

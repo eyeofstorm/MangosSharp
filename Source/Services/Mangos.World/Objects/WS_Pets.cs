@@ -67,9 +67,9 @@ namespace Mangos.World.Objects
                 {
                     @object.GroupUpdateFlag |= 0x7FC00u;
                 }
-                WS_Pets wS_Pets = WorldServiceLocator._WS_Pets;
-                ref WS_Base.BaseUnit owner = ref Owner;
-                WS_PlayerData.CharacterObject Caster = (WS_PlayerData.CharacterObject)owner;
+                var wS_Pets = WorldServiceLocator._WS_Pets;
+                ref var owner = ref Owner;
+                var Caster = (WS_PlayerData.CharacterObject)owner;
                 WS_Base.BaseUnit Pet = this;
                 wS_Pets.SendPetInitialize(ref Caster, ref Pet);
                 owner = Caster;
@@ -81,7 +81,7 @@ namespace Mangos.World.Objects
                 if (Owner is WS_PlayerData.CharacterObject @object)
                 {
                     @object.GroupUpdateFlag |= 0x7FC00u;
-                    Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_PET_SPELLS);
+                    var packet = new Packets.PacketClass(Opcodes.SMSG_PET_SPELLS);
                     packet.AddUInt64(0uL);
                     @object.client.Send(ref packet);
                     packet.Dispose();
@@ -133,8 +133,8 @@ namespace Mangos.World.Objects
         public void On_CMSG_PET_NAME_QUERY(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            int PetNumber = packet.GetInt32();
-            ulong PetGUID = packet.GetUInt64();
+            var PetNumber = packet.GetInt32();
+            var PetGUID = packet.GetUInt64();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "CMSG_PET_NAME_QUERY [Number={0} GUID={1:X}", PetNumber, PetGUID);
             SendPetNameQuery(ref client, PetGUID, PetNumber);
         }
@@ -148,10 +148,10 @@ namespace Mangos.World.Objects
         public void On_CMSG_PET_ACTION(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            ulong PetGUID = packet.GetUInt64();
-            ushort SpellID = packet.GetUInt16();
-            ushort SpellFlag = packet.GetUInt16();
-            ulong TargetGUID = packet.GetUInt64();
+            var PetGUID = packet.GetUInt64();
+            var SpellID = packet.GetUInt16();
+            var SpellFlag = packet.GetUInt16();
+            var TargetGUID = packet.GetUInt64();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "CMSG_PET_ACTION [GUID={0:X} Spell={1} Flag={2:X} Target={3:X}]", PetGUID, SpellID, SpellFlag, TargetGUID);
         }
 
@@ -164,25 +164,25 @@ namespace Mangos.World.Objects
         public void On_CMSG_PET_ABANDON(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            ulong PetGUID = packet.GetUInt64();
+            var PetGUID = packet.GetUInt64();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "CMSG_PET_ABANDON [GUID={0:X}]", PetGUID);
         }
 
         public void On_CMSG_PET_RENAME(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            ulong PetGUID = packet.GetUInt64();
-            string PetName = packet.GetString();
+            var PetGUID = packet.GetUInt64();
+            var PetName = packet.GetString();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "CMSG_PET_RENAME [GUID={0:X} Name={1}]", PetGUID, PetName);
         }
 
         public void On_CMSG_PET_SET_ACTION(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            ulong PetGUID = packet.GetUInt64();
-            int Position = packet.GetInt32();
-            ushort SpellID = packet.GetUInt16();
-            short ActionState = packet.GetInt16();
+            var PetGUID = packet.GetUInt64();
+            var Position = packet.GetInt32();
+            var SpellID = packet.GetUInt16();
+            var ActionState = packet.GetInt16();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "CMSG_PET_SET_ACTION [GUID={0:X} Pos={1} Spell={2} Action={3}]", PetGUID, Position, SpellID, ActionState);
         }
 
@@ -208,7 +208,7 @@ namespace Mangos.World.Objects
         {
             if (WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(PetGUID) && WorldServiceLocator._WorldServer.WORLD_CREATUREs[PetGUID] is PetObject @object)
             {
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_PET_NAME_QUERY_RESPONSE);
+                var response = new Packets.PacketClass(Opcodes.SMSG_PET_NAME_QUERY_RESPONSE);
                 response.AddInt32(PetNumber);
                 response.AddString(@object.PetName);
                 response.AddInt32(WorldServiceLocator._NativeMethods.timeGetTime(""));
@@ -223,11 +223,11 @@ namespace Mangos.World.Objects
             {
                 return;
             }
-            DataTable PetQuery = new DataTable();
+            var PetQuery = new DataTable();
             WorldServiceLocator._WorldServer.CharacterDatabase.Query($"SELECT * FROM character_pet WHERE owner = '{objCharacter.GUID}';", ref PetQuery);
             if (PetQuery.Rows.Count != 0)
             {
-                DataRow row = PetQuery.Rows[0];
+                var row = PetQuery.Rows[0];
                 objCharacter.Pet = new PetObject(checked(row.As<ulong>("id") + WorldServiceLocator._Global_Constants.GUID_PET), row.As<int>("entry"))
                 {
                     Owner = objCharacter,
@@ -267,7 +267,7 @@ namespace Mangos.World.Objects
                 Command = @object.Command;
                 State = @object.State;
             }
-            Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_PET_SPELLS);
+            var packet = new Packets.PacketClass(Opcodes.SMSG_PET_SPELLS);
             packet.AddUInt64(Pet.GUID);
             packet.AddInt32(0);
             packet.AddInt32(16842752);
@@ -279,7 +279,7 @@ namespace Mangos.World.Objects
                 packet.AddInt16((short)unchecked((ushort)(Command << 8)));
                 packet.AddInt16(0);
                 packet.AddInt16((short)unchecked((ushort)(Command << 8)));
-                int i = 0;
+                var i = 0;
                 do
                 {
                     packet.AddInt16(0);

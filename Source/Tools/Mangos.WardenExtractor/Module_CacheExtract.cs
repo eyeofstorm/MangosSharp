@@ -28,7 +28,7 @@ namespace Mangos.WardenExtractor
         public static void ExtractCache()
         {
             Console.Write("Name of WDB: ");
-            string sWDB = Console.ReadLine();
+            var sWDB = Console.ReadLine();
             if (File.Exists(sWDB) == false)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -38,20 +38,20 @@ namespace Mangos.WardenExtractor
 
             var fs = new FileStream(sWDB, FileMode.Open, FileAccess.Read, FileShare.Read);
             var br = new BinaryReader(fs);
-            string Header = Conversions.ToString(br.ReadChars(4));
-            uint Version = br.ReadUInt32();
-            string Lang = Program.Reverse(Conversions.ToString(br.ReadChars(4)));
+            var Header = Conversions.ToString(br.ReadChars(4));
+            var Version = br.ReadUInt32();
+            var Lang = Program.Reverse(Conversions.ToString(br.ReadChars(4)));
             var Unk = br.ReadBytes(8);
             Console.ForegroundColor = ConsoleColor.White;
             Directory.CreateDirectory("Modules");
             while (fs.Position + 20L <= fs.Length)
             {
                 var argbBytes = br.ReadBytes(16);
-                string ModName = Program.ToHex(ref argbBytes);
-                int DataLen = br.ReadInt32();
+                var ModName = Program.ToHex(ref argbBytes);
+                var DataLen = br.ReadInt32();
                 if (DataLen == 0)
                     continue;
-                int ModLen = br.ReadInt32();
+                var ModLen = br.ReadInt32();
                 var ModData = new byte[ModLen];
                 br.Read(ModData, 0, ModLen);
                 var fs2 = new FileStream(@"Modules\" + ModName + ".mod", FileMode.Create, FileAccess.Write, FileShare.None);
@@ -68,7 +68,7 @@ namespace Mangos.WardenExtractor
         public static void ConvertWDB()
         {
             Console.Write("Name of WDB: ");
-            string sWDB = Console.ReadLine();
+            var sWDB = Console.ReadLine();
             if (File.Exists(sWDB) == false)
             {
                 Console.ForegroundColor = ConsoleColor.Red;
@@ -80,11 +80,11 @@ namespace Mangos.WardenExtractor
             var br = new BinaryReader(fs);
             var ms = new MemoryStream();
             var bw = new BinaryWriter(ms);
-            string Header = Conversions.ToString(br.ReadChars(4));
-            uint Version = br.ReadUInt32();
-            string Lang = Program.Reverse(Conversions.ToString(br.ReadChars(4)));
-            int Unk1 = br.ReadInt32();
-            int Unk2 = br.ReadInt32();
+            var Header = Conversions.ToString(br.ReadChars(4));
+            var Version = br.ReadUInt32();
+            var Lang = Program.Reverse(Conversions.ToString(br.ReadChars(4)));
+            var Unk1 = br.ReadInt32();
+            var Unk2 = br.ReadInt32();
             bw.Write((byte)Strings.Asc(Header[0]));
             bw.Write((byte)Strings.Asc(Header[1]));
             bw.Write((byte)Strings.Asc(Header[2]));
@@ -102,8 +102,8 @@ namespace Mangos.WardenExtractor
             while (fs.Position + 20L <= fs.Length)
             {
                 var byteName = br.ReadBytes(16);
-                string ModName = Program.ToHex(ref byteName);
-                int DataLen = br.ReadInt32();
+                var ModName = Program.ToHex(ref byteName);
+                var DataLen = br.ReadInt32();
                 bw.Write(byteName, 0, byteName.Length);
                 bw.Write(DataLen);
                 if (DataLen == 0)
@@ -111,7 +111,7 @@ namespace Mangos.WardenExtractor
                     continue;
                 }
 
-                int ModLen = br.ReadInt32();
+                var ModLen = br.ReadInt32();
                 bw.Write(ModLen);
                 var ModData = new byte[ModLen];
                 br.Read(ModData, 0, ModLen);

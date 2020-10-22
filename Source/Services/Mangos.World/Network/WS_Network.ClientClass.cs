@@ -91,7 +91,7 @@ namespace Mangos.World.Network
                             }
                         }
 
-                        while (Packets.TryDequeue(out Packets.PacketClass packet))
+                        while (Packets.TryDequeue(out var packet))
                         {
                             using (packet)
                             {
@@ -102,13 +102,13 @@ namespace Mangos.World.Network
                                 }
                                 else
                                 {
-                                    int start = WorldServiceLocator._NativeMethods.timeGetTime("");
+                                    var start = WorldServiceLocator._NativeMethods.timeGetTime("");
                                     checked
                                     {
                                         try
                                         {
-                                            WorldServer.HandlePacket handlePacket = WorldServiceLocator._WorldServer.PacketHandlers[packet.OpCode];
-                                            ClientClass client = this;
+                                            var handlePacket = WorldServiceLocator._WorldServer.PacketHandlers[packet.OpCode];
+                                            var client = this;
                                             handlePacket(ref packet, ref client);
 
                                             if (WorldServiceLocator._NativeMethods.timeGetTime("") - start > 100)
@@ -206,7 +206,7 @@ namespace Mangos.World.Network
                             packet.CompressUpdatePacket();
                         }
                         packet.UpdateLength();
-                        byte[] data = (byte[])packet.Data.Clone();
+                        var data = (byte[])packet.Data.Clone();
 
                         if (WorldServiceLocator._WorldServer.ClsWorldServer.Cluster != null)
                         {
@@ -262,9 +262,9 @@ namespace Mangos.World.Network
 
                 try
                 {
-                    Packets packets4 = WorldServiceLocator._Packets;
-                    byte[] data4 = packet.Data;
-                    ClientClass client = this;
+                    var packets4 = WorldServiceLocator._Packets;
+                    var data4 = packet.Data;
+                    var client = this;
                     packets4.DumpPacket(data4, client);
                 }
                 catch (Exception ex)

@@ -53,8 +53,8 @@ namespace Mangos.World.Handlers
                 return;
             }
             packet.GetInt16();
-            ChatMsg msgType = (ChatMsg)packet.GetInt32();
-            LANGUAGES msgLanguage = (LANGUAGES)packet.GetInt32();
+            var msgType = (ChatMsg)packet.GetInt32();
+            var msgLanguage = (LANGUAGES)packet.GetInt32();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_MESSAGECHAT [{2}:{3}]", client.IP, client.Port, msgType, msgLanguage);
             if (client.Character.Spell_Language != (LANGUAGES)(-1))
             {
@@ -67,11 +67,11 @@ namespace Mangos.World.Handlers
                 case ChatMsg.CHAT_MSG_WHISPER:
                 case ChatMsg.CHAT_MSG_EMOTE:
                     {
-                        string Message3 = packet.GetString();
+                        var Message3 = packet.GetString();
                         if (Message3.StartsWith(WorldServiceLocator._ConfigurationProvider.GetConfiguration().CommandCharacter) && client.Character.Access > AccessLevel.Player)
                         {
                             Message3 = Message3.Remove(0, 1);
-                            Packets.PacketClass toCommand = WorldServiceLocator._Functions.BuildChatMessage(2147483647uL, Message3, ChatMsg.CHAT_MSG_SYSTEM, LANGUAGES.LANG_GLOBAL);
+                            var toCommand = WorldServiceLocator._Functions.BuildChatMessage(2147483647uL, Message3, ChatMsg.CHAT_MSG_SYSTEM, LANGUAGES.LANG_GLOBAL);
                             try
                             {
                                 client.Send(ref toCommand);
@@ -90,7 +90,7 @@ namespace Mangos.World.Handlers
                     }
                 case ChatMsg.CHAT_MSG_AFK:
                     {
-                        string Message = packet.GetString();
+                        var Message = packet.GetString();
                         if ((Operators.CompareString(Message, "", TextCompare: false) == 0 || !client.Character.AFK) && !client.Character.IsInCombat)
                         {
                             client.Character.AFK = !client.Character.AFK;
@@ -105,7 +105,7 @@ namespace Mangos.World.Handlers
                     }
                 case ChatMsg.CHAT_MSG_DND:
                     {
-                        string Message2 = packet.GetString();
+                        var Message2 = packet.GetString();
                         if (Operators.CompareString(Message2, "", TextCompare: false) == 0 || !client.Character.DND)
                         {
                             client.Character.DND = !client.Character.DND;

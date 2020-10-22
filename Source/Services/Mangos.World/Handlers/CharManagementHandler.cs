@@ -37,10 +37,10 @@ namespace Mangos.World.Handlers
                 return;
             }
             packet.GetInt16();
-            byte button = packet.GetInt8();
-            ushort action = packet.GetUInt16();
-            byte actionMisc = packet.GetInt8();
-            byte actionType = packet.GetInt8();
+            var button = packet.GetInt8();
+            var action = packet.GetUInt16();
+            var actionMisc = packet.GetInt8();
+            var actionType = packet.GetInt8();
             if (action == 0)
             {
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] MSG_SET_ACTION_BUTTON [Remove action from button {2}]", client.IP, client.Port, button);
@@ -70,7 +70,7 @@ namespace Mangos.World.Handlers
             client.Character.Save();
             if (client.Character.IsInCombat)
             {
-                Packets.PacketClass LOGOUT_RESPONSE_DENIED = new Packets.PacketClass(Opcodes.SMSG_LOGOUT_RESPONSE);
+                var LOGOUT_RESPONSE_DENIED = new Packets.PacketClass(Opcodes.SMSG_LOGOUT_RESPONSE);
                 try
                 {
                     LOGOUT_RESPONSE_DENIED.AddInt32(0);
@@ -85,8 +85,8 @@ namespace Mangos.World.Handlers
             }
             if (!(client.Character.positionZ > WorldServiceLocator._WS_Maps.GetZCoord(client.Character.positionX, client.Character.positionY, client.Character.positionZ, client.Character.MapID) + 10f))
             {
-                Packets.UpdateClass UpdateData = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
-                Packets.PacketClass SMSG_UPDATE_OBJECT = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                var UpdateData = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
+                var SMSG_UPDATE_OBJECT = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                 try
                 {
                     SMSG_UPDATE_OBJECT.AddInt32(1);
@@ -95,7 +95,7 @@ namespace Mangos.World.Handlers
                     UpdateData.SetUpdateFlag(46, client.Character.cUnitFlags);
                     client.Character.StandState = 1;
                     UpdateData.SetUpdateFlag(138, client.Character.cBytes1);
-                    WS_PlayerData.CharacterObject updateObject = client.Character;
+                    var updateObject = client.Character;
                     UpdateData.AddToPacket(ref SMSG_UPDATE_OBJECT, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                     client.Character.SendToNearPlayers(ref SMSG_UPDATE_OBJECT);
                 }
@@ -103,7 +103,7 @@ namespace Mangos.World.Handlers
                 {
                     SMSG_UPDATE_OBJECT.Dispose();
                 }
-                Packets.PacketClass packetACK = new Packets.PacketClass(Opcodes.SMSG_STANDSTATE_CHANGE_ACK);
+                var packetACK = new Packets.PacketClass(Opcodes.SMSG_STANDSTATE_CHANGE_ACK);
                 try
                 {
                     packetACK.AddInt8(1);
@@ -114,7 +114,7 @@ namespace Mangos.World.Handlers
                     packetACK.Dispose();
                 }
             }
-            Packets.PacketClass SMSG_LOGOUT_RESPONSE = new Packets.PacketClass(Opcodes.SMSG_LOGOUT_RESPONSE);
+            var SMSG_LOGOUT_RESPONSE = new Packets.PacketClass(Opcodes.SMSG_LOGOUT_RESPONSE);
             try
             {
                 SMSG_LOGOUT_RESPONSE.AddInt32(0);
@@ -148,8 +148,8 @@ namespace Mangos.World.Handlers
                     client.Character.LogoutTimer?.Dispose();
                     client.Character.LogoutTimer = null;
 
-                    Packets.UpdateClass UpdateData = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
-                    Packets.PacketClass SMSG_UPDATE_OBJECT = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                    var UpdateData = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
+                    var SMSG_UPDATE_OBJECT = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                     try
                     {
                         SMSG_UPDATE_OBJECT.AddInt32(1);
@@ -158,7 +158,7 @@ namespace Mangos.World.Handlers
                         UpdateData.SetUpdateFlag(46, client.Character.cUnitFlags);
                         client.Character.StandState = 0;
                         UpdateData.SetUpdateFlag(138, client.Character.cBytes1);
-                        WS_PlayerData.CharacterObject updateObject = client.Character;
+                        var updateObject = client.Character;
                         UpdateData.AddToPacket(ref SMSG_UPDATE_OBJECT, ObjectUpdateType.UPDATETYPE_VALUES, ref updateObject);
                         client.Send(ref SMSG_UPDATE_OBJECT);
                     }
@@ -166,7 +166,7 @@ namespace Mangos.World.Handlers
                     {
                         SMSG_UPDATE_OBJECT.Dispose();
                     }
-                    Packets.PacketClass packetACK = new Packets.PacketClass(Opcodes.SMSG_STANDSTATE_CHANGE_ACK);
+                    var packetACK = new Packets.PacketClass(Opcodes.SMSG_STANDSTATE_CHANGE_ACK);
                     try
                     {
                         packetACK.AddInt8(0);
@@ -176,7 +176,7 @@ namespace Mangos.World.Handlers
                     {
                         packetACK.Dispose();
                     }
-                    Packets.PacketClass SMSG_LOGOUT_CANCEL_ACK = new Packets.PacketClass(Opcodes.SMSG_LOGOUT_CANCEL_ACK);
+                    var SMSG_LOGOUT_CANCEL_ACK = new Packets.PacketClass(Opcodes.SMSG_LOGOUT_CANCEL_ACK);
                     try
                     {
                         client.Send(ref SMSG_LOGOUT_CANCEL_ACK);
@@ -192,7 +192,7 @@ namespace Mangos.World.Handlers
             catch (Exception ex)
             {
                 ProjectData.SetProjectError(ex);
-                Exception e = ex;
+                var e = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error while trying to cancel logout.{0}", Environment.NewLine + e);
                 ProjectData.ClearProjectError();
             }
@@ -203,7 +203,7 @@ namespace Mangos.World.Handlers
             if (checked(packet.Data.Length - 1) >= 6)
             {
                 packet.GetInt16();
-                byte StandState = packet.GetInt8();
+                var StandState = packet.GetInt8();
                 if (StandState == 0)
                 {
                     client.Character.RemoveAurasByInterruptFlag(262144);
@@ -211,7 +211,7 @@ namespace Mangos.World.Handlers
                 client.Character.StandState = StandState;
                 client.Character.SetUpdateFlag(138, client.Character.cBytes1);
                 client.Character.SendCharacterUpdate();
-                Packets.PacketClass packetACK = new Packets.PacketClass(Opcodes.SMSG_STANDSTATE_CHANGE_ACK);
+                var packetACK = new Packets.PacketClass(Opcodes.SMSG_STANDSTATE_CHANGE_ACK);
                 try
                 {
                     packetACK.AddInt8(StandState);

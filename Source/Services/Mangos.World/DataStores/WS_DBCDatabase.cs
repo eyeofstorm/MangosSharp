@@ -592,13 +592,13 @@ namespace Mangos.World.DataStores
 
         public int GetNearestTaxi(float x, float y, int map)
         {
-            int selectedTaxiNode = 0;
-            foreach (KeyValuePair<int, TTaxiNode> TaxiNode in TaxiNodes)
+            var selectedTaxiNode = 0;
+            foreach (var TaxiNode in TaxiNodes)
             {
                 if (TaxiNode.Value.MapID == map)
                 {
-                    float tmp = WorldServiceLocator._WS_Combat.GetDistance(x, TaxiNode.Value.x, y, TaxiNode.Value.y);
-                    float minDistance = 1E+08f;
+                    var tmp = WorldServiceLocator._WS_Combat.GetDistance(x, TaxiNode.Value.x, y, TaxiNode.Value.y);
+                    var minDistance = 1E+08f;
                     if (tmp < minDistance)
                     {
                         minDistance = tmp;
@@ -611,7 +611,7 @@ namespace Mangos.World.DataStores
 
         public TSpellShapeshiftForm FindShapeshiftForm(int ID)
         {
-            foreach (TSpellShapeshiftForm Form in SpellShapeShiftForm)
+            foreach (var Form in SpellShapeShiftForm)
             {
                 if (Form.ID == ID)
                 {
@@ -635,9 +635,9 @@ namespace Mangos.World.DataStores
                         enumerator = result.Rows.GetEnumerator();
                         while (enumerator.MoveNext())
                         {
-                            DataRow row = (DataRow)enumerator.Current;
-                            int dbLvl = row.As<int>("lvl");
-                            long dbXp = row.As<long>("xp_for_next_level");
+                            var row = (DataRow)enumerator.Current;
+                            var dbLvl = row.As<int>("lvl");
+                            var dbXp = row.As<long>("xp_for_next_level");
                             WorldServiceLocator._WS_Player_Initializator.XPTable[dbLvl] = checked((int)dbXp);
                         }
                     }
@@ -661,7 +661,7 @@ namespace Mangos.World.DataStores
 
         public void InitializeBattlemasters()
         {
-            DataTable MySQLQuery = new DataTable();
+            var MySQLQuery = new DataTable();
             WorldServiceLocator._WorldServer.WorldDatabase.Query("SELECT * FROM battlemaster_entry", ref MySQLQuery);
             IEnumerator enumerator = default;
             try
@@ -669,7 +669,7 @@ namespace Mangos.World.DataStores
                 enumerator = MySQLQuery.Rows.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    DataRow row = (DataRow)enumerator.Current;
+                    var row = (DataRow)enumerator.Current;
                     Battlemasters.Add(row.As<int>("entry"), row.As<byte>("bg_template"));
                 }
             }
@@ -685,7 +685,7 @@ namespace Mangos.World.DataStores
 
         public void InitializeBattlegrounds()
         {
-            DataTable mySqlQuery = new DataTable();
+            var mySqlQuery = new DataTable();
             WorldServiceLocator._WorldServer.WorldDatabase.Query("SELECT * FROM battleground_template", ref mySqlQuery);
             IEnumerator enumerator = default;
             try
@@ -693,8 +693,8 @@ namespace Mangos.World.DataStores
                 enumerator = mySqlQuery.Rows.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    DataRow row = (DataRow)enumerator.Current;
-                    byte entry = row.As<byte>("id");
+                    var row = (DataRow)enumerator.Current;
+                    var entry = row.As<byte>("id");
                     Battlegrounds.Add(entry, new TBattleground());
                     Battlegrounds[entry].MinPlayersPerTeam = row.As<byte>("MinPlayersPerTeam");
                     Battlegrounds[entry].MaxPlayersPerTeam = row.As<byte>("MaxPlayersPerTeam");
@@ -718,7 +718,7 @@ namespace Mangos.World.DataStores
 
         public void InitializeTeleportCoords()
         {
-            DataTable MySQLQuery = new DataTable();
+            var MySQLQuery = new DataTable();
             WorldServiceLocator._WorldServer.WorldDatabase.Query("SELECT * FROM spells_teleport_coords", ref MySQLQuery);
             IEnumerator enumerator = default;
             try
@@ -726,8 +726,8 @@ namespace Mangos.World.DataStores
                 enumerator = MySQLQuery.Rows.GetEnumerator();
                 while (enumerator.MoveNext())
                 {
-                    DataRow row = (DataRow)enumerator.Current;
-                    int SpellID = row.As<int>("id");
+                    var row = (DataRow)enumerator.Current;
+                    var SpellID = row.As<int>("id");
                     TeleportCoords.Add(SpellID, new TTeleportCoords());
                     TeleportCoords[SpellID].Name = row.As<string>("name");
                     TeleportCoords[SpellID].MapID = row.As<uint>("mapId");
@@ -759,7 +759,7 @@ namespace Mangos.World.DataStores
                 WorldServiceLocator._WS_TimerBasedEvents.CharacterSaver = new WS_TimerBasedEvents.TCharacterSaver();
                 WorldServiceLocator._WS_TimerBasedEvents.WeatherChanger = new WS_TimerBasedEvents.TWeatherChanger();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.INFORMATION, "World: Loading Maps and Spawns....");
-                DataTable MySQLQuery = new DataTable();
+                var MySQLQuery = new DataTable();
                 try
                 {
                     WorldServiceLocator._WorldServer.CharacterDatabase.Query("SELECT MAX(item_guid) FROM characters_inventory;", ref MySQLQuery);
@@ -775,7 +775,7 @@ namespace Mangos.World.DataStores
                 catch (Exception ex5)
                 {
                     ProjectData.SetProjectError(ex5);
-                    Exception ex4 = ex5;
+                    var ex4 = ex5;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "World: Failed loading characters_inventory....");
                     ProjectData.ClearProjectError();
                 }
@@ -795,7 +795,7 @@ namespace Mangos.World.DataStores
                 catch (Exception ex6)
                 {
                     ProjectData.SetProjectError(ex6);
-                    Exception ex3 = ex6;
+                    var ex3 = ex6;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "World: Failed loading creatures....");
                     ProjectData.ClearProjectError();
                 }
@@ -815,7 +815,7 @@ namespace Mangos.World.DataStores
                 catch (Exception ex7)
                 {
                     ProjectData.SetProjectError(ex7);
-                    Exception ex2 = ex7;
+                    var ex2 = ex7;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "World: Failed loading gameobjects....");
                     ProjectData.ClearProjectError();
                 }
@@ -835,7 +835,7 @@ namespace Mangos.World.DataStores
                 catch (Exception ex8)
                 {
                     ProjectData.SetProjectError(ex8);
-                    Exception ex = ex8;
+                    var ex = ex8;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "World: Failed loading corpse....");
                     ProjectData.ClearProjectError();
                 }
@@ -843,7 +843,7 @@ namespace Mangos.World.DataStores
             catch (Exception ex9)
             {
                 ProjectData.SetProjectError(ex9);
-                Exception e = ex9;
+                var e = ex9;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Internal database initialization failed! [{0}]{1}{2}", e.Message, Environment.NewLine, e.ToString());
                 ProjectData.ClearProjectError();
             }

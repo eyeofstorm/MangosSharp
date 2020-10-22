@@ -52,7 +52,7 @@ namespace Mangos.World.Server
                     return;
                 }
                 WeatherWorking = true;
-                foreach (KeyValuePair<int, WS_Weather.WeatherZone> weatherZone in WorldServiceLocator._WS_Weather.WeatherZones)
+                foreach (var weatherZone in WorldServiceLocator._WS_Weather.WeatherZones)
                 {
                     weatherZone.Value.Update();
                 }

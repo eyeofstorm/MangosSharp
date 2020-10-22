@@ -56,15 +56,15 @@ namespace Mangos.World.ReaderWriterLock
                 _ => s
             };
 
-            string path = $"ReaderWriterLock_Debug_{ID}_{DateAndTime.Now.Ticks}.log";
+            var path = $"ReaderWriterLock_Debug_{ID}_{DateAndTime.Now.Ticks}.log";
             file = new FileStream(path, FileMode.Create);
             writer = new StreamWriter(file);
             @lock = new System.Threading.ReaderWriterLock();
-            StackTrace st = new StackTrace();
+            var st = new StackTrace();
             WriteLine($"NewLock {ID} from:");
-            StackFrame[] sf = st.GetFrames();
-            StackFrame[] array = sf;
-            foreach (StackFrame frame in array)
+            var sf = st.GetFrames();
+            var array = sf;
+            foreach (var frame in array)
             {
                 WriteLine($"\t{frame.GetMethod()!.Name}");
             }
@@ -78,11 +78,11 @@ namespace Mangos.World.ReaderWriterLock
 
         public void AcquireReaderLock(int t)
         {
-            StackTrace st = new StackTrace();
+            var st = new StackTrace();
             WriteLine($"AcquireReaderLock {ID} from:");
-            StackFrame[] sf = st.GetFrames();
-            StackFrame[] array = sf;
-            foreach (StackFrame frame in array)
+            var sf = st.GetFrames();
+            var array = sf;
+            foreach (var frame in array)
             {
                 WriteLine($"\t{frame.GetMethod()!.Name}");
             }
@@ -94,11 +94,11 @@ namespace Mangos.World.ReaderWriterLock
             try
             {
                 @lock.ReleaseReaderLock();
-                StackTrace st = new StackTrace();
+                var st = new StackTrace();
                 WriteLine($"ReleaseReaderLock {ID} from:");
-                StackFrame[] sf = st.GetFrames();
-                StackFrame[] array = sf;
-                foreach (StackFrame frame in array)
+                var sf = st.GetFrames();
+                var array = sf;
+                foreach (var frame in array)
                 {
                     WriteLine($"\t{ frame.GetMethod()!.Name}");
                 }
@@ -114,9 +114,9 @@ namespace Mangos.World.ReaderWriterLock
         public void AcquireWriterLock(int t)
         {
             WriteLine($"AcquireWriterLock {ID} from:");
-            StackTrace st = new StackTrace();
-            StackFrame[] sf = st.GetFrames();
-            foreach (StackFrame frame in sf)
+            var st = new StackTrace();
+            var sf = st.GetFrames();
+            foreach (var frame in sf)
             {
                 WriteLine($"\t{ frame.GetMethod()!.Name}");
             }
@@ -129,9 +129,9 @@ namespace Mangos.World.ReaderWriterLock
             {
                 @lock.ReleaseWriterLock();
                 WriteLine("ReleaseWriterLock " + ID + " from:");
-                StackFrame[] sf = new StackTrace().GetFrames();
-                StackFrame[] array = sf;
-                foreach (StackFrame frame in array)
+                var sf = new StackTrace().GetFrames();
+                var array = sf;
+                foreach (var frame in array)
                 {
                     WriteLine("\t" + frame.GetMethod()!.Name);
                 }
@@ -165,10 +165,10 @@ namespace Mangos.World.ReaderWriterLock
         {
             while (true)
             {
-                int i = 0;
+                var i = 0;
                 while (WriteQueue.Count > 0)
                 {
-                    string str = "";
+                    var str = "";
                     lock (WriteQueue)
                     {
                         str = WriteQueue.Dequeue();

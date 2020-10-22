@@ -34,7 +34,7 @@ namespace Mangos.World.Handlers
     {
         private void SendActivateTaxiReply(ref WS_Network.ClientClass client, ActivateTaxiReplies reply)
         {
-            Packets.PacketClass taxiFailed = new Packets.PacketClass(Opcodes.SMSG_ACTIVATETAXIREPLY);
+            var taxiFailed = new Packets.PacketClass(Opcodes.SMSG_ACTIVATETAXIREPLY);
             try
             {
                 taxiFailed.AddInt32((int)reply);
@@ -52,8 +52,8 @@ namespace Mangos.World.Handlers
             {
                 return;
             }
-            int currentTaxi = WorldServiceLocator._WS_DBCDatabase.GetNearestTaxi(WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].positionX, WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].positionY, checked((int)WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].MapID));
-            Packets.PacketClass SMSG_TAXINODE_STATUS = new Packets.PacketClass(Opcodes.SMSG_TAXINODE_STATUS);
+            var currentTaxi = WorldServiceLocator._WS_DBCDatabase.GetNearestTaxi(WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].positionX, WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].positionY, checked((int)WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].MapID));
+            var SMSG_TAXINODE_STATUS = new Packets.PacketClass(Opcodes.SMSG_TAXINODE_STATUS);
             try
             {
                 SMSG_TAXINODE_STATUS.AddUInt64(cGuid);
@@ -79,11 +79,11 @@ namespace Mangos.World.Handlers
             {
                 return;
             }
-            int currentTaxi = WorldServiceLocator._WS_DBCDatabase.GetNearestTaxi(WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].positionX, WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].positionY, checked((int)WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].MapID));
+            var currentTaxi = WorldServiceLocator._WS_DBCDatabase.GetNearestTaxi(WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].positionX, WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].positionY, checked((int)WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGuid].MapID));
             if (!objCharacter.TaxiZones[currentTaxi])
             {
                 objCharacter.TaxiZones.Set(currentTaxi, value: true);
-                Packets.PacketClass SMSG_NEW_TAXI_PATH = new Packets.PacketClass(Opcodes.SMSG_NEW_TAXI_PATH);
+                var SMSG_NEW_TAXI_PATH = new Packets.PacketClass(Opcodes.SMSG_NEW_TAXI_PATH);
                 try
                 {
                     objCharacter.client.Send(ref SMSG_NEW_TAXI_PATH);
@@ -92,7 +92,7 @@ namespace Mangos.World.Handlers
                 {
                     SMSG_NEW_TAXI_PATH.Dispose();
                 }
-                Packets.PacketClass SMSG_TAXINODE_STATUS = new Packets.PacketClass(Opcodes.SMSG_TAXINODE_STATUS);
+                var SMSG_TAXINODE_STATUS = new Packets.PacketClass(Opcodes.SMSG_TAXINODE_STATUS);
                 try
                 {
                     SMSG_TAXINODE_STATUS.AddUInt64(cGuid);
@@ -106,7 +106,7 @@ namespace Mangos.World.Handlers
             }
             else
             {
-                Packets.PacketClass SMSG_SHOWTAXINODES = new Packets.PacketClass(Opcodes.SMSG_SHOWTAXINODES);
+                var SMSG_SHOWTAXINODES = new Packets.PacketClass(Opcodes.SMSG_SHOWTAXINODES);
                 try
                 {
                     SMSG_SHOWTAXINODES.AddInt32(1);
@@ -127,7 +127,7 @@ namespace Mangos.World.Handlers
             if (checked(packet.Data.Length - 1) >= 13)
             {
                 packet.GetInt16();
-                ulong guid = packet.GetUInt64();
+                var guid = packet.GetUInt64();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_TAXINODE_STATUS_QUERY [taxiGUID={2:X}]", client.IP, client.Port, guid);
                 if (WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(guid))
                 {
@@ -141,7 +141,7 @@ namespace Mangos.World.Handlers
             if (checked(packet.Data.Length - 1) >= 13)
             {
                 packet.GetInt16();
-                ulong guid = packet.GetUInt64();
+                var guid = packet.GetUInt64();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_TAXIQUERYAVAILABLENODES [taxiGUID={2:X}]", client.IP, client.Port, guid);
                 if (WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(guid) && ((uint)WorldServiceLocator._WorldServer.WORLD_CREATUREs[guid].CreatureInfo.cNpcFlags & 8u) != 0)
                 {
@@ -157,9 +157,9 @@ namespace Mangos.World.Handlers
                 return;
             }
             packet.GetInt16();
-            ulong guid = packet.GetUInt64();
-            int srcNode = packet.GetInt32();
-            int dstNode = packet.GetInt32();
+            var guid = packet.GetUInt64();
+            var srcNode = packet.GetInt32();
+            var dstNode = packet.GetInt32();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_ACTIVATETAXI [taxiGUID={2:X} srcNode={3} dstNode={4}]", client.IP, client.Port, guid, srcNode, dstNode);
             if (!WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(guid) || (WorldServiceLocator._WorldServer.WORLD_CREATUREs[guid].CreatureInfo.cNpcFlags & 8) == 0)
             {
@@ -196,7 +196,7 @@ namespace Mangos.World.Handlers
             {
                 if (!WorldServiceLocator._WorldServer.CREATURESDatabase.ContainsKey(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].HordeMount))
                 {
-                    CreatureInfo tmpCr2 = new CreatureInfo(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].HordeMount);
+                    var tmpCr2 = new CreatureInfo(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].HordeMount);
                     mount = tmpCr2.GetFirstModel;
                 }
                 else
@@ -206,7 +206,7 @@ namespace Mangos.World.Handlers
             }
             else if (!WorldServiceLocator._WorldServer.CREATURESDatabase.ContainsKey(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].AllianceMount))
             {
-                CreatureInfo tmpCr = new CreatureInfo(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].AllianceMount);
+                var tmpCr = new CreatureInfo(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].AllianceMount);
                 mount = tmpCr.GetFirstModel;
             }
             else
@@ -218,11 +218,11 @@ namespace Mangos.World.Handlers
                 SendActivateTaxiReply(ref client, ActivateTaxiReplies.ERR_TAXIUNSPECIFIEDSERVERERROR);
                 return;
             }
-            float discountMod = client.Character.GetDiscountMod(WorldServiceLocator._WorldServer.WORLD_CREATUREs[guid].Faction);
+            var discountMod = client.Character.GetDiscountMod(WorldServiceLocator._WorldServer.WORLD_CREATUREs[guid].Faction);
             checked
             {
                 int totalCost = default;
-                foreach (KeyValuePair<int, WS_DBCDatabase.TTaxiPath> taxiPath in WorldServiceLocator._WS_DBCDatabase.TaxiPaths)
+                foreach (var taxiPath in WorldServiceLocator._WS_DBCDatabase.TaxiPaths)
                 {
                     if (taxiPath.Value.TFrom == srcNode && taxiPath.Value.TTo == dstNode)
                     {
@@ -235,7 +235,7 @@ namespace Mangos.World.Handlers
                     SendActivateTaxiReply(ref client, ActivateTaxiReplies.ERR_TAXINOTENOUGHMONEY);
                     return;
                 }
-                ref uint copper = ref client.Character.Copper;
+                ref var copper = ref client.Character.Copper;
                 copper = (uint)(copper - totalCost);
                 client.Character.TaxiNodes.Clear();
                 client.Character.TaxiNodes.Enqueue(srcNode);
@@ -257,9 +257,9 @@ namespace Mangos.World.Handlers
                 packet.GetInt16();
                 try
                 {
-                    ulong guid = packet.GetUInt64();
-                    int totalCost = packet.GetInt32();
-                    int nodeCount = packet.GetInt32();
+                    var guid = packet.GetUInt64();
+                    var totalCost = packet.GetInt32();
+                    var nodeCount = packet.GetInt32();
                     if (nodeCount <= 0 || packet.Data.Length - 1 < 21 + 4 * nodeCount)
                     {
                         return;
@@ -305,14 +305,14 @@ namespace Mangos.World.Handlers
                         }
                         nodes = new List<int>();
                     }
-                    int num = nodeCount - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = nodeCount - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         nodes.Add(packet.GetInt32());
                     }
-                    int srcNode = nodes[0];
-                    int dstNode = nodes[1];
-                    foreach (int node2 in client.Character.TaxiNodes)
+                    var srcNode = nodes[0];
+                    var dstNode = nodes[1];
+                    foreach (var node2 in client.Character.TaxiNodes)
                     {
                         if (!WorldServiceLocator._WS_DBCDatabase.TaxiNodes.ContainsKey(node2))
                         {
@@ -325,7 +325,7 @@ namespace Mangos.World.Handlers
                     {
                         if (!WorldServiceLocator._WorldServer.CREATURESDatabase.ContainsKey(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].HordeMount))
                         {
-                            CreatureInfo tmpCr2 = new CreatureInfo(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].HordeMount);
+                            var tmpCr2 = new CreatureInfo(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].HordeMount);
                             mount = tmpCr2.GetFirstModel;
                         }
                         else
@@ -335,7 +335,7 @@ namespace Mangos.World.Handlers
                     }
                     else if (!WorldServiceLocator._WorldServer.CREATURESDatabase.ContainsKey(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].AllianceMount))
                     {
-                        CreatureInfo tmpCr = new CreatureInfo(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].AllianceMount);
+                        var tmpCr = new CreatureInfo(WorldServiceLocator._WS_DBCDatabase.TaxiNodes[srcNode].AllianceMount);
                         mount = tmpCr.GetFirstModel;
                     }
                     else
@@ -347,9 +347,9 @@ namespace Mangos.World.Handlers
                         SendActivateTaxiReply(ref client, ActivateTaxiReplies.ERR_TAXIUNSPECIFIEDSERVERERROR);
                         return;
                     }
-                    float discountMod = client.Character.GetDiscountMod(WorldServiceLocator._WorldServer.WORLD_CREATUREs[guid].Faction);
+                    var discountMod = client.Character.GetDiscountMod(WorldServiceLocator._WorldServer.WORLD_CREATUREs[guid].Faction);
                     totalCost = 0;
-                    foreach (KeyValuePair<int, WS_DBCDatabase.TTaxiPath> taxiPath in WorldServiceLocator._WS_DBCDatabase.TaxiPaths)
+                    foreach (var taxiPath in WorldServiceLocator._WS_DBCDatabase.TaxiPaths)
                     {
                         if (taxiPath.Value.TFrom == srcNode && taxiPath.Value.TTo == dstNode)
                         {
@@ -362,10 +362,10 @@ namespace Mangos.World.Handlers
                         SendActivateTaxiReply(ref client, ActivateTaxiReplies.ERR_TAXINOTENOUGHMONEY);
                         return;
                     }
-                    ref uint copper = ref client.Character.Copper;
+                    ref var copper = ref client.Character.Copper;
                     copper = (uint)(copper - totalCost);
                     client.Character.TaxiNodes.Clear();
-                    foreach (int node in nodes)
+                    foreach (var node in nodes)
                     {
                         client.Character.TaxiNodes.Enqueue(node);
                     }
@@ -376,7 +376,7 @@ namespace Mangos.World.Handlers
                 catch (Exception ex)
                 {
                     ProjectData.SetProjectError(ex);
-                    Exception e = ex;
+                    var e = ex;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error when taking a long taxi.{0}", Environment.NewLine + e);
                     ProjectData.ClearProjectError();
                 }
@@ -412,19 +412,19 @@ namespace Mangos.World.Handlers
 
         private void TaxiMove(WS_PlayerData.CharacterObject character, float discountMod)
         {
-            bool flagFirstNode = true;
-            List<int> waypointPaths = new List<int>();
-            Dictionary<int, WS_DBCDatabase.TTaxiPathNode> waypointNodes = new Dictionary<int, WS_DBCDatabase.TTaxiPathNode>();
+            var flagFirstNode = true;
+            var waypointPaths = new List<int>();
+            var waypointNodes = new Dictionary<int, WS_DBCDatabase.TTaxiPathNode>();
             checked
             {
                 try
                 {
-                    int dstNode = character.TaxiNodes.Dequeue();
+                    var dstNode = character.TaxiNodes.Dequeue();
                     while (character.TaxiNodes.Count > 0)
                     {
-                        int srcNode = dstNode;
+                        var srcNode = dstNode;
                         dstNode = character.TaxiNodes.Dequeue();
-                        foreach (KeyValuePair<int, WS_DBCDatabase.TTaxiPath> taxiPath in WorldServiceLocator._WS_DBCDatabase.TaxiPaths)
+                        foreach (var taxiPath in WorldServiceLocator._WS_DBCDatabase.TaxiPaths)
                         {
                             if (taxiPath.Value.TFrom == srcNode && taxiPath.Value.TTo == dstNode)
                             {
@@ -433,7 +433,7 @@ namespace Mangos.World.Handlers
                             }
                         }
                     }
-                    foreach (int path in waypointPaths)
+                    foreach (var path in waypointPaths)
                     {
                         if (flagFirstNode)
                         {
@@ -441,23 +441,23 @@ namespace Mangos.World.Handlers
                         }
                         else
                         {
-                            int price = (int)Math.Round(WorldServiceLocator._WS_DBCDatabase.TaxiPaths[path].Price * discountMod);
+                            var price = (int)Math.Round(WorldServiceLocator._WS_DBCDatabase.TaxiPaths[path].Price * discountMod);
                             if (character.Copper < price)
                             {
                                 break;
                             }
-                            ref uint copper = ref character.Copper;
+                            ref var copper = ref character.Copper;
                             copper = (uint)(copper - price);
                             character.SetUpdateFlag(1176, character.Copper);
                             character.SendCharacterUpdate(toNear: false);
                             Console.WriteLine("Paying {0}", price);
                         }
-                        float lastX = character.positionX;
-                        float lastY = character.positionY;
-                        float lastZ = character.positionZ;
-                        float totalDistance = 0f;
+                        var lastX = character.positionX;
+                        var lastY = character.positionY;
+                        var lastZ = character.positionZ;
+                        var totalDistance = 0f;
                         waypointNodes.Clear();
-                        foreach (KeyValuePair<int, WS_DBCDatabase.TTaxiPathNode> taxiPathNode in WorldServiceLocator._WS_DBCDatabase.TaxiPathNodes[path])
+                        foreach (var taxiPathNode in WorldServiceLocator._WS_DBCDatabase.TaxiPathNodes[path])
                         {
                             waypointNodes.Add(taxiPathNode.Value.Seq, taxiPathNode.Value);
                             totalDistance += WorldServiceLocator._WS_Combat.GetDistance(lastX, taxiPathNode.Value.x, lastY, taxiPathNode.Value.y, lastZ, taxiPathNode.Value.z);
@@ -468,7 +468,7 @@ namespace Mangos.World.Handlers
                         lastX = character.positionX;
                         lastY = character.positionY;
                         lastZ = character.positionZ;
-                        Packets.PacketClass SMSG_MONSTER_MOVE = new Packets.PacketClass(Opcodes.SMSG_MONSTER_MOVE);
+                        var SMSG_MONSTER_MOVE = new Packets.PacketClass(Opcodes.SMSG_MONSTER_MOVE);
                         try
                         {
                             SMSG_MONSTER_MOVE.AddPackGUID(character.GUID);
@@ -480,8 +480,8 @@ namespace Mangos.World.Handlers
                             SMSG_MONSTER_MOVE.AddInt32(768);
                             SMSG_MONSTER_MOVE.AddInt32((int)(totalDistance / WorldServiceLocator._Global_Constants.UNIT_NORMAL_TAXI_SPEED * 1000f));
                             SMSG_MONSTER_MOVE.AddInt32(waypointNodes.Count);
-                            int num = waypointNodes.Count - 1;
-                            for (int k = 0; k <= num; k++)
+                            var num = waypointNodes.Count - 1;
+                            for (var k = 0; k <= num; k++)
                             {
                                 SMSG_MONSTER_MOVE.AddSingle(waypointNodes[k].x);
                                 SMSG_MONSTER_MOVE.AddSingle(waypointNodes[k].y);
@@ -493,14 +493,14 @@ namespace Mangos.World.Handlers
                         {
                             SMSG_MONSTER_MOVE.Dispose();
                         }
-                        int num2 = waypointNodes.Count - 1;
-                        for (int i = 0; i <= num2; i++)
+                        var num2 = waypointNodes.Count - 1;
+                        for (var i = 0; i <= num2; i++)
                         {
-                            float moveDistance = WorldServiceLocator._WS_Combat.GetDistance(lastX, waypointNodes[i].x, lastY, waypointNodes[i].y, lastZ, waypointNodes[i].z);
+                            var moveDistance = WorldServiceLocator._WS_Combat.GetDistance(lastX, waypointNodes[i].x, lastY, waypointNodes[i].y, lastZ, waypointNodes[i].z);
                             lastX = waypointNodes[i].x;
                             lastY = waypointNodes[i].y;
                             lastZ = waypointNodes[i].z;
-                            Packets.PacketClass p = new Packets.PacketClass(Opcodes.SMSG_MONSTER_MOVE);
+                            var p = new Packets.PacketClass(Opcodes.SMSG_MONSTER_MOVE);
                             try
                             {
                                 p.AddPackGUID(character.GUID);
@@ -512,9 +512,9 @@ namespace Mangos.World.Handlers
                                 p.AddInt32(768);
                                 p.AddInt32((int)(totalDistance / WorldServiceLocator._Global_Constants.UNIT_NORMAL_TAXI_SPEED * 1000f));
                                 p.AddInt32(waypointNodes.Count);
-                                int num3 = i;
-                                int num4 = waypointNodes.Count - 1;
-                                for (int j = num3; j <= num4; j++)
+                                var num3 = i;
+                                var num4 = waypointNodes.Count - 1;
+                                for (var j = num3; j <= num4; j++)
                                 {
                                     p.AddSingle(waypointNodes[j].x);
                                     p.AddSingle(waypointNodes[j].y);
@@ -539,7 +539,7 @@ namespace Mangos.World.Handlers
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Error on flight: {0}", ex.ToString());
                     ProjectData.ClearProjectError();
                 }

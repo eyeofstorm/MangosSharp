@@ -62,7 +62,7 @@ namespace Mangos.World.AntiCheat
             if (posX != positionX && posY != positionY && posZ != positionZ)
             {
                 TotalOffset = GetTotalOffset(cTime, sTime);
-                float Distance = PlayerMoveDistance(posX, positionX, posY, positionY, posZ, positionZ);
+                var Distance = PlayerMoveDistance(posX, positionX, posY, positionY, posZ, positionZ);
                 if (TotalOffset >= 235 && TotalOffset < 35000)
                 {
                     LastMessage = $"Time Hack | Offset: {TotalOffset}";
@@ -70,7 +70,7 @@ namespace Mangos.World.AntiCheat
                 }
                 else if (Distance >= RunSpeed)
                 {
-                    float Estimate = (float)(Distance * 1.54);
+                    var Estimate = (float)(Distance * 1.54);
                     LastMessage = $"Memory Hack | Distance: {Distance} Estimated Speed: {Estimate}";
                     LastViolation = ViolationType.AC_VIOLATION_SPEEDHACK_MEM;
                 }

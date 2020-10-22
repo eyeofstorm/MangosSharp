@@ -62,8 +62,8 @@ namespace Mangos.World.Loots
                 }
                 checked
                 {
-                    int num = Items.Count - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = Items.Count - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         if (!Items[i].Roll())
                         {
@@ -71,11 +71,11 @@ namespace Mangos.World.Loots
                         }
                         if (Items[i].MinCountOrRef < 0)
                         {
-                            LootTemplate Referenced = WorldServiceLocator._WS_Loot.LootTemplates_Reference.GetLoot(-Items[i].MinCountOrRef);
+                            var Referenced = WorldServiceLocator._WS_Loot.LootTemplates_Reference.GetLoot(-Items[i].MinCountOrRef);
                             if (Referenced != null)
                             {
                                 int maxCount = Items[i].MaxCount;
-                                for (int j = 1; j <= maxCount; j++)
+                                for (var j = 1; j <= maxCount; j++)
                                 {
                                     Referenced.Process(ref Loot, Items[i].Group);
                                 }
@@ -83,16 +83,16 @@ namespace Mangos.World.Loots
                         }
                         else
                         {
-                            List<LootItem> items = Loot.Items;
+                            var items = Loot.Items;
                             List<LootStoreItem> items2;
                             int index;
-                            LootStoreItem Item = (items2 = Items)[index = i];
-                            LootItem item = new LootItem(ref Item);
+                            var Item = (items2 = Items)[index = i];
+                            var item = new LootItem(ref Item);
                             items2[index] = Item;
                             items.Add(item);
                         }
                     }
-                    foreach (KeyValuePair<byte, LootGroup> group in Groups)
+                    foreach (var group in Groups)
                     {
                         group.Value.Process(ref Loot);
                     }

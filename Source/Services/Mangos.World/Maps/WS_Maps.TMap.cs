@@ -93,10 +93,10 @@ namespace Mangos.World.Maps
                         return;
                     }
                     WorldServiceLocator._WS_Maps.Maps.Add((uint)Map, this);
-                    int x = 0;
+                    var x = 0;
                     do
                     {
-                        int y = 0;
+                        var y = 0;
                         do
                         {
                             TileUsed[x, y] = false;
@@ -108,10 +108,10 @@ namespace Mangos.World.Maps
                     while (x <= 63);
                     try
                     {
-                        int num = mapDataStore.Rows - 1;
-                        for (int i = 0; i <= num; i++)
+                        var num = mapDataStore.Rows - 1;
+                        for (var i = 0; i <= num; i++)
                         {
-                            int tmpMap = mapDataStore.ReadInt(i, 0);
+                            var tmpMap = mapDataStore.ReadInt(i, 0);
                             if (tmpMap == Map)
                             {
                                 ID = Map;
@@ -139,10 +139,10 @@ namespace Mangos.World.Maps
                 {
                     if (!_disposedValue)
                     {
-                        int i = 0;
+                        var i = 0;
                         do
                         {
-                            int j = 0;
+                            var j = 0;
                             do
                             {
                                 if (Tiles[i, j] != null)

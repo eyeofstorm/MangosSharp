@@ -50,12 +50,12 @@ namespace Mangos.World.Server
                 {
                     return;
                 }
-                int StartTime = WorldServiceLocator._NativeMethods.timeGetTime("");
+                var StartTime = WorldServiceLocator._NativeMethods.timeGetTime("");
                 AIManagerWorking = true;
                 try
                 {
                     WorldServiceLocator._WorldServer.WORLD_TRANSPORTs_Lock.AcquireReaderLock(WorldServiceLocator._Global_Constants.DEFAULT_LOCK_TIMEOUT);
-                    foreach (KeyValuePair<ulong, WS_Transports.TransportObject> wORLD_TRANSPORT in WorldServiceLocator._WorldServer.WORLD_TRANSPORTs)
+                    foreach (var wORLD_TRANSPORT in WorldServiceLocator._WorldServer.WORLD_TRANSPORTs)
                     {
                         wORLD_TRANSPORT.Value.Update();
                     }
@@ -63,7 +63,7 @@ namespace Mangos.World.Server
                 catch (Exception ex5)
                 {
                     ProjectData.SetProjectError(ex5);
-                    Exception ex4 = ex5;
+                    var ex4 = ex5;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error updating transports.{0}{1}", Environment.NewLine, ex4.ToString());
                     ProjectData.ClearProjectError();
                 }
@@ -79,7 +79,7 @@ namespace Mangos.World.Server
                         try
                         {
                             long num = WorldServiceLocator._WorldServer.WORLD_CREATUREsKeys.Count - 1;
-                            for (long i = 0L; i <= num; i++)
+                            for (var i = 0L; i <= num; i++)
                             {
                                 if (WorldServiceLocator._WorldServer.WORLD_CREATUREs[Conversions.ToULong(WorldServiceLocator._WorldServer.WORLD_CREATUREsKeys[(int)i])] != null && WorldServiceLocator._WorldServer.WORLD_CREATUREs[Conversions.ToULong(WorldServiceLocator._WorldServer.WORLD_CREATUREsKeys[(int)i])].aiScript != null)
                                 {
@@ -90,7 +90,7 @@ namespace Mangos.World.Server
                         catch (Exception ex6)
                         {
                             ProjectData.SetProjectError(ex6);
-                            Exception ex3 = ex6;
+                            var ex3 = ex6;
                             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error updating AI.{0}{1}", Environment.NewLine, ex3.ToString());
                             ProjectData.ClearProjectError();
                         }
@@ -102,14 +102,14 @@ namespace Mangos.World.Server
                     catch (ApplicationException ex7)
                     {
                         ProjectData.SetProjectError(ex7);
-                        ApplicationException ex2 = ex7;
+                        var ex2 = ex7;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "Update: AI Manager timed out");
                         ProjectData.ClearProjectError();
                     }
                     catch (Exception ex8)
                     {
                         ProjectData.SetProjectError(ex8);
-                        Exception ex = ex8;
+                        var ex = ex8;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error updating AI.{0}{1}", Environment.NewLine, ex.ToString());
                         ProjectData.ClearProjectError();
                     }

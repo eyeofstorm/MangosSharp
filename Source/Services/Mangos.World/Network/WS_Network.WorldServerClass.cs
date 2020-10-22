@@ -104,7 +104,7 @@ namespace Mangos.World.Network
                 LastCPUTime = 0.0;
                 UsageCPU = 0f;
                 Cluster = null;
-                WorldServerConfiguration configuration = WorldServiceLocator._ConfigurationProvider.GetConfiguration();
+                var configuration = WorldServiceLocator._ConfigurationProvider.GetConfiguration();
                 m_RemoteURI = $"http://{configuration.ClusterConnectHost}:{configuration.ClusterConnectPort}";
                 LocalURI = $"http://{configuration.LocalConnectHost}:{configuration.LocalConnectPort}";
                 Cluster = null;
@@ -147,7 +147,7 @@ namespace Mangos.World.Network
                         Cluster = ProxyClient.Create<ICluster>(m_RemoteURI);
                         if (!Information.IsNothing(Cluster))
                         {
-                            WorldServerConfiguration configuration = WorldServiceLocator._ConfigurationProvider.GetConfiguration();
+                            var configuration = WorldServiceLocator._ConfigurationProvider.GetConfiguration();
                             if (Cluster.Connect(LocalURI, configuration.Maps.Select(_Closure_0024__._0024I13_002D0 ??= x => Conversions.ToUInteger(x)).ToList()))
                             {
                                 break;
@@ -158,7 +158,7 @@ namespace Mangos.World.Network
                     catch (Exception ex)
                     {
                         ProjectData.SetProjectError(ex);
-                        Exception e = ex;
+                        var e = ex;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Unable to connect to cluster. [{0}]", e.Message);
                         ProjectData.ClearProjectError();
                     }
@@ -205,7 +205,7 @@ namespace Mangos.World.Network
                 {
                     throw new ApplicationException("Client doesn't exist!");
                 }
-                ClientClass objCharacter = new ClientClass(client);
+                var objCharacter = new ClientClass(client);
                 if (WorldServiceLocator._WorldServer.CLIENTs.ContainsKey(id))
                 {
                     WorldServiceLocator._WorldServer.CLIENTs.Remove(id);
@@ -241,8 +241,8 @@ namespace Mangos.World.Network
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.NETWORK, "[{0:000000}] Client login [0x{1:X}]", id, guid);
                 try
                 {
-                    ClientClass client = WorldServiceLocator._WorldServer.CLIENTs[id];
-                    WS_PlayerData.CharacterObject Character = new WS_PlayerData.CharacterObject(ref client, guid);
+                    var client = WorldServiceLocator._WorldServer.CLIENTs[id];
+                    var Character = new WS_PlayerData.CharacterObject(ref client, guid);
                     WorldServiceLocator._WorldServer.CHARACTERs_Lock.AcquireWriterLock(WorldServiceLocator._Global_Constants.DEFAULT_LOCK_TIMEOUT);
                     WorldServiceLocator._WorldServer.CHARACTERs[guid] = Character;
                     WorldServiceLocator._WorldServer.CHARACTERs_Lock.ReleaseWriterLock();
@@ -254,7 +254,7 @@ namespace Mangos.World.Network
                 catch (Exception ex)
                 {
                     ProjectData.SetProjectError(ex);
-                    Exception e = ex;
+                    var e = ex;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Error on login: {0}", e.ToString());
                     ProjectData.ClearProjectError();
                 }
@@ -287,9 +287,9 @@ namespace Mangos.World.Network
                 
                 try
                 {
-                    if(WorldServiceLocator._WorldServer.CLIENTs.TryGetValue(id, out ClientClass _client))
+                    if(WorldServiceLocator._WorldServer.CLIENTs.TryGetValue(id, out var _client))
                     {
-                        Packets.PacketClass p = new Packets.PacketClass(ref data);
+                        var p = new Packets.PacketClass(ref data);
                         _client?.PushPacket(p);
                     }
                     else
@@ -298,7 +298,7 @@ namespace Mangos.World.Network
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Error on Client OnPacket: {0}", ex.ToString());
                     ProjectData.ClearProjectError();
                 }
@@ -374,7 +374,7 @@ namespace Mangos.World.Network
 
             public void CheckCPU(object State)
             {
-                TimeSpan TimeSinceLastCheck = DateAndTime.Now.Subtract(LastInfo);
+                var TimeSinceLastCheck = DateAndTime.Now.Subtract(LastInfo);
                 UsageCPU = (float)((Process.GetCurrentProcess().TotalProcessorTime.TotalMilliseconds - LastCPUTime) / TimeSinceLastCheck.TotalMilliseconds * 100.0);
                 LastInfo = DateAndTime.Now;
                 LastCPUTime = Process.GetCurrentProcess().TotalProcessorTime.TotalMilliseconds;
@@ -382,7 +382,7 @@ namespace Mangos.World.Network
 
             public ServerInfo GetServerInfo()
             {
-                ServerInfo serverInfo = new ServerInfo
+                var serverInfo = new ServerInfo
                 {
                     cpuUsage = UsageCPU,
                     memoryUsage = checked((ulong)Math.Round(Process.GetCurrentProcess().WorkingSet64 / 1048576.0))
@@ -400,7 +400,7 @@ namespace Mangos.World.Network
             {
                 if (!WorldServiceLocator._WS_Maps.Maps.ContainsKey(MapID))
                 {
-                    WS_Maps.TMap Map = new WS_Maps.TMap(checked((int)MapID), await dataStoreProvider.GetDataStoreAsync("Map.dbc"));
+                    var Map = new WS_Maps.TMap(checked((int)MapID), await dataStoreProvider.GetDataStoreAsync("Map.dbc"));
                 }
             }
 
@@ -423,7 +423,7 @@ namespace Mangos.World.Network
 
             public bool InstanceCanCreate(int Type)
             {
-                WorldServerConfiguration configuration = WorldServiceLocator._ConfigurationProvider.GetConfiguration();
+                var configuration = WorldServiceLocator._ConfigurationProvider.GetConfiguration();
                 return Type switch
                 {
                     3 => configuration.CreateBattlegrounds,
@@ -456,7 +456,7 @@ namespace Mangos.World.Network
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.NETWORK, "[{0:000000}] Client group set [G{1:00000}]", ID, GroupID);
                 if (!WorldServiceLocator._WS_Group.Groups.ContainsKey(GroupID))
                 {
-                    WS_Group.Group Group = new WS_Group.Group(GroupID);
+                    var Group = new WS_Group.Group(GroupID);
                     Cluster.GroupRequestUpdate(ID);
                 }
                 WorldServiceLocator._WorldServer.CLIENTs[ID].Character.Group = WorldServiceLocator._WS_Group.Groups[GroupID];
@@ -475,8 +475,8 @@ namespace Mangos.World.Network
                 {
                     return;
                 }
-                List<ulong> list = new List<ulong>();
-                foreach (ulong GUID in Members)
+                var list = new List<ulong>();
+                foreach (var GUID in Members)
                 {
                     if (WorldServiceLocator._WorldServer.CHARACTERs.ContainsKey(GUID))
                     {
@@ -531,13 +531,13 @@ namespace Mangos.World.Network
                 {
                     Flag = 1015;
                 }
-                WS_Group wS_Group = WorldServiceLocator._WS_Group;
+                var wS_Group = WorldServiceLocator._WS_Group;
                 Dictionary<ulong, WS_PlayerData.CharacterObject> cHARACTERs;
                 ulong key;
-                WS_PlayerData.CharacterObject objCharacter = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = GUID];
-                Packets.PacketClass packetClass = wS_Group.BuildPartyMemberStats(ref objCharacter, checked((uint)Flag));
+                var objCharacter = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = GUID];
+                var packetClass = wS_Group.BuildPartyMemberStats(ref objCharacter, checked((uint)Flag));
                 cHARACTERs[key] = objCharacter;
-                Packets.PacketClass p = packetClass;
+                var p = packetClass;
                 p.UpdateLength();
                 return p.Data;
             }

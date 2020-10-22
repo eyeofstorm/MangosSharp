@@ -118,7 +118,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastEarthQuake()
         {
-            for (int i = 0; i <= 2; i++)
+            for (var i = 0; i <= 2; i++)
             {
                 WS_Base.BaseUnit Target = aiCreature;
                 if (Target is null)
@@ -136,7 +136,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastMagmaSplash()
         {
-            for (int i = 1; i <= 2; i++)
+            for (var i = 1; i <= 2; i++)
             {
                 WS_Base.BaseUnit Target = aiCreature;
                 if (Target is null)
@@ -154,7 +154,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastPyroBlast()
         {
-            for (int i = 2; i <= 2; i++)
+            for (var i = 2; i <= 2; i++)
             {
                 WS_Base.BaseUnit Target = aiCreature;
                 if (Target is null)

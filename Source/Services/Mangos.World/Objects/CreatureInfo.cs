@@ -145,8 +145,8 @@ namespace Mangos.World.Objects
         {
             get
             {
-                int[] modelIDs = new int[4];
-                int current = 0;
+                var modelIDs = new int[4];
+                var current = 0;
                 checked
                 {
                     if (ModelA1 != 0)
@@ -207,7 +207,7 @@ namespace Mangos.World.Objects
         {
             Id = CreatureID;
             WorldServiceLocator._WorldServer.CREATURESDatabase.Add(Id, this);
-            DataTable MySQLQuery = new DataTable();
+            var MySQLQuery = new DataTable();
             WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM creature_template LEFT JOIN creature_template_spells ON creature_template.entry = creature_template_spells.`entry` WHERE creature_template.entry = {CreatureID};", ref MySQLQuery);
             if (MySQLQuery.Rows.Count == 0)
             {
@@ -312,7 +312,7 @@ namespace Mangos.World.Objects
             MechanicImmune = MySQLQuery.Rows[0].As<uint>("SchoolImmuneMask");
             if (File.Exists("scripts\\gossip\\" + WorldServiceLocator._Functions.FixName(Name) + ".vb"))
             {
-                ScriptedObject tmpScript = new ScriptedObject("scripts\\gossip\\" + WorldServiceLocator._Functions.FixName(Name) + ".vb", "", InMemory: true);
+                var tmpScript = new ScriptedObject("scripts\\gossip\\" + WorldServiceLocator._Functions.FixName(Name) + ".vb", "", InMemory: true);
                 TalkScript = (TBaseTalk)tmpScript.InvokeConstructor("TalkScript");
                 tmpScript.Dispose();
             }

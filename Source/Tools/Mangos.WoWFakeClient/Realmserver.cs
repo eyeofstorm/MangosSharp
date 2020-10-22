@@ -76,7 +76,7 @@ namespace Mangos.WoWFakeClient
                 Name = "Checking Connection State"
             };
             NewThread.Start();
-            string sChatMsg = "";
+            var sChatMsg = "";
             while (true)
             {
                 sChatMsg = Console.ReadLine();
@@ -210,9 +210,9 @@ namespace Mangos.WoWFakeClient
                                     Console.WriteLine("[{0}][Realm] Challenge Success.", Strings.Format(DateAndTime.TimeOfDay, "HH:mm:ss"));
                                     Packet.Offset = 3;
                                     ServerB = Packet.GetByteArray(32);
-                                    byte G_len = Packet.GetInt8();
+                                    var G_len = Packet.GetInt8();
                                     G = Packet.GetByteArray(G_len);
-                                    byte N_len = Packet.GetInt8();
+                                    var N_len = Packet.GetInt8();
                                     N = Packet.GetByteArray(N_len);
                                     Salt = Packet.GetByteArray(32);
                                     CrcSalt = Packet.GetByteArray(16);
@@ -304,17 +304,17 @@ namespace Mangos.WoWFakeClient
                         {
                             for (int i = 1, loopTo = RealmCount; i <= loopTo; i++)
                             {
-                                byte RealmType = Packet.GetInt8();
-                                byte RealmLocked = Packet.GetInt8();
-                                byte Unk1 = Packet.GetInt8();
-                                byte Unk2 = Packet.GetInt8();
-                                byte RealmStatus = Packet.GetInt8();
-                                string RealmName = Packet.GetString();
-                                string RealmIP = Packet.GetString();
-                                float RealmPopulation = Packet.GetFloat();
-                                byte RealmCharacters = Packet.GetInt8();
-                                byte RealmTimezone = Packet.GetInt8();
-                                byte Unk3 = Packet.GetInt8();
+                                var RealmType = Packet.GetInt8();
+                                var RealmLocked = Packet.GetInt8();
+                                var Unk1 = Packet.GetInt8();
+                                var Unk2 = Packet.GetInt8();
+                                var RealmStatus = Packet.GetInt8();
+                                var RealmName = Packet.GetString();
+                                var RealmIP = Packet.GetString();
+                                var RealmPopulation = Packet.GetFloat();
+                                var RealmCharacters = Packet.GetInt8();
+                                var RealmTimezone = Packet.GetInt8();
+                                var Unk3 = Packet.GetInt8();
                                 Console.WriteLine("[{0}][Realm] Connecting to realm [{1}][{2}].", Strings.Format(DateAndTime.TimeOfDay, "HH:mm:ss"), RealmName, RealmIP);
                                 if (Strings.InStr(RealmIP, ":") > 0)
                                 {
@@ -361,14 +361,14 @@ namespace Mangos.WoWFakeClient
 
         public static void SendR(Packets.PacketClass Packet)
         {
-            int i = Connection.Send(Packet.Data, 0, Packet.Data.Length, SocketFlags.None);
+            var i = Connection.Send(Packet.Data, 0, Packet.Data.Length, SocketFlags.None);
         }
 
         public static void CalculateProof()
         {
             Random.NextBytes(A);
             Array.Reverse(A);
-            string tempStr = Account.ToUpper() + ":" + Password.ToUpper();
+            var tempStr = Account.ToUpper() + ":" + Password.ToUpper();
             var temp = Encoding.ASCII.GetBytes(tempStr.ToCharArray());
             var algorithm1 = new SHA1Managed();
             temp = algorithm1.ComputeHash(temp);
@@ -429,7 +429,7 @@ namespace Mangos.WoWFakeClient
             var N_Hash = algorithm1.ComputeHash(N);
             var G_Hash = algorithm1.ComputeHash(G);
             var NG_Hash = new byte[20];
-            for (int i = 0; i <= 19; i++)
+            for (var i = 0; i <= 19; i++)
                 NG_Hash[i] = (byte)(N_Hash[i] ^ G_Hash[i]);
             temp = Concat(NG_Hash, User_Hash);
             temp = Concat(temp, Salt);
@@ -450,8 +450,8 @@ namespace Mangos.WoWFakeClient
 
             var buffer2 = new byte[(int)(bo.Length / 2d - 1d + 1)];
             var buffer3 = new byte[(int)(bo.Length / 2d - 1d + 1)];
-            int num1 = 0;
-            int num2 = 1;
+            var num1 = 0;
+            var num2 = 1;
             int num3;
             var loopTo = buffer2.Length - 1;
             for (num3 = 0; num3 <= loopTo; num3++)
@@ -483,8 +483,8 @@ namespace Mangos.WoWFakeClient
             if (b1.Length == b2.Length)
             {
                 var buffer1 = new byte[(b1.Length + b2.Length)];
-                int num1 = 0;
-                int num2 = 1;
+                var num1 = 0;
+                var num2 = 1;
                 int num3;
                 var loopTo = b1.Length - 1;
                 for (num3 = 0; num3 <= loopTo; num3++)

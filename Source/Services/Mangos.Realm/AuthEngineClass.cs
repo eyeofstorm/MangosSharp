@@ -192,7 +192,7 @@ namespace Mangos.Realm
             nHash = algorithm1.ComputeHash(N);
             gHash = algorithm1.ComputeHash(g);
             userHash = algorithm1.ComputeHash(_username);
-            for (int i = 0; i <= 19; i++)
+            for (var i = 0; i <= 19; i++)
                 ngHash[i] = (byte)(nHash[i] ^ gHash[i]);
             var temp = Concat(ngHash, userHash);
             temp = Concat(temp, Salt);
@@ -259,7 +259,7 @@ namespace Mangos.Realm
             if (Bytes1.Length != Bytes2.Length)
                 return null;
             var CombineBuffer = new byte[(Bytes1.Length + Bytes2.Length)];
-            int Counter = 0;
+            var Counter = 0;
             for (int i = 0, loopTo = CombineBuffer.Length - 1; i <= loopTo; i += 2)
             {
                 CombineBuffer[i] = Bytes1[Counter];
@@ -289,7 +289,7 @@ namespace Mangos.Realm
             var SplitBuffer1 = new byte[(int)(ByteBuffer.Length / 2d - 1d + 1)];
             var SplitBuffer2 = new byte[(int)(ByteBuffer.Length / 2d - 1d + 1)];
             var ReturnList = new ArrayList();
-            int Counter = 0;
+            var Counter = 0;
             for (int i = 0, loopTo = SplitBuffer1.Length - 1; i <= loopTo; i++)
             {
                 SplitBuffer1[i] = ByteBuffer[Counter];

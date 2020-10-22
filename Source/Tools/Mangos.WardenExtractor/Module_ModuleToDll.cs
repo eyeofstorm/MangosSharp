@@ -43,7 +43,7 @@ namespace Mangos.WardenExtractor
                 return;
             }
 
-            foreach (string sFile in Directory.GetFiles("Modules"))
+            foreach (var sFile in Directory.GetFiles("Modules"))
             {
                 Console.WriteLine(sFile);
                 byte[] fileData = null;
@@ -91,7 +91,7 @@ namespace Mangos.WardenExtractor
                 return;
             }
 
-            foreach (string sFile in Directory.GetFiles("Dlls"))
+            foreach (var sFile in Directory.GetFiles("Dlls"))
             {
                 Console.WriteLine(sFile);
                 byte[] fileData = null;
@@ -132,7 +132,7 @@ namespace Mangos.WardenExtractor
             var Key = Program.ParseKey("ECA9A9D1EAAEFD38CC115062FB92996E"); // ParseKey(RC4Key)
             Key = Program.RC4.Init(Key);
             Program.RC4.Crypt(ref ModData, Key);
-            int UncompressedLen = BitConverter.ToInt32(ModData, 0);
+            var UncompressedLen = BitConverter.ToInt32(ModData, 0);
             if (UncompressedLen < 0)
             {
                 Console.WriteLine("Failed to decrypt {0}, incorrect length.", ModName);
@@ -141,8 +141,8 @@ namespace Mangos.WardenExtractor
 
             var CompressedData = new byte[(ModData.Length - 0x108)];
             Array.Copy(ModData, 4, CompressedData, 0, CompressedData.Length);
-            int dataPos = 4 + CompressedData.Length;
-            string Sign = Conversions.ToString((char)ModData[dataPos + 3]) + (char)ModData[dataPos + 2] + (char)ModData[dataPos + 1] + (char)ModData[dataPos];
+            var dataPos = 4 + CompressedData.Length;
+            var Sign = Conversions.ToString((char)ModData[dataPos + 3]) + (char)ModData[dataPos + 2] + (char)ModData[dataPos + 1] + (char)ModData[dataPos];
             if (Sign != "SIGN")
             {
                 Console.WriteLine("Failed to decrypt {0}, sign missing.", ModName);
@@ -175,7 +175,7 @@ namespace Mangos.WardenExtractor
         public static void DllToModule(string DllName, ref byte[] DllData)
         {
             Console.WriteLine("Insert RC4 Key for {0}:", DllName);
-            string RC4Key = Console.ReadLine();
+            var RC4Key = Console.ReadLine();
             var Key = Program.ParseKey(RC4Key);
             Key = Program.RC4.Init(Key);
             var CompressedData = new ZipService().Compress(DllData, 0, DllData.Length);
@@ -212,7 +212,7 @@ namespace Mangos.WardenExtractor
             for (int i = 0, loopTo = properResult.Length - 1; i <= loopTo; i++)
                 properResult[i] = 0xBB;
             properResult[0x100 - 1] = 0xB;
-            string tmpKey = "MAIEV.MOD";
+            var tmpKey = "MAIEV.MOD";
             var bKey = new byte[tmpKey.Length];
             for (int i = 0, loopTo1 = tmpKey.Length - 1; i <= loopTo1; i++)
                 bKey[i] = (byte)Strings.Asc(tmpKey[i]);
@@ -238,7 +238,7 @@ namespace Mangos.WardenExtractor
             for (int i = 0, loopTo = properResult.Length - 1; i <= loopTo; i++)
                 properResult[i] = 0xBB;
             properResult[0x100 - 1] = 0xB;
-            string tmpKey = "MAIEV.MOD";
+            var tmpKey = "MAIEV.MOD";
             var bKey = new byte[tmpKey.Length];
             for (int i = 0, loopTo1 = tmpKey.Length - 1; i <= loopTo1; i++)
                 bKey[i] = (byte)Strings.Asc(tmpKey[i]);

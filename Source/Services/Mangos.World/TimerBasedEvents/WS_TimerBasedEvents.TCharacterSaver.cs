@@ -56,7 +56,7 @@ namespace Mangos.World.Server
                 try
                 {
                     WorldServiceLocator._WorldServer.CHARACTERs_Lock.AcquireReaderLock(WorldServiceLocator._Global_Constants.DEFAULT_LOCK_TIMEOUT);
-                    foreach (KeyValuePair<ulong, WS_PlayerData.CharacterObject> cHARACTER in WorldServiceLocator._WorldServer.CHARACTERs)
+                    foreach (var cHARACTER in WorldServiceLocator._WorldServer.CHARACTERs)
                     {
                         cHARACTER.Value.SaveCharacter();
                     }
@@ -64,7 +64,7 @@ namespace Mangos.World.Server
                 catch (Exception ex2)
                 {
                     ProjectData.SetProjectError(ex2);
-                    Exception ex = ex2;
+                    var ex = ex2;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, ex.ToString(), null);
                     ProjectData.ClearProjectError();
                 }

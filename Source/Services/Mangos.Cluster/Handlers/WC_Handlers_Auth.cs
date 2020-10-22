@@ -63,20 +63,20 @@ namespace Mangos.Cluster.Handlers
             // _WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}] [{1}:{2}] CMSG_AUTH_SESSION", Format(TimeOfDay, "hh:mm:ss"), client.IP, client.Port)
 
             packet.GetInt16();
-            int clientVersion = packet.GetInt32();
-            int clientSessionID = packet.GetInt32();
-            string clientAccount = packet.GetString();
-            int clientSeed = packet.GetInt32();
+            var clientVersion = packet.GetInt32();
+            var clientSessionID = packet.GetInt32();
+            var clientAccount = packet.GetString();
+            var clientSeed = packet.GetInt32();
             var clientHash = new byte[20];
-            for (int i = 0; i <= 19; i++)
+            for (var i = 0; i <= 19; i++)
                 clientHash[i] = packet.GetInt8();
-            int clientAddOnsSize = packet.GetInt32();
+            var clientAddOnsSize = packet.GetInt32();
 
             // DONE: Set client.Account
-            string tmp = clientAccount;
+            var tmp = clientAccount;
 
             // DONE: Kick if existing
-            foreach (KeyValuePair<uint, ClientClass> tmpClientEntry in clusterServiceLocator._WorldCluster.CLIENTs)
+            foreach (var tmpClientEntry in clusterServiceLocator._WorldCluster.CLIENTs)
             {
                 if (tmpClientEntry.Value is object)
                 {
@@ -234,8 +234,8 @@ namespace Mangos.Cluster.Handlers
                 if (packet.Data.Length - 1 < 13)
                     return;
                 packet.GetInt16();
-                uint DataID = packet.GetUInt32();
-                uint UncompressedSize = packet.GetUInt32();
+                var DataID = packet.GetUInt32();
+                var UncompressedSize = packet.GetUInt32();
                 clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_UPDATE_ACCOUNT_DATA [ID={2} Size={3}]", client.IP, client.Port, DataID, UncompressedSize);
                 if (DataID > 7L)
                     return;
@@ -263,7 +263,7 @@ namespace Mangos.Cluster.Handlers
                 // Exit Sub
                 // End If
 
-                int ReceivedPacketSize = packet.Data.Length - packet.Offset;
+                var ReceivedPacketSize = packet.Data.Length - packet.Offset;
             }
             // Dim dataStr As String
             // DONE: Check if it's compressed, if so, decompress it
@@ -289,7 +289,7 @@ namespace Mangos.Cluster.Handlers
             if (packet.Data.Length - 1 < 9)
                 return;
             packet.GetInt16();
-            uint DataID = packet.GetUInt32();
+            var DataID = packet.GetUInt32();
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_REQUEST_ACCOUNT_DATA [ID={2}]", client.IP, client.Port, DataID);
             if (DataID > 7L)
                 return;
@@ -348,7 +348,7 @@ namespace Mangos.Cluster.Handlers
                 response.AddInt8((byte)MySQLQuery.Rows.Count);
                 for (int i = 0, loopTo = MySQLQuery.Rows.Count - 1; i <= loopTo; i++)
                 {
-                    bool DEAD = false;
+                    var DEAD = false;
                     var DeadMySQLQuery = new DataTable();
                     clusterServiceLocator._WorldCluster.GetCharacterDatabase().Query(string.Format("SELECT COUNT(*) FROM corpse WHERE player = {0};", MySQLQuery.Rows[i]["char_guid"]), ref DeadMySQLQuery);
                     if (DeadMySQLQuery.Rows[0].As<int>(0) > 0)
@@ -372,8 +372,8 @@ namespace Mangos.Cluster.Handlers
                     response.AddSingle(MySQLQuery.Rows[i].As<float>("char_positionY"));
                     response.AddSingle(MySQLQuery.Rows[i].As<float>("char_positionZ"));
                     response.AddInt32(MySQLQuery.Rows[i].As<int>("char_guildId"));
-                    uint playerState = (uint)CharacterFlagState.CHARACTER_FLAG_NONE;
-                    uint ForceRestrictions = MySQLQuery.Rows[i].As<uint>("force_restrictions");
+                    var playerState = (uint)CharacterFlagState.CHARACTER_FLAG_NONE;
+                    var ForceRestrictions = MySQLQuery.Rows[i].As<uint>("force_restrictions");
                     if ((ForceRestrictions & (uint)ForceRestrictionFlags.RESTRICT_TRANSFER) != 0)
                     {
                         playerState += (uint)CharacterFlagState.CHARACTER_FLAG_LOCKED_FOR_TRANSFER;
@@ -396,9 +396,9 @@ namespace Mangos.Cluster.Handlers
 
                     response.AddUInt32(playerState);
                     response.AddInt8(MySQLQuery.Rows[i].As<byte>("char_restState"));
-                    int PetModel = 0;
-                    int PetLevel = 0;
-                    int PetFamily = 0;
+                    var PetModel = 0;
+                    var PetLevel = 0;
+                    var PetFamily = 0;
                     if (PetQuery.Rows.Count > 0)
                     {
                         PetModel = PetQuery.Rows[0].As<int>("modelid");
@@ -413,15 +413,15 @@ namespace Mangos.Cluster.Handlers
                     response.AddInt32(PetFamily);
 
                     // DONE: Get items
-                    long GUID = MySQLQuery.Rows[i].As<long>("char_guid");
+                    var GUID = MySQLQuery.Rows[i].As<long>("char_guid");
                     var ItemsMySQLQuery = new DataTable();
-                    string characterDB = clusterServiceLocator._WorldCluster.GetCharacterDatabase().SQLDBName;
-                    string worldDB = clusterServiceLocator._WorldCluster.GetWorldDatabase().SQLDBName;
+                    var characterDB = clusterServiceLocator._WorldCluster.GetCharacterDatabase().SQLDBName;
+                    var worldDB = clusterServiceLocator._WorldCluster.GetWorldDatabase().SQLDBName;
                     clusterServiceLocator._WorldCluster.GetCharacterDatabase().Query(string.Format("SELECT item_slot, displayid, inventorytype FROM " + characterDB + ".characters_inventory, " + worldDB + ".item_template WHERE item_bag = {0} AND item_slot <> 255 AND entry = item_id  ORDER BY item_slot;", GUID), ref ItemsMySQLQuery);
                     var e = ItemsMySQLQuery.Rows.GetEnumerator();
                     e.Reset();
                     e.MoveNext();
-                    DataRow row = (DataRow)e.Current;
+                    var row = (DataRow)e.Current;
 
                     // DONE: Add model info
                     for (byte slot = 0, loopTo1 = (byte)EquipmentSlots.EQUIPMENT_SLOT_END; slot <= loopTo1; slot++) // - 1
@@ -469,7 +469,7 @@ namespace Mangos.Cluster.Handlers
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_CHAR_DELETE", client.IP, client.Port);
             var response = new PacketClass(Opcodes.SMSG_CHAR_DELETE);
             packet.GetInt16();
-            ulong guid = packet.GetUInt64();
+            var guid = packet.GetUInt64();
             try
             {
                 var q = new DataTable();
@@ -544,10 +544,10 @@ namespace Mangos.Cluster.Handlers
         public void On_CMSG_CHAR_RENAME(PacketClass packet, ClientClass client)
         {
             packet.GetInt16();
-            long GUID = packet.GetInt64();
-            string Name = packet.GetString();
+            var GUID = packet.GetInt64();
+            var Name = packet.GetString();
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_CHAR_RENAME [{2}:{3}]", client.IP, client.Port, GUID, Name);
-            byte ErrCode = (byte)ATLoginFlags.AT_LOGIN_RENAME;
+            var ErrCode = (byte)ATLoginFlags.AT_LOGIN_RENAME;
 
             // DONE: Check for existing name
             var q = new DataTable();
@@ -573,18 +573,18 @@ namespace Mangos.Cluster.Handlers
         public void On_CMSG_CHAR_CREATE(PacketClass packet, ClientClass client)
         {
             packet.GetInt16();
-            string Name = packet.GetString();
+            var Name = packet.GetString();
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_CHAR_CREATE [{2}]", client.IP, client.Port, Name);
-            byte Race = packet.GetInt8();
-            byte Classe = packet.GetInt8();
-            byte Gender = packet.GetInt8();
-            byte Skin = packet.GetInt8();
-            byte Face = packet.GetInt8();
-            byte HairStyle = packet.GetInt8();
-            byte HairColor = packet.GetInt8();
-            byte FacialHair = packet.GetInt8();
-            byte OutfitId = packet.GetInt8();
-            int result = (int)CharResponse.CHAR_CREATE_DISABLED;
+            var Race = packet.GetInt8();
+            var Classe = packet.GetInt8();
+            var Gender = packet.GetInt8();
+            var Skin = packet.GetInt8();
+            var Face = packet.GetInt8();
+            var HairStyle = packet.GetInt8();
+            var HairColor = packet.GetInt8();
+            var FacialHair = packet.GetInt8();
+            var OutfitId = packet.GetInt8();
+            var result = (int)CharResponse.CHAR_CREATE_DISABLED;
 
             // Try to pass the packet to one of World Servers
             try
@@ -612,7 +612,7 @@ namespace Mangos.Cluster.Handlers
         public void On_CMSG_PLAYER_LOGIN(PacketClass packet, ClientClass client)
         {
             packet.GetInt16();               // int16 unknown
-            ulong GUID = packet.GetUInt64();
+            var GUID = packet.GetUInt64();
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_PLAYER_LOGIN [0x{2:X}]", client.IP, client.Port, GUID);
             if (client.Character is null)
             {

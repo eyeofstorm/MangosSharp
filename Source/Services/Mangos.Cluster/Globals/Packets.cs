@@ -41,7 +41,7 @@ namespace Mangos.Cluster.Globals
         {
             // #If DEBUG Then
             int j;
-            string buffer = "";
+            var buffer = "";
             try
             {
                 buffer = client is null ? buffer + string.Format("DEBUG: Packet Dump{0}", Constants.vbCrLf) : buffer + string.Format("[{0}:{1}] DEBUG: Packet Dump - Length={2}{3}", client.IP, client.Port, data.Length, Constants.vbCrLf);
@@ -82,16 +82,16 @@ namespace Mangos.Cluster.Globals
         public void LogPacket(byte[] data, bool Server, [Optional, DefaultParameterValue(null)] ClientClass client)
         {
             int j;
-            string buffer = "";
+            var buffer = "";
             try
             {
-                Opcodes opcode = (Opcodes)BitConverter.ToInt16(data, 2);
+                var opcode = (Opcodes)BitConverter.ToInt16(data, 2);
                 if (IgnorePacket(opcode))
                     return;
-                int StartAt = 6;
+                var StartAt = 6;
                 if (Server)
                     StartAt = 4;
-                string TypeStr = "IN";
+                var TypeStr = "IN";
                 if (Server)
                     TypeStr = "OUT";
                 if (client is null)

@@ -86,7 +86,7 @@ namespace Mangos.WoWFakeClient
 
             private byte GetByte()
             {
-                byte r = data[index];
+                var r = data[index];
                 index += 1;
                 if (index >= 0x14)
                 {
@@ -122,7 +122,7 @@ namespace Mangos.WoWFakeClient
 
             var WardenData = new byte[(Packet.Data.Length - 4)];
             Buffer.BlockCopy(Packet.Data, 4, WardenData, 0, WardenData.Length);
-            MaievOpcode Opcode = (MaievOpcode)Packet.GetInt8();
+            var Opcode = (MaievOpcode)Packet.GetInt8();
             Console.ForegroundColor = ConsoleColor.Cyan;
             Console.WriteLine("SMSG_WARDEN_DATA [{0}]", Opcode);
             Console.ForegroundColor = ConsoleColor.White;
@@ -132,7 +132,7 @@ namespace Mangos.WoWFakeClient
                     {
                         var Name = Packet.GetByteArray(16);
                         var Key = Packet.GetByteArray(16);
-                        uint Size = Packet.GetUInt32();
+                        var Size = Packet.GetUInt32();
                         Maiev.ModuleName = BitConverter.ToString(Name).Replace("-", "");
                         Maiev.ModuleKey = Key;
                         ModuleLength = (int)Size;
@@ -171,7 +171,7 @@ namespace Mangos.WoWFakeClient
 
                 case MaievOpcode.MAIEV_MODULE_TRANSFER:
                     {
-                        ushort Size = Packet.GetUInt16();
+                        var Size = Packet.GetUInt16();
                         var Data = Packet.GetByteArray(Size);
                         Maiev.ModuleData = Realmserver.Concat(Maiev.ModuleData, Data);
                         ModuleLength -= Size;
@@ -205,7 +205,7 @@ namespace Mangos.WoWFakeClient
                         // TODO: Encrypt?
                         Maiev.ReadKeys2();
                         RC4.Crypt(ref WardenData, Maiev.ModKeyIn);
-                        int HandledBytes = Maiev.HandlePacket(WardenData);
+                        var HandledBytes = Maiev.HandlePacket(WardenData);
                         if (HandledBytes <= 0)
                             return;
                         var thePacket = Maiev.ReadPacket();
@@ -228,7 +228,7 @@ namespace Mangos.WoWFakeClient
                         // TODO: Encrypt?
                         Maiev.ReadKeys2();
                         RC4.Crypt(ref WardenData, Maiev.ModKeyIn);
-                        int HandledBytes = Maiev.HandlePacket(WardenData);
+                        var HandledBytes = Maiev.HandlePacket(WardenData);
                         if (HandledBytes <= 0)
                             return;
                         var thePacket = Maiev.ReadPacket();
@@ -248,7 +248,7 @@ namespace Mangos.WoWFakeClient
                 case MaievOpcode.MAIEV_MODULE_SEED:
                     {
                         Maiev.GenerateNewRC4Keys(Realmserver.SS_Hash);
-                        int HandledBytes = Maiev.HandlePacket(WardenData);
+                        var HandledBytes = Maiev.HandlePacket(WardenData);
                         if (HandledBytes <= 0)
                             return;
                         var thePacket = Maiev.ReadPacket();
@@ -301,7 +301,7 @@ namespace Mangos.WoWFakeClient
             {
                 Key = RC4.Init(Key);
                 RC4.Crypt(ref Data, Key);
-                int UncompressedLen = BitConverter.ToInt32(Data, 0);
+                var UncompressedLen = BitConverter.ToInt32(Data, 0);
                 if (UncompressedLen < 0)
                 {
                     Console.WriteLine("[WARDEN] Failed to decrypt {0}, incorrect length.", Name);
@@ -310,8 +310,8 @@ namespace Mangos.WoWFakeClient
 
                 var CompressedData = new byte[(Data.Length - 0x108)];
                 Array.Copy(Data, 4, CompressedData, 0, CompressedData.Length);
-                int dataPos = 4 + CompressedData.Length;
-                string Sign = Conversions.ToString((char)Data[dataPos + 3]) + (char)Data[dataPos + 2] + (char)Data[dataPos + 1] + (char)Data[dataPos];
+                var dataPos = 4 + CompressedData.Length;
+                var Sign = Conversions.ToString((char)Data[dataPos + 3]) + (char)Data[dataPos + 2] + (char)Data[dataPos + 1] + (char)Data[dataPos];
                 if (Sign != "SIGN")
                 {
                     Console.WriteLine("[WARDEN] Failed to decrypt {0}, sign missing.", Name);
@@ -354,7 +354,7 @@ namespace Mangos.WoWFakeClient
                 for (int i = 0, loopTo = properResult.Length - 1; i <= loopTo; i++)
                     properResult[i] = 0xBB;
                 properResult[0x100 - 1] = 0xB;
-                string tmpKey = "MAIEV.MOD";
+                var tmpKey = "MAIEV.MOD";
                 var bKey = new byte[tmpKey.Length];
                 for (int i = 0, loopTo1 = tmpKey.Length - 1; i <= loopTo1; i++)
                     bKey[i] = (byte)Strings.Asc(tmpKey[i]);
@@ -383,7 +383,7 @@ namespace Mangos.WoWFakeClient
 
             private byte[] PrepairModule(ref BinaryReader br)
             {
-                int length = br.ReadInt32();
+                var length = br.ReadInt32();
                 m_Mod = malloc(length);
                 var bModule = new byte[length];
                 var ms = new MemoryStream(bModule);
@@ -397,12 +397,12 @@ namespace Mangos.WoWFakeClient
                 var tmpBytes = br.ReadBytes(40);
                 bw.Write(tmpBytes, 0, tmpBytes.Length);
                 br2.BaseStream.Position = 0x24L;
-                int source_location = 0x28 + br2.ReadInt32() * 12;
+                var source_location = 0x28 + br2.ReadInt32() * 12;
                 br.BaseStream.Position = 0x28L;
-                int destination_location = br.ReadInt32();
+                var destination_location = br.ReadInt32();
                 br.BaseStream.Position = 0x0L;
-                int limit = br.ReadInt32();
-                bool skip = false;
+                var limit = br.ReadInt32();
+                var skip = false;
 
                 // Console.WriteLine("Copying code sections to module.")
                 while (destination_location < limit)
@@ -427,18 +427,18 @@ namespace Mangos.WoWFakeClient
                 br.BaseStream.Position = 8L;
                 source_location = br.ReadInt32();
                 destination_location = 0;
-                int counter = 0;
+                var counter = 0;
                 br2.BaseStream.Position = 0xCL;
-                int CountTo = br2.ReadInt32();
+                var CountTo = br2.ReadInt32();
                 while (counter < CountTo)
                 {
                     br2.BaseStream.Position = source_location;
-                    byte tmpByte1 = br2.ReadByte();
-                    byte tmpByte2 = br2.ReadByte();
+                    var tmpByte1 = br2.ReadByte();
+                    var tmpByte2 = br2.ReadByte();
                     destination_location += tmpByte2 | tmpByte1 << 8;
                     source_location += 2;
                     br2.BaseStream.Position = destination_location;
-                    int address = br2.ReadInt32() + m_Mod;
+                    var address = br2.ReadInt32() + m_Mod;
                     bw.BaseStream.Position = destination_location;
                     bw.Write(address);
                     counter += 1;
@@ -452,22 +452,22 @@ namespace Mangos.WoWFakeClient
                 for (counter = 0; counter <= loopTo; counter++)
                 {
                     br2.BaseStream.Position = 0x1CL;
-                    int proc_start = br2.ReadInt32() + counter * 8;
+                    var proc_start = br2.ReadInt32() + counter * 8;
                     br2.BaseStream.Position = proc_start;
                     library = getNTString(ref br2, br2.ReadInt32());
                     // Console.WriteLine("  Library: {0}", library)
 
-                    int hModule = LoadLibrary(library);
+                    var hModule = LoadLibrary(library);
                     br2.BaseStream.Position = proc_start + 4;
-                    int proc_offset = br2.ReadInt32();
+                    var proc_offset = br2.ReadInt32();
                     br2.BaseStream.Position = proc_offset;
-                    int proc = br2.ReadInt32();
+                    var proc = br2.ReadInt32();
                     while (proc != 0)
                     {
                         if (proc > 0)
                         {
-                            string strProc = getNTString(ref br2, proc);
-                            int addr = GetProcAddress(hModule, strProc);
+                            var strProc = getNTString(ref br2, proc);
+                            var addr = GetProcAddress(hModule, strProc);
 
                             // Console.WriteLine("    Function: {0} (0x{1:X})", strProc, addr)
                             bw.BaseStream.Position = proc_offset;
@@ -488,9 +488,9 @@ namespace Mangos.WoWFakeClient
             private string getNTString(ref BinaryReader br, int pos)
             {
                 br.BaseStream.Position = pos;
-                int i = 0;
+                var i = 0;
                 byte tmpByte;
-                string tmpStr = "";
+                var tmpStr = "";
                 do
                 {
                     tmpByte = br.ReadByte();
@@ -745,7 +745,7 @@ namespace Mangos.WoWFakeClient
             public int HandlePacket(byte[] PacketData)
             {
                 m_PKT = new byte[] { };
-                int BytesRead = 0;
+                var BytesRead = 0;
                 int localVarPtr() { object argobj = BytesRead; var ret = VarPtr(ref argobj); return ret; }
 
                 BytesRead = localVarPtr();
@@ -790,22 +790,22 @@ namespace Mangos.WoWFakeClient
 
         private static int ByteArrPtr(ref byte[] arr)
         {
-            int pData = malloc(arr.Length);
+            var pData = malloc(arr.Length);
             Marshal.Copy(arr, 0, new IntPtr(pData), arr.Length);
             return pData;
         }
 
         private static int malloc(int length)
         {
-            int tmpHandle = Marshal.AllocHGlobal(length + 4).ToInt32();
-            int lockedHandle = GlobalLock(tmpHandle) + 4;
+            var tmpHandle = Marshal.AllocHGlobal(length + 4).ToInt32();
+            var lockedHandle = GlobalLock(tmpHandle) + 4;
             Marshal.WriteInt32(new IntPtr(lockedHandle - 4), tmpHandle);
             return lockedHandle;
         }
 
         private static void free(int ptr)
         {
-            int tmpHandle = Marshal.ReadInt32(new IntPtr(ptr - 4));
+            var tmpHandle = Marshal.ReadInt32(new IntPtr(ptr - 4));
             GlobalUnlock(tmpHandle);
             Marshal.FreeHGlobal(new IntPtr(tmpHandle));
         }

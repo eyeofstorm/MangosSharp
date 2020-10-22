@@ -116,7 +116,7 @@ namespace Mangos.WoWFakeClient
                                 Decode(ref Buffer);
 
                             // Calculate Length from packet
-                            int PacketLen = Buffer[1] + Buffer[0] * 256 + 2;
+                            var PacketLen = Buffer[1] + Buffer[0] * 256 + 2;
                             if (bytes < PacketLen)
                             {
                                 Console.WriteLine("[{0}][World] Bad Packet length [{1}][{2}] bytes", Strings.Format(DateAndTime.TimeOfDay, "HH:mm:ss"), bytes, PacketLen);
@@ -220,7 +220,7 @@ namespace Mangos.WoWFakeClient
         {
             if (Encoding)
                 Encode(ref Packet.Data);
-            int i = Connection.Send(Packet.Data, 0, Packet.Data.Length, SocketFlags.None);
+            var i = Connection.Send(Packet.Data, 0, Packet.Data.Length, SocketFlags.None);
         }
 
         public static void Encode(ref byte[] Buffer)

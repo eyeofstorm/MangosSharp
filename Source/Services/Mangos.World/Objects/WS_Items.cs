@@ -458,7 +458,7 @@ namespace Mangos.World.Objects
             {
                 Id = itemId;
                 WorldServiceLocator._WorldServer.ITEMDatabase.Add(Id, this);
-                DataTable mySqlQuery = new DataTable();
+                var mySqlQuery = new DataTable();
                 WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM item_template WHERE entry = {itemId};", ref mySqlQuery);
                 if (mySqlQuery.Rows.Count == 0)
                 {
@@ -483,25 +483,25 @@ namespace Mangos.World.Objects
                 SubClass = (ITEM_SUBCLASS)mySqlQuery.Rows[0].As<byte>("subclass");
                 InventoryType = (INVENTORY_TYPES)mySqlQuery.Rows[0].As<byte>("inventorytype");
                 Level = mySqlQuery.Rows[0].As<int>("itemlevel");
-                Type typeFromHandle = typeof(BitConverter);
+                var typeFromHandle = typeof(BitConverter);
                 DataRow row;
-                object[] obj = new object[1]
+                var obj = new object[1]
                 {
                     (row = mySqlQuery.Rows[0])["allowableclass"]
                 };
-                object[] array = obj;
-                bool[] obj2 = new bool[1]
+                var array = obj;
+                var obj2 = new bool[1]
                 {
                     true
                 };
-                bool[] array2 = obj2;
-                object obj3 = NewLateBinding.LateGet(null, typeFromHandle, "GetBytes", obj, null, null, obj2);
+                var array2 = obj2;
+                var obj3 = NewLateBinding.LateGet(null, typeFromHandle, "GetBytes", obj, null, null, obj2);
                 if (array2[0])
                 {
                     row["allowableclass"] = RuntimeHelpers.GetObjectValue(RuntimeHelpers.GetObjectValue(array[0]));
                 }
                 AvailableClasses = BitConverter.ToUInt32((byte[])obj3, 0);
-                object obj4 = NewLateBinding.LateGet(null, typeof(BitConverter), "GetBytes", array = new object[1]
+                var obj4 = NewLateBinding.LateGet(null, typeof(BitConverter), "GetBytes", array = new object[1]
                 {
                     (row = mySqlQuery.Rows[0])["allowablerace"]
                 }, null, null, array2 = new bool[1]
@@ -757,8 +757,8 @@ namespace Mangos.World.Objects
 
         public void SendItemInfo(ref WS_Network.ClientClass client, int itemID)
         {
-            Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_ITEM_QUERY_SINGLE_RESPONSE);
-            ItemInfo item = (WorldServiceLocator._WorldServer.ITEMDatabase.ContainsKey(itemID) ? WorldServiceLocator._WorldServer.ITEMDatabase[itemID] : new ItemInfo(itemID));
+            var response = new Packets.PacketClass(Opcodes.SMSG_ITEM_QUERY_SINGLE_RESPONSE);
+            var item = (WorldServiceLocator._WorldServer.ITEMDatabase.ContainsKey(itemID) ? WorldServiceLocator._WorldServer.ITEMDatabase[itemID] : new ItemInfo(itemID));
             response.AddInt32(item.Id);
             response.AddInt32((int)item.ObjectClass);
             if (item.ObjectClass == ITEM_CLASS.ITEM_CLASS_CONSUMABLE)
@@ -793,7 +793,7 @@ namespace Mangos.World.Objects
             response.AddInt32(item.Unique);
             response.AddInt32(item.Stackable);
             response.AddInt32(item.ContainerSlots);
-            int l = 0;
+            var l = 0;
             checked
             {
                 do
@@ -803,7 +803,7 @@ namespace Mangos.World.Objects
                     l++;
                 }
                 while (l <= 9);
-                int k = 0;
+                var k = 0;
                 do
                 {
                     response.AddSingle(item.Damage[k].Minimum);
@@ -812,7 +812,7 @@ namespace Mangos.World.Objects
                     k++;
                 }
                 while (k <= 4);
-                int j = 0;
+                var j = 0;
                 do
                 {
                     response.AddInt32(item.Resistances[j]);
@@ -822,7 +822,7 @@ namespace Mangos.World.Objects
                 response.AddInt32(item.Delay);
                 response.AddInt32(item.AmmoType);
                 response.AddSingle(item.Range);
-                int i = 0;
+                var i = 0;
                 do
                 {
                     if (!WorldServiceLocator._WS_Spells.SPELLs.ContainsKey(item.Spells[i].SpellID))
@@ -881,7 +881,7 @@ namespace Mangos.World.Objects
             if (checked(packet.Data.Length - 1) >= 9)
             {
                 packet.GetInt16();
-                int itemID = packet.GetInt32();
+                var itemID = packet.GetInt32();
                 SendItemInfo(ref client, itemID);
             }
         }
@@ -891,9 +891,9 @@ namespace Mangos.World.Objects
             if (checked(packet.Data.Length - 1) >= 9)
             {
                 packet.GetInt16();
-                int itemID = packet.GetInt32();
-                ItemInfo item = (WorldServiceLocator._WorldServer.ITEMDatabase.ContainsKey(itemID) ? WorldServiceLocator._WorldServer.ITEMDatabase[itemID] : new ItemInfo(itemID));
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_ITEM_NAME_QUERY_RESPONSE);
+                var itemID = packet.GetInt32();
+                var item = (WorldServiceLocator._WorldServer.ITEMDatabase.ContainsKey(itemID) ? WorldServiceLocator._WorldServer.ITEMDatabase[itemID] : new ItemInfo(itemID));
+                var response = new Packets.PacketClass(Opcodes.SMSG_ITEM_NAME_QUERY_RESPONSE);
                 response.AddInt32(itemID);
                 response.AddString(item.Name);
                 response.AddInt32((int)item.InventoryType);
@@ -907,8 +907,8 @@ namespace Mangos.World.Objects
             if (checked(packet.Data.Length - 1) >= 7)
             {
                 packet.GetInt16();
-                byte srcSlot = packet.GetInt8();
-                byte dstSlot = packet.GetInt8();
+                var srcSlot = packet.GetInt8();
+                var dstSlot = packet.GetInt8();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_SWAP_INV_ITEM [srcSlot=0:{2}, dstSlot=0:{3}]", client.IP, client.Port, srcSlot, dstSlot);
                 client.Character.ItemSWAP(0, srcSlot, 0, dstSlot);
             }
@@ -923,8 +923,8 @@ namespace Mangos.World.Objects
             try
             {
                 packet.GetInt16();
-                byte srcBag = packet.GetInt8();
-                byte srcSlot = packet.GetInt8();
+                var srcBag = packet.GetInt8();
+                var srcSlot = packet.GetInt8();
                 if (srcBag == byte.MaxValue)
                 {
                     srcBag = 0;
@@ -937,9 +937,9 @@ namespace Mangos.World.Objects
                 }
                 else if (srcBag == 0 && client.Character.Items.ContainsKey(srcSlot))
                 {
-                    byte[] slots2 = client.Character.Items[srcSlot].ItemInfo.GetSlots;
-                    byte[] array = slots2;
-                    foreach (byte tmpSlot4 in array)
+                    var slots2 = client.Character.Items[srcSlot].ItemInfo.GetSlots;
+                    var array = slots2;
+                    foreach (var tmpSlot4 in array)
                     {
                         if (!client.Character.Items.ContainsKey(tmpSlot4))
                         {
@@ -951,11 +951,11 @@ namespace Mangos.World.Objects
                     }
                     if (errCode == 9)
                     {
-                        byte[] array2 = slots2;
-                        int num = 0;
+                        var array2 = slots2;
+                        var num = 0;
                         if (num < array2.Length)
                         {
-                            byte tmpSlot3 = array2[num];
+                            var tmpSlot3 = array2[num];
                             client.Character.ItemSWAP(srcBag, srcSlot, 0, tmpSlot3);
                             errCode = 0;
                         }
@@ -963,9 +963,9 @@ namespace Mangos.World.Objects
                 }
                 else if (srcBag > 0)
                 {
-                    byte[] slots = client.Character.Items[srcBag].Items[srcSlot].ItemInfo.GetSlots;
-                    byte[] array3 = slots;
-                    foreach (byte tmpSlot2 in array3)
+                    var slots = client.Character.Items[srcBag].Items[srcSlot].ItemInfo.GetSlots;
+                    var array3 = slots;
+                    foreach (var tmpSlot2 in array3)
                     {
                         if (!client.Character.Items.ContainsKey(tmpSlot2))
                         {
@@ -977,11 +977,11 @@ namespace Mangos.World.Objects
                     }
                     if (errCode == 9)
                     {
-                        byte[] array4 = slots;
-                        int num2 = 0;
+                        var array4 = slots;
+                        var num2 = 0;
                         if (num2 < array4.Length)
                         {
-                            byte tmpSlot = array4[num2];
+                            var tmpSlot = array4[num2];
                             client.Character.ItemSWAP(srcBag, srcSlot, 0, tmpSlot);
                             errCode = 0;
                         }
@@ -993,7 +993,7 @@ namespace Mangos.World.Objects
                 }
                 if (errCode != 0)
                 {
-                    Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
+                    var response = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
                     response.AddInt8(errCode);
                     response.AddUInt64(client.Character.ItemGetGUID(srcBag, srcSlot));
                     response.AddUInt64(0uL);
@@ -1005,7 +1005,7 @@ namespace Mangos.World.Objects
             catch (Exception ex)
             {
                 ProjectData.SetProjectError(ex);
-                Exception err = ex;
+                var err = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "[{0}:{1}] Unable to equip item. {2}{3}", client.IP, client.Port, Environment.NewLine, err.ToString());
                 ProjectData.ClearProjectError();
             }
@@ -1016,9 +1016,9 @@ namespace Mangos.World.Objects
             if (checked(packet.Data.Length - 1) >= 8)
             {
                 packet.GetInt16();
-                byte srcBag = packet.GetInt8();
-                byte srcSlot = packet.GetInt8();
-                byte dstBag = packet.GetInt8();
+                var srcBag = packet.GetInt8();
+                var srcSlot = packet.GetInt8();
+                var dstBag = packet.GetInt8();
                 if (srcBag == byte.MaxValue)
                 {
                     srcBag = 0;
@@ -1028,11 +1028,11 @@ namespace Mangos.World.Objects
                     dstBag = 0;
                 }
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_AUTOSTORE_BAG_ITEM [srcSlot={3}:{2}, dstBag={4}]", client.IP, client.Port, srcSlot, srcBag, dstBag);
-                WS_PlayerData.CharacterObject character = client.Character;
+                var character = client.Character;
                 Dictionary<ulong, ItemObject> wORLD_ITEMs;
                 ulong key;
-                ItemObject Item = (wORLD_ITEMs = WorldServiceLocator._WorldServer.WORLD_ITEMs)[key = client.Character.ItemGetGUID(srcBag, srcSlot)];
-                bool num = character.ItemADD_AutoBag(ref Item, dstBag);
+                var Item = (wORLD_ITEMs = WorldServiceLocator._WorldServer.WORLD_ITEMs)[key = client.Character.ItemGetGUID(srcBag, srcSlot)];
+                var num = character.ItemADD_AutoBag(ref Item, dstBag);
                 wORLD_ITEMs[key] = Item;
                 if (num)
                 {
@@ -1047,10 +1047,10 @@ namespace Mangos.World.Objects
             if (checked(packet.Data.Length - 1) >= 9)
             {
                 packet.GetInt16();
-                byte dstBag = packet.GetInt8();
-                byte dstSlot = packet.GetInt8();
-                byte srcBag = packet.GetInt8();
-                byte srcSlot = packet.GetInt8();
+                var dstBag = packet.GetInt8();
+                var dstSlot = packet.GetInt8();
+                var srcBag = packet.GetInt8();
+                var srcSlot = packet.GetInt8();
                 if (dstBag == byte.MaxValue)
                 {
                     dstBag = 0;
@@ -1069,11 +1069,11 @@ namespace Mangos.World.Objects
             if (checked(packet.Data.Length - 1) >= 10)
             {
                 packet.GetInt16();
-                byte srcBag = packet.GetInt8();
-                byte srcSlot = packet.GetInt8();
-                byte dstBag = packet.GetInt8();
-                byte dstSlot = packet.GetInt8();
-                byte count = packet.GetInt8();
+                var srcBag = packet.GetInt8();
+                var srcSlot = packet.GetInt8();
+                var dstBag = packet.GetInt8();
+                var dstSlot = packet.GetInt8();
+                var count = packet.GetInt8();
                 if (dstBag == byte.MaxValue)
                 {
                     dstBag = 0;
@@ -1097,15 +1097,15 @@ namespace Mangos.World.Objects
                 return;
             }
             packet.GetInt16();
-            byte srcBag = packet.GetInt8();
-            byte srcSlot = packet.GetInt8();
+            var srcBag = packet.GetInt8();
+            var srcSlot = packet.GetInt8();
             if (srcBag == byte.MaxValue)
             {
                 srcBag = 0;
             }
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_READ_ITEM [srcSlot={3}:{2}]", client.IP, client.Port, srcSlot, srcBag);
             short opcode = 175;
-            ulong guid = 0uL;
+            var guid = 0uL;
             if (srcBag == 0)
             {
                 if (client.Character.Items.ContainsKey(srcSlot))
@@ -1127,7 +1127,7 @@ namespace Mangos.World.Objects
             }
             if (decimal.Compare(new decimal(guid), 0m) != 0)
             {
-                Packets.PacketClass response = new Packets.PacketClass((Opcodes)opcode);
+                var response = new Packets.PacketClass((Opcodes)opcode);
                 response.AddUInt64(guid);
                 client.Send(ref response);
                 response.Dispose();
@@ -1139,12 +1139,12 @@ namespace Mangos.World.Objects
             if (checked(packet.Data.Length - 1) >= 17)
             {
                 packet.GetInt16();
-                int pageID = packet.GetInt32();
-                ulong itemGuid = packet.GetUInt64();
+                var pageID = packet.GetInt32();
+                var itemGuid = packet.GetUInt64();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_PAGE_TEXT_QUERY [pageID={2}, itemGuid={3:X}]", client.IP, client.Port, pageID, itemGuid);
-                DataTable mySqlQuery = new DataTable();
+                var mySqlQuery = new DataTable();
                 WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT * FROM page_text WHERE entry = \"{pageID}\";", ref mySqlQuery);
-                Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_PAGE_TEXT_QUERY_RESPONSE);
+                var response = new Packets.PacketClass(Opcodes.SMSG_PAGE_TEXT_QUERY_RESPONSE);
                 response.AddInt32(pageID);
                 if (mySqlQuery.Rows.Count != 0)
                 {
@@ -1172,10 +1172,10 @@ namespace Mangos.World.Objects
             if (checked(packet.Data.Length - 1) >= 9)
             {
                 packet.GetInt16();
-                byte giftBag = packet.GetInt8();
-                byte giftSlot = packet.GetInt8();
-                byte itemBag = packet.GetInt8();
-                byte itemSlot = packet.GetInt8();
+                var giftBag = packet.GetInt8();
+                var giftSlot = packet.GetInt8();
+                var itemBag = packet.GetInt8();
+                var itemSlot = packet.GetInt8();
                 if (giftBag == byte.MaxValue)
                 {
                     giftBag = 0;
@@ -1185,8 +1185,8 @@ namespace Mangos.World.Objects
                     itemBag = 0;
                 }
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_WRAP_ITEM [{2}:{3} -> {4}{5}]", client.IP, client.Port, giftBag, giftSlot, itemBag, itemSlot);
-                ItemObject gift = client.Character.ItemGET(giftBag, giftSlot);
-                ItemObject item = client.Character.ItemGET(itemBag, itemSlot);
+                var gift = client.Character.ItemGET(giftBag, giftSlot);
+                var item = client.Character.ItemGET(itemBag, itemSlot);
                 if (gift == null || item == null)
                 {
                     SendInventoryChangeFailure(ref client.Character, InventoryChangeFailure.EQUIP_ERR_ITEM_NOT_FOUND, 0uL, 0uL);
@@ -1205,9 +1205,9 @@ namespace Mangos.World.Objects
                 try
                 {
                     packet.GetInt16();
-                    byte srcBag = packet.GetInt8();
-                    byte srcSlot = packet.GetInt8();
-                    byte count = packet.GetInt8();
+                    var srcBag = packet.GetInt8();
+                    var srcSlot = packet.GetInt8();
+                    var count = packet.GetInt8();
                     if (srcBag == byte.MaxValue)
                     {
                         srcBag = 0;
@@ -1224,10 +1224,10 @@ namespace Mangos.World.Objects
                         {
                             if (srcSlot < 23u)
                             {
-                                WS_PlayerData.CharacterObject character = client.Character;
+                                var character = client.Character;
                                 Dictionary<byte, ItemObject> items;
                                 byte key;
-                                ItemObject Item = (items = client.Character.Items)[key = srcSlot];
+                                var Item = (items = client.Character.Items)[key = srcSlot];
                                 character.UpdateRemoveItemStats(ref Item, srcSlot);
                                 items[key] = Item;
                             }
@@ -1257,7 +1257,7 @@ namespace Mangos.World.Objects
                 catch (Exception ex)
                 {
                     ProjectData.SetProjectError(ex);
-                    Exception e = ex;
+                    var e = ex;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Error destroying item.{0}", Environment.NewLine + e);
                     ProjectData.ClearProjectError();
                 }
@@ -1273,26 +1273,26 @@ namespace Mangos.World.Objects
                     return;
                 }
                 packet.GetInt16();
-                byte bag = packet.GetInt8();
+                var bag = packet.GetInt8();
                 if (bag == byte.MaxValue)
                 {
                     bag = 0;
                 }
-                byte slot = packet.GetInt8();
-                byte tmp3 = packet.GetInt8();
+                var slot = packet.GetInt8();
+                var tmp3 = packet.GetInt8();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_USE_ITEM [bag={2} slot={3} tmp3={4}]", client.IP, client.Port, bag, slot, tmp3);
                 if (((uint)client.Character.cUnitFlags & 0x100000u) != 0)
                 {
                     return;
                 }
-                ulong itemGuid = client.Character.ItemGetGUID(bag, slot);
+                var itemGuid = client.Character.ItemGetGUID(bag, slot);
                 if (!WorldServiceLocator._WorldServer.WORLD_ITEMs.ContainsKey(itemGuid))
                 {
                     SendInventoryChangeFailure(ref client.Character, InventoryChangeFailure.EQUIP_ERR_ITEM_NOT_FOUND, 0uL, 0uL);
                     return;
                 }
-                ItemInfo itemInfo = WorldServiceLocator._WorldServer.WORLD_ITEMs[itemGuid].ItemInfo;
-                bool InstantCast = false;
+                var itemInfo = WorldServiceLocator._WorldServer.WORLD_ITEMs[itemGuid].ItemInfo;
+                var InstantCast = false;
                 byte j = 0;
                 do
                 {
@@ -1316,10 +1316,10 @@ namespace Mangos.World.Objects
                 {
                     WorldServiceLocator._WorldServer.WORLD_ITEMs[itemGuid].SoulbindItem(client);
                 }
-                WS_Spells.SpellTargets targets = new WS_Spells.SpellTargets();
-                WS_Spells.SpellTargets spellTargets = targets;
-                ref WS_PlayerData.CharacterObject character = ref client.Character;
-                ref WS_PlayerData.CharacterObject reference = ref character;
+                var targets = new WS_Spells.SpellTargets();
+                var spellTargets = targets;
+                ref var character = ref client.Character;
+                ref var reference = ref character;
                 WS_Base.BaseObject Caster = character;
                 spellTargets.ReadTargets(ref packet, ref Caster);
                 reference = (WS_PlayerData.CharacterObject)Caster;
@@ -1333,18 +1333,18 @@ namespace Mangos.World.Objects
                             WorldServiceLocator._WS_Spells.SendCastResult(SpellFailedReason.SPELL_FAILED_NO_CHARGES_REMAIN, ref client, itemInfo.Spells[i].SpellID);
                             break;
                         }
-                        ref WS_PlayerData.CharacterObject character2 = ref client.Character;
+                        ref var character2 = ref client.Character;
                         reference = ref character2;
                         Caster = character2;
-                        int spellID = itemInfo.Spells[i].SpellID;
+                        var spellID = itemInfo.Spells[i].SpellID;
                         Dictionary<ulong, ItemObject> wORLD_ITEMs;
                         ulong key;
-                        ItemObject Item = (wORLD_ITEMs = WorldServiceLocator._WorldServer.WORLD_ITEMs)[key = itemGuid];
-                        WS_Spells.CastSpellParameters castSpellParameters = new WS_Spells.CastSpellParameters(ref targets, ref Caster, spellID, ref Item, InstantCast);
+                        var Item = (wORLD_ITEMs = WorldServiceLocator._WorldServer.WORLD_ITEMs)[key = itemGuid];
+                        var castSpellParameters = new WS_Spells.CastSpellParameters(ref targets, ref Caster, spellID, ref Item, InstantCast);
                         wORLD_ITEMs[key] = Item;
                         reference = (WS_PlayerData.CharacterObject)Caster;
-                        WS_Spells.CastSpellParameters tmpSpell = castSpellParameters;
-                        byte castResult = byte.MaxValue;
+                        var tmpSpell = castSpellParameters;
+                        var castResult = byte.MaxValue;
                         try
                         {
                             castResult = (byte)WorldServiceLocator._WS_Spells.SPELLs[itemInfo.Spells[i].SpellID].CanCast(ref client.Character, targets, FirstCheck: true);
@@ -1360,7 +1360,7 @@ namespace Mangos.World.Objects
                         catch (Exception ex2)
                         {
                             ProjectData.SetProjectError(ex2);
-                            Exception e = ex2;
+                            var e = ex2;
                             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Error casting spell {0}.{1}", itemInfo.Spells[i].SpellID, Environment.NewLine + e);
                             WorldServiceLocator._WS_Spells.SendCastResult((SpellFailedReason)castResult, ref client, itemInfo.Spells[i].SpellID);
                             ProjectData.ClearProjectError();
@@ -1377,7 +1377,7 @@ namespace Mangos.World.Objects
             catch (Exception ex3)
             {
                 ProjectData.SetProjectError(ex3);
-                Exception ex = ex3;
+                var ex = ex3;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error while using a item.{0}", Environment.NewLine + ex);
                 ProjectData.ClearProjectError();
             }
@@ -1390,14 +1390,14 @@ namespace Mangos.World.Objects
                 return;
             }
             packet.GetInt16();
-            byte bag = packet.GetInt8();
+            var bag = packet.GetInt8();
             if (bag == byte.MaxValue)
             {
                 bag = 0;
             }
-            byte slot = packet.GetInt8();
+            var slot = packet.GetInt8();
             WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_OPEN_ITEM [bag={2} slot={3}]", client.IP, client.Port, bag, slot);
-            ulong itemGuid = ((bag != 0) ? client.Character.Items[bag].Items[slot].GUID : client.Character.Items[slot].GUID);
+            var itemGuid = ((bag != 0) ? client.Character.Items[bag].Items[slot].GUID : client.Character.Items[slot].GUID);
             if (decimal.Compare(new decimal(itemGuid), 0m) != 0 && WorldServiceLocator._WorldServer.WORLD_ITEMs.ContainsKey(itemGuid))
             {
                 if (WorldServiceLocator._WorldServer.WORLD_ITEMs[itemGuid].GenerateLoot())
@@ -1413,7 +1413,7 @@ namespace Mangos.World.Objects
 
         public void SendInventoryChangeFailure(ref WS_PlayerData.CharacterObject objCharacter, InventoryChangeFailure errorCode, ulong guid1, ulong guid2)
         {
-            Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
+            var packet = new Packets.PacketClass(Opcodes.SMSG_INVENTORY_CHANGE_FAILURE);
             packet.AddInt8((byte)errorCode);
             if (errorCode == InventoryChangeFailure.EQUIP_ERR_YOU_MUST_REACH_LEVEL_N)
             {

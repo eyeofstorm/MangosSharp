@@ -31,12 +31,12 @@ namespace Mangos.World.Handlers
             if (client.Access >= AccessLevel.GameMaster)
             {
                 packet.GetInt16();
-                int Time = packet.GetInt32();
-                uint Map = packet.GetUInt32();
-                float X = packet.GetFloat();
-                float Y = packet.GetFloat();
-                float Z = packet.GetFloat();
-                float O = packet.GetFloat();
+                var Time = packet.GetInt32();
+                var Map = packet.GetUInt32();
+                var X = packet.GetFloat();
+                var Y = packet.GetFloat();
+                var Z = packet.GetFloat();
+                var O = packet.GetFloat();
                 client.Character.Teleport(X, Y, Z, O, checked((int)Map));
             }
         }

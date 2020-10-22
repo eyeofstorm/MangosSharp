@@ -68,11 +68,11 @@ namespace Mangos.DBCReader
 
         private void HandleDBCData(byte[] Data)
         {
-            string DBCType = Conversions.ToString((char)Data[0]) + (char)Data[1] + (char)Data[2] + (char)Data[3];
-            int Rows = BitConverter.ToInt32(Data, 4);
-            int Columns = BitConverter.ToInt32(Data, 8);
-            int RowLength = BitConverter.ToInt32(Data, 12);
-            int StringPartLength = BitConverter.ToInt32(Data, 16);
+            var DBCType = Conversions.ToString((char)Data[0]) + (char)Data[1] + (char)Data[2] + (char)Data[3];
+            var Rows = BitConverter.ToInt32(Data, 4);
+            var Columns = BitConverter.ToInt32(Data, 8);
+            var RowLength = BitConverter.ToInt32(Data, 12);
+            var StringPartLength = BitConverter.ToInt32(Data, 16);
             if (DBCType != "WDBC")
             {
                 MessageBox.Show("This file is not a DBC file.", "Error");
@@ -108,7 +108,7 @@ namespace Mangos.DBCReader
             // Check if any column uses floats instead of uint32's
             // Code below doesn't work at the moment, flags are in some cases counted as floats
             float tmpSng;
-            string tmpString = "";
+            var tmpString = "";
             var notFloat = new List<int>();
             for (i = 0; i <= 99; i++)
             {
@@ -295,8 +295,8 @@ namespace Mangos.DBCReader
             var Buffer = new byte[4];
             bool A_Float;
             bool A_String;
-            bool FailString = false;
-            bool DoneChange = false;
+            var FailString = false;
+            var DoneChange = false;
             int tmpInt2;
             if (DBCData.Items.Count == 0)
                 return;
@@ -403,9 +403,9 @@ namespace Mangos.DBCReader
                 return;
             }
 
-            string sQuery = txtQuery.Text;
-            int column = Conversions.ToInteger(cmbColumn.SelectedItem);
-            int start = 0;
+            var sQuery = txtQuery.Text;
+            var column = Conversions.ToInteger(cmbColumn.SelectedItem);
+            var start = 0;
             if (DBCData.SelectedItems.Count > 0)
             {
                 start = int.MaxValue - 1;
@@ -418,10 +418,10 @@ namespace Mangos.DBCReader
                 start += 1;
             }
 
-            bool is_string = IsString.Contains(column);
+            var is_string = IsString.Contains(column);
             for (int i = start, loopTo = DBCData.Items.Count - 1; i <= loopTo; i++)
             {
-                string sItem = DBCData.Items[i].SubItems[column].Text;
+                var sItem = DBCData.Items[i].SubItems[column].Text;
                 if (is_string && sItem.IndexOf(sQuery, StringComparison.OrdinalIgnoreCase) >= 0)
                 {
                     DBCData.SelectedItems.Clear();

@@ -71,7 +71,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastLightning()
         {
-            for (int i = 0; i <= 3; i++)
+            for (var i = 0; i <= 3; i++)
             {
                 WS_Base.BaseUnit Target = aiCreature;
                 if (Target is null)
@@ -82,7 +82,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastSlumber()
         {
-            for (int i = 1; i <= 3; i++)
+            for (var i = 1; i <= 3; i++)
             {
                 WS_Base.BaseUnit target = aiCreature;
                 if (target is null)

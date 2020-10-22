@@ -31,7 +31,7 @@ namespace Mangos.WoWFakeClient
         {
             // #If DEBUG Then
             int j;
-            string buffer = "";
+            var buffer = "";
             try
             {
                 buffer += string.Format("DEBUG: Packet Dump - Length={0}{1}", data.Length, Constants.vbCrLf);
@@ -213,7 +213,7 @@ namespace Mangos.WoWFakeClient
                 else
                 {
                     var Bytes = Encoding.UTF8.GetBytes(buffer.ToCharArray());
-                    int Position = Data.Length;
+                    var Position = Data.Length;
                     if (EndZero)
                     {
                         Array.Resize(ref Data, Data.Length + Bytes.Length + 1);
@@ -279,7 +279,7 @@ namespace Mangos.WoWFakeClient
 
             public void AddByteArray(byte[] buffer)
             {
-                int tmp = Data.Length;
+                var tmp = Data.Length;
                 Array.Resize(ref Data, Data.Length + buffer.Length);
                 Array.Copy(buffer, 0, Data, tmp, buffer.Length);
                 if (Realm == false)
@@ -293,8 +293,8 @@ namespace Mangos.WoWFakeClient
             {
                 var GUID = BitConverter.GetBytes(buffer);
                 var flags = new BitArray(8);
-                int offsetStart = Data.Length;
-                int offsetNewSize = offsetStart;
+                var offsetStart = Data.Length;
+                var offsetNewSize = offsetStart;
                 byte i;
                 for (i = 0; i <= 7; i++)
                 {
@@ -388,74 +388,74 @@ namespace Mangos.WoWFakeClient
 
             public short GetInt16()
             {
-                short num1 = BitConverter.ToInt16(Data, Offset);
+                var num1 = BitConverter.ToInt16(Data, Offset);
                 Offset += 2;
                 return num1;
             }
 
             public short GetInt16(int Offset)
             {
-                short num1 = BitConverter.ToInt16(Data, Offset);
+                var num1 = BitConverter.ToInt16(Data, Offset);
                 return num1;
             }
 
             public int GetInt32()
             {
-                int num1 = BitConverter.ToInt32(Data, Offset);
+                var num1 = BitConverter.ToInt32(Data, Offset);
                 Offset += 4;
                 return num1;
             }
 
             public int GetInt32(int Offset)
             {
-                int num1 = BitConverter.ToInt32(Data, Offset);
+                var num1 = BitConverter.ToInt32(Data, Offset);
                 return num1;
             }
 
             public long GetInt64()
             {
-                long num1 = BitConverter.ToInt64(Data, Offset);
+                var num1 = BitConverter.ToInt64(Data, Offset);
                 Offset += 8;
                 return num1;
             }
 
             public long GetInt64(int Offset)
             {
-                long num1 = BitConverter.ToInt64(Data, Offset);
+                var num1 = BitConverter.ToInt64(Data, Offset);
                 return num1;
             }
 
             public float GetFloat()
             {
-                float single1 = BitConverter.ToSingle(Data, Offset);
+                var single1 = BitConverter.ToSingle(Data, Offset);
                 Offset += 4;
                 return single1;
             }
 
             public float GetFloat(int Offset_)
             {
-                float single1 = BitConverter.ToSingle(Data, Offset);
+                var single1 = BitConverter.ToSingle(Data, Offset);
                 Offset = Offset_ + 4;
                 return single1;
             }
 
             public double GetDouble()
             {
-                double num1 = BitConverter.ToDouble(Data, Offset);
+                var num1 = BitConverter.ToDouble(Data, Offset);
                 Offset += 8;
                 return num1;
             }
 
             public double GetDouble(int Offset)
             {
-                double num1 = BitConverter.ToDouble(Data, Offset);
+                var num1 = BitConverter.ToDouble(Data, Offset);
                 return num1;
             }
 
             public string GetString()
             {
-                int start = Offset;
-                int i = 0;
+                var start = Offset;
+                var i = 0;
                 while (Data[start + i] != 0)
                 {
                     i += 1;
@@ -468,8 +468,8 @@ namespace Mangos.WoWFakeClient
 
             public string GetString(int Offset)
             {
-                int i = Offset;
-                string tmpString = "";
+                var i = Offset;
+                var tmpString = "";
                 while (Data[i] != 0)
                 {
                     tmpString += Conversions.ToString((char)Data[i]);
@@ -482,46 +482,46 @@ namespace Mangos.WoWFakeClient
 
             public ushort GetUInt16()
             {
-                ushort num1 = BitConverter.ToUInt16(Data, Offset);
+                var num1 = BitConverter.ToUInt16(Data, Offset);
                 Offset += 2;
                 return num1;
             }
 
             public ushort GetUInt16(int Offset)
             {
-                ushort num1 = BitConverter.ToUInt16(Data, Offset);
+                var num1 = BitConverter.ToUInt16(Data, Offset);
                 return num1;
             }
 
             public uint GetUInt32()
             {
-                uint num1 = BitConverter.ToUInt32(Data, Offset);
+                var num1 = BitConverter.ToUInt32(Data, Offset);
                 Offset += 4;
                 return num1;
             }
 
             public uint GetUInt32(int Offset)
             {
-                uint num1 = BitConverter.ToUInt32(Data, Offset);
+                var num1 = BitConverter.ToUInt32(Data, Offset);
                 return num1;
             }
 
             public ulong GetUInt64()
             {
-                ulong num1 = BitConverter.ToUInt64(Data, Offset);
+                var num1 = BitConverter.ToUInt64(Data, Offset);
                 Offset += 8;
                 return num1;
             }
 
             public ulong GetUInt64(int Offset)
             {
-                ulong num1 = BitConverter.ToUInt64(Data, Offset);
+                var num1 = BitConverter.ToUInt64(Data, Offset);
                 return num1;
             }
 
             public ulong GetPackGUID()
             {
-                byte flags = Data[Offset];
+                var flags = Data[Offset];
                 var GUID = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
                 Offset += 1;
                 if ((flags & 1) == 1)
@@ -577,7 +577,7 @@ namespace Mangos.WoWFakeClient
 
             public ulong GetPackGUID(int Offset)
             {
-                byte flags = Data[Offset];
+                var flags = Data[Offset];
                 var GUID = new byte[] { 0, 0, 0, 0, 0, 0, 0, 0 };
                 Offset += 1;
                 if ((flags & 1) == 1)

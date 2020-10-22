@@ -180,7 +180,7 @@ namespace Mangos.World.Scripts.Creatures
 
         public void CastFireball()
         {
-            for (int i = 0; i <= 3; i++)
+            for (var i = 0; i <= 3; i++)
             {
                 var theTarget = aiCreature.GetRandomTarget();
                 if (theTarget is null)

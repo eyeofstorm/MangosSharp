@@ -305,7 +305,7 @@ namespace Mangos.World.Warden
             {
                 Key = WS_Handlers_Warden.RC4.Init(Key);
                 WS_Handlers_Warden.RC4.Crypt(ref Data, Key);
-                int UncompressedLen = BitConverter.ToInt32(Data, 0);
+                var UncompressedLen = BitConverter.ToInt32(Data, 0);
                 if (UncompressedLen < 0)
                 {
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "[WARDEN] Failed to decrypt {0}, incorrect length.", Name);
@@ -313,24 +313,24 @@ namespace Mangos.World.Warden
                 }
                 checked
                 {
-                    byte[] CompressedData = new byte[Data.Length - 264 - 1 + 1];
+                    var CompressedData = new byte[Data.Length - 264 - 1 + 1];
                     Array.Copy(Data, 4, CompressedData, 0, CompressedData.Length);
-                    int dataPos = 4 + CompressedData.Length;
-                    string Sign = Conversions.ToString(Strings.Chr(Data[dataPos + 3])) + Conversions.ToString(Strings.Chr(Data[dataPos + 2])) + Conversions.ToString(Strings.Chr(Data[dataPos + 1])) + Conversions.ToString(Strings.Chr(Data[dataPos]));
+                    var dataPos = 4 + CompressedData.Length;
+                    var Sign = Conversions.ToString(Strings.Chr(Data[dataPos + 3])) + Conversions.ToString(Strings.Chr(Data[dataPos + 2])) + Conversions.ToString(Strings.Chr(Data[dataPos + 1])) + Conversions.ToString(Strings.Chr(Data[dataPos]));
                     if (Operators.CompareString(Sign, "SIGN", TextCompare: false) != 0)
                     {
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "[WARDEN] Failed to decrypt {0}, sign missing.", Name);
                         return false;
                     }
                     dataPos += 4;
-                    byte[] Signature = new byte[256];
+                    var Signature = new byte[256];
                     Array.Copy(Data, dataPos, Signature, 0, Signature.Length);
                     if (!CheckSignature(Signature, Data, Data.Length - 260))
                     {
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "[WARDEN] Signature fail on Warden Module.");
                         return false;
                     }
-                    byte[] DecompressedData = WorldServiceLocator._GlobalZip.DeCompress(CompressedData);
+                    var DecompressedData = WorldServiceLocator._GlobalZip.DeCompress(CompressedData);
                     if (!PrepairModule(ref DecompressedData))
                     {
                         return false;
@@ -355,14 +355,14 @@ namespace Mangos.World.Warden
 
             public bool CheckSignature(byte[] Signature, byte[] Data, int DataLen)
             {
-                BigInteger power = new BigInteger(new byte[4]
+                var power = new BigInteger(new byte[4]
                 {
                     1,
                     0,
                     1,
                     0
                 }, isUnsigned: true, isBigEndian: true);
-                BigInteger pmod = new BigInteger(new byte[256]
+                var pmod = new BigInteger(new byte[256]
                 {
                     107,
                     206,
@@ -621,34 +621,34 @@ namespace Mangos.World.Warden
                     175,
                     199
                 }, isUnsigned: true, isBigEndian: true);
-                BigInteger sig = new BigInteger(Signature, isUnsigned: true, isBigEndian: true);
-                byte[] result = BigInteger.ModPow(sig, power, pmod).ToByteArray(isUnsigned: true, isBigEndian: true);
-                byte[] properResult = new byte[256];
+                var sig = new BigInteger(Signature, isUnsigned: true, isBigEndian: true);
+                var result = BigInteger.ModPow(sig, power, pmod).ToByteArray(isUnsigned: true, isBigEndian: true);
+                var properResult = new byte[256];
                 checked
                 {
-                    int num = properResult.Length - 1;
-                    for (int k = 0; k <= num; k++)
+                    var num = properResult.Length - 1;
+                    for (var k = 0; k <= num; k++)
                     {
                         properResult[k] = 187;
                     }
                     properResult[255] = 11;
-                    string tmpKey = "MAIEV.MOD";
-                    byte[] bKey = new byte[tmpKey.Length - 1 + 1];
-                    int num2 = tmpKey.Length - 1;
-                    for (int j = 0; j <= num2; j++)
+                    var tmpKey = "MAIEV.MOD";
+                    var bKey = new byte[tmpKey.Length - 1 + 1];
+                    var num2 = tmpKey.Length - 1;
+                    for (var j = 0; j <= num2; j++)
                     {
                         bKey[j] = (byte)Strings.Asc(tmpKey[j]);
                     }
-                    byte[] newData = new byte[DataLen + bKey.Length - 1 + 1];
+                    var newData = new byte[DataLen + bKey.Length - 1 + 1];
                     Array.Copy(Data, 0, newData, 0, DataLen);
                     Array.Copy(bKey, 0, newData, DataLen, bKey.Length);
-                    SHA1Managed sha1 = new SHA1Managed();
-                    byte[] digest = sha1.ComputeHash(newData);
+                    var sha1 = new SHA1Managed();
+                    var digest = sha1.ComputeHash(newData);
                     Array.Copy(digest, 0, properResult, 0, digest.Length);
                     Console.WriteLine("Result:       " + BitConverter.ToString(result));
                     Console.WriteLine("ProperResult: " + BitConverter.ToString(properResult));
-                    int num3 = result.Length - 1;
-                    for (int i = 0; i <= num3; i++)
+                    var num3 = result.Length - 1;
+                    for (var i = 0; i <= num3; i++)
                     {
                         if (result[i] != properResult[i])
                         {
@@ -665,8 +665,8 @@ namespace Mangos.World.Warden
                 {
                     try
                     {
-                        int pModule = WorldServiceLocator._WS_Warden.ByteArrPtr(ref data);
-                        object? obj = Marshal.PtrToStructure(new IntPtr(pModule), typeof(CHeader));
+                        var pModule = WorldServiceLocator._WS_Warden.ByteArrPtr(ref data);
+                        var obj = Marshal.PtrToStructure(new IntPtr(pModule), typeof(CHeader));
                         Header = ((obj != null) ? ((CHeader)obj) : default);
                         dwModuleSize = Header.dwModuleSize;
                         if (dwModuleSize < int.MaxValue)
@@ -675,10 +675,10 @@ namespace Mangos.World.Warden
                             if (m_Mod != 0)
                             {
                                 Marshal.Copy(data, 0, (IntPtr)m_Mod, 40);
-                                int index = 40 + Header.dwChunkCount * 3 * 4;
-                                int dwChunkDest = m_Mod + BitConverter.ToInt32(data, 40);
-                                int dwModuleEnd = m_Mod + dwModuleSize;
-                                bool bCopyChunk = true;
+                                var index = 40 + Header.dwChunkCount * 3 * 4;
+                                var dwChunkDest = m_Mod + BitConverter.ToInt32(data, 40);
+                                var dwModuleEnd = m_Mod + dwModuleSize;
+                                var bCopyChunk = true;
                                 while (dwChunkDest < dwModuleEnd)
                                 {
                                     int dwCurrentChunkSize = BitConverter.ToInt16(data, index);
@@ -693,9 +693,9 @@ namespace Mangos.World.Warden
                                 }
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[WARDEN] Update...");
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[WARDEN] Update: Adjusting references to global variables...");
-                                int pbRelocationTable = m_Mod + Header.dwSizeOfCode;
-                                int dwRelocationIndex = 0;
-                                int dwLastRelocation = 0;
+                                var pbRelocationTable = m_Mod + Header.dwSizeOfCode;
+                                var dwRelocationIndex = 0;
+                                var dwLastRelocation = 0;
                                 while (dwRelocationIndex < Header.dwRelocationCount)
                                 {
                                     int dwValue = Marshal.ReadByte(new IntPtr(pbRelocationTable));
@@ -706,35 +706,35 @@ namespace Mangos.World.Warden
                                         dwValue = dwValue + Marshal.ReadByte(new IntPtr(checked(pbRelocationTable + 2))) << 8;
                                         dwValue += Marshal.ReadByte(new IntPtr(checked(pbRelocationTable + 3)));
                                         pbRelocationTable += 4;
-                                        int old2 = Marshal.ReadInt32(new IntPtr(m_Mod + dwValue));
+                                        var old2 = Marshal.ReadInt32(new IntPtr(m_Mod + dwValue));
                                         Marshal.WriteInt32(new IntPtr(m_Mod + dwValue), m_Mod + old2);
                                     }
                                     else
                                     {
                                         dwValue = (dwValue << 8) + dwLastRelocation + Marshal.ReadByte(new IntPtr(checked(pbRelocationTable + 1)));
                                         pbRelocationTable += 2;
-                                        int old = Marshal.ReadInt32(new IntPtr(m_Mod + dwValue));
+                                        var old = Marshal.ReadInt32(new IntPtr(m_Mod + dwValue));
                                         Marshal.WriteInt32(new IntPtr(m_Mod + dwValue), m_Mod + old);
                                     }
                                     dwRelocationIndex++;
                                     dwLastRelocation = dwValue;
                                 }
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[WARDEN] Update: Updating API library references...");
-                                int dwLibraryIndex = 0;
+                                var dwLibraryIndex = 0;
                                 while (dwLibraryIndex < Header.dwLibraryCount)
                                 {
-                                    object? obj2 = Marshal.PtrToStructure(new IntPtr(m_Mod + Header.dwLibraryTable + dwLibraryIndex * 8), typeof(CLibraryEntry));
-                                    CLibraryEntry pLibraryTable = ((obj2 != null) ? ((CLibraryEntry)obj2) : default);
-                                    string procLib = Marshal.PtrToStringAnsi(new IntPtr(m_Mod + pLibraryTable.dwFileName));
+                                    var obj2 = Marshal.PtrToStructure(new IntPtr(m_Mod + Header.dwLibraryTable + dwLibraryIndex * 8), typeof(CLibraryEntry));
+                                    var pLibraryTable = ((obj2 != null) ? ((CLibraryEntry)obj2) : default);
+                                    var procLib = Marshal.PtrToStringAnsi(new IntPtr(m_Mod + pLibraryTable.dwFileName));
                                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "    Library: {0}", procLib);
-                                    int hModule = NativeMethods.LoadLibrary(procLib, "");
+                                    var hModule = NativeMethods.LoadLibrary(procLib, "");
                                     if (hModule != 0)
                                     {
-                                        int dwImports = m_Mod + pLibraryTable.dwImports;
-                                        int dwCurrent = Marshal.ReadInt32(new IntPtr(dwImports));
+                                        var dwImports = m_Mod + pLibraryTable.dwImports;
+                                        var dwCurrent = Marshal.ReadInt32(new IntPtr(dwImports));
                                         while (dwCurrent != 0)
                                         {
-                                            int procAddr = 0;
+                                            var procAddr = 0;
                                             dwCurrent = Marshal.ReadInt32(new IntPtr(dwImports));
                                             if (dwCurrent <= 0)
                                             {
@@ -744,9 +744,9 @@ namespace Mangos.World.Warden
                                             }
                                             else
                                             {
-                                                string procFunc = Marshal.PtrToStringAnsi(new IntPtr(m_Mod + dwCurrent));
-                                                MethodInfo procRedirector = typeof(ApiRedirector).GetMethod("my" + procFunc);
-                                                Type procDelegate = typeof(ApiRedirector).GetNestedType("d" + procFunc);
+                                                var procFunc = Marshal.PtrToStringAnsi(new IntPtr(m_Mod + dwCurrent));
+                                                var procRedirector = typeof(ApiRedirector).GetMethod("my" + procFunc);
+                                                var procDelegate = typeof(ApiRedirector).GetNestedType("d" + procFunc);
                                                 if (procRedirector is null || procDelegate is null)
                                                 {
                                                     procAddr = (int)(uint)NativeMethods.GetProcAddress((IntPtr)hModule, procFunc, "");
@@ -766,14 +766,14 @@ namespace Mangos.World.Warden
                                     dwLibraryIndex++;
                                     dwLibraryCount++;
                                 }
-                                for (int dwIndex = 0; dwIndex < Header.dwChunkCount; dwIndex++)
+                                for (var dwIndex = 0; dwIndex < Header.dwChunkCount; dwIndex++)
                                 {
-                                    int pdwChunk2 = m_Mod + (10 + dwIndex * 3 * 4) * 4;
-                                    uint dwOldProtect = 0u;
-                                    int lpAddress = m_Mod + Marshal.ReadInt32(new IntPtr(pdwChunk2));
-                                    int dwSize = Marshal.ReadInt32(new IntPtr(pdwChunk2 + 4));
-                                    int flNewProtect = Marshal.ReadInt32(new IntPtr(pdwChunk2 + 8));
-                                    int lpflOldProtect = (int)dwOldProtect;
+                                    var pdwChunk2 = m_Mod + (10 + dwIndex * 3 * 4) * 4;
+                                    var dwOldProtect = 0u;
+                                    var lpAddress = m_Mod + Marshal.ReadInt32(new IntPtr(pdwChunk2));
+                                    var dwSize = Marshal.ReadInt32(new IntPtr(pdwChunk2 + 4));
+                                    var flNewProtect = Marshal.ReadInt32(new IntPtr(pdwChunk2 + 8));
+                                    var lpflOldProtect = (int)dwOldProtect;
                                     NativeMethods.VirtualProtect(lpAddress, dwSize, flNewProtect, ref lpflOldProtect, "");
                                     dwOldProtect = (uint)lpflOldProtect;
                                     if ((unchecked((uint)flNewProtect) & 0xF0u) != 0)
@@ -781,10 +781,10 @@ namespace Mangos.World.Warden
                                         NativeMethods.FlushInstructionCache(NativeMethods.GetCurrentProcess(""), lpAddress, dwSize, "");
                                     }
                                 }
-                                bool bUnload = true;
+                                var bUnload = true;
                                 if (Header.dwSizeOfCode < dwModuleSize)
                                 {
-                                    int dwOffset = (Header.dwSizeOfCode + 4095) & -4096;
+                                    var dwOffset = (Header.dwSizeOfCode + 4095) & -4096;
                                     if (dwOffset >= Header.dwSizeOfCode && dwOffset > dwModuleSize)
                                     {
                                         NativeMethods.VirtualFree(m_Mod + dwOffset, dwModuleSize - dwOffset, 16384, "");
@@ -804,9 +804,9 @@ namespace Mangos.World.Warden
                     catch (Exception ex2)
                     {
                         ProjectData.SetProjectError(ex2);
-                        Exception ex = ex2;
+                        var ex = ex2;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Failed to prepair module.{0}{1}", Environment.NewLine, ex.ToString());
-                        bool PrepairModule = false;
+                        var PrepairModule = false;
                         ProjectData.ClearProjectError();
                         return PrepairModule;
                     }
@@ -817,12 +817,12 @@ namespace Mangos.World.Warden
             {
                 checked
                 {
-                    int dwProcedureDiff = 1 - Header.dwProcedureAdjust;
+                    var dwProcedureDiff = 1 - Header.dwProcedureAdjust;
                     if (dwProcedureDiff > Header.dwProcedureCount)
                     {
                         return false;
                     }
-                    int fInit = Marshal.ReadInt32(new IntPtr(m_Mod + Header.dwProcedureTable + dwProcedureDiff * 4));
+                    var fInit = Marshal.ReadInt32(new IntPtr(m_Mod + Header.dwProcedureTable + dwProcedureDiff * 4));
                     InitPointer = m_Mod + fInit;
                     Console.WriteLine("Initialize Function is mapped at 0x{0:X}", InitPointer);
                     SendPacketD = SendPacket;
@@ -853,10 +853,10 @@ namespace Mangos.World.Warden
                     myFuncList = new IntPtr(WorldServiceLocator._WS_Warden.Malloc(28));
                     Marshal.StructureToPtr(myFunctionList, myFuncList, fDeleteOld: false);
                     pFuncList = myFuncList.ToInt32();
-                    WS_Warden wS_Warden = WorldServiceLocator._WS_Warden;
-                    ref int reference = ref pFuncList;
+                    var wS_Warden = WorldServiceLocator._WS_Warden;
+                    ref var reference = ref pFuncList;
                     object obj = reference;
-                    int num = wS_Warden.VarPtr(ref obj);
+                    var num = wS_Warden.VarPtr(ref obj);
                     reference = Conversions.ToInteger(obj);
                     ppFuncList = num;
                     Console.WriteLine("Initializing module");
@@ -868,12 +868,12 @@ namespace Mangos.World.Warden
                     catch (Exception ex2)
                     {
                         ProjectData.SetProjectError(ex2);
-                        Exception ex = ex2;
+                        var ex = ex2;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "[WARDEN] Failed to Initialize Module.");
                         ProjectData.ClearProjectError();
                     }
                     pWardenList = Marshal.ReadInt32(new IntPtr(m_ModMem));
-                    object? obj2 = Marshal.PtrToStructure(new IntPtr(pWardenList), typeof(WardenFuncList));
+                    var obj2 = Marshal.PtrToStructure(new IntPtr(pWardenList), typeof(WardenFuncList));
                     myWardenList = ((obj2 != null) ? ((WardenFuncList)obj2) : default);
                     Console.WriteLine("Exports:");
                     Console.WriteLine("  GenerateRC4Keys: 0x{0:X}", myWardenList.fpGenerateRC4Keys);
@@ -938,8 +938,8 @@ namespace Mangos.World.Warden
                 Console.WriteLine("Warden.GetRC4Data() Buffer={0}, Size={1}", lpBuffer, dwSize);
                 checked
                 {
-                    int num = dwSize - 1;
-                    for (int i = 0; i <= num; i++)
+                    var num = dwSize - 1;
+                    for (var i = 0; i <= num; i++)
                     {
                         Marshal.WriteByte(new IntPtr(lpBuffer + i), 0);
                     }
@@ -951,7 +951,7 @@ namespace Mangos.World.Warden
             public void GenerateNewRC4Keys(byte[] K)
             {
                 m_RC4 = 0;
-                int pK = WorldServiceLocator._WS_Warden.ByteArrPtr(ref K);
+                var pK = WorldServiceLocator._WS_Warden.ByteArrPtr(ref K);
                 GenerateRC4Keys(m_ModMem, pK, K.Length);
                 WorldServiceLocator._WS_Warden.Free(pK);
             }
@@ -959,13 +959,13 @@ namespace Mangos.World.Warden
             public int HandlePacket(byte[] PacketData)
             {
                 m_PKT = new byte[0];
-                int BytesRead = 0;
-                WS_Warden wS_Warden = WorldServiceLocator._WS_Warden;
+                var BytesRead = 0;
+                var wS_Warden = WorldServiceLocator._WS_Warden;
                 object obj = BytesRead;
-                int num = wS_Warden.VarPtr(ref obj);
+                var num = wS_Warden.VarPtr(ref obj);
                 BytesRead = Conversions.ToInteger(obj);
                 BytesRead = num;
-                int pPacket = WorldServiceLocator._WS_Warden.ByteArrPtr(ref PacketData);
+                var pPacket = WorldServiceLocator._WS_Warden.ByteArrPtr(ref PacketData);
                 PacketHandler(m_ModMem, pPacket, PacketData.Length, BytesRead);
                 WorldServiceLocator._WS_Warden.Free(pPacket);
                 return Marshal.ReadInt32(new IntPtr(BytesRead));
@@ -978,7 +978,7 @@ namespace Mangos.World.Warden
 
             public void ReadKeys(ref WS_PlayerData.CharacterObject objCharacter)
             {
-                byte[] KeyData = new byte[516];
+                var KeyData = new byte[516];
                 Marshal.Copy(new IntPtr(checked(m_ModMem + 32)), KeyData, 0, KeyData.Length);
                 Buffer.BlockCopy(KeyData, 0, objCharacter.WardenData.KeyOut, 0, 258);
                 Buffer.BlockCopy(KeyData, 258, objCharacter.WardenData.KeyIn, 0, 258);
@@ -986,7 +986,7 @@ namespace Mangos.World.Warden
 
             public void ReadXorByte(ref WS_PlayerData.CharacterObject objCharacter)
             {
-                byte[] ClientSeed = new byte[16];
+                var ClientSeed = new byte[16];
                 Marshal.Copy(new IntPtr(checked(m_ModMem + 4)), ClientSeed, 0, ClientSeed.Length);
                 objCharacter.WardenData.ClientSeed = ClientSeed;
                 objCharacter.WardenData.xorByte = ClientSeed[0];

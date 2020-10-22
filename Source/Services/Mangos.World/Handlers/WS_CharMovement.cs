@@ -57,10 +57,10 @@ namespace Mangos.World.Handlers
             {
                 client.Character.charMovementFlags = packet.GetInt32();
             }
-            uint Time = packet.GetUInt32();
-            float posX = packet.GetFloat();
-            float posY = packet.GetFloat();
-            float posZ = packet.GetFloat();
+            var Time = packet.GetUInt32();
+            var posX = packet.GetFloat();
+            var posY = packet.GetFloat();
+            var posZ = packet.GetFloat();
             if (client.Character != null)
             {
                 client.Character.orientation = packet.GetFloat();
@@ -83,23 +83,23 @@ namespace Mangos.World.Handlers
             }
             if (client.Character.Pet != null && client.Character.Pet.FollowOwner)
             {
-                float angle = client.Character.orientation - (float)Math.PI / 2f;
+                var angle = client.Character.orientation - (float)Math.PI / 2f;
                 if (angle < 0f)
                 {
                     angle += (float)Math.PI * 2f;
                 }
                 client.Character.Pet.SetToRealPosition();
-                float tmpX = (float)(client.Character.positionX + Math.Cos(angle) * 2.0);
-                float tmpY = (float)(client.Character.positionY + Math.Sin(angle) * 2.0);
+                var tmpX = (float)(client.Character.positionX + Math.Cos(angle) * 2.0);
+                var tmpY = (float)(client.Character.positionY + Math.Sin(angle) * 2.0);
                 client.Character.Pet.MoveTo(tmpX, tmpY, client.Character.positionZ, client.Character.orientation, Running: true);
             }
             if (((uint)client.Character.charMovementFlags & 0x2000000u) != 0)
             {
-                ulong transportGUID = packet.GetUInt64();
-                float transportX = packet.GetFloat();
-                float transportY = packet.GetFloat();
-                float transportZ = packet.GetFloat();
-                float transportO = packet.GetFloat();
+                var transportGUID = packet.GetUInt64();
+                var transportX = packet.GetFloat();
+                var transportY = packet.GetFloat();
+                var transportZ = packet.GetFloat();
+                var transportO = packet.GetFloat();
                 client.Character.transportX = transportX;
                 client.Character.transportY = transportY;
                 client.Character.transportZ = transportZ;
@@ -109,12 +109,12 @@ namespace Mangos.World.Handlers
                     if (WorldServiceLocator._CommonGlobalFunctions.GuidIsMoTransport(transportGUID) && WorldServiceLocator._WorldServer.WORLD_TRANSPORTs.ContainsKey(transportGUID))
                     {
                         client.Character.OnTransport = WorldServiceLocator._WorldServer.WORLD_TRANSPORTs[transportGUID];
-                        WS_PlayerData.CharacterObject character = client.Character;
-                        int NotSpellID = 0;
+                        var character = client.Character;
+                        var NotSpellID = 0;
                         character.RemoveAurasOfType(AuraEffects_Names.SPELL_AURA_MOUNTED, NotSpellID);
-                        WS_Transports.TransportObject obj = (WS_Transports.TransportObject)client.Character.OnTransport;
-                        ref WS_PlayerData.CharacterObject character2 = ref client.Character;
-                        ref WS_PlayerData.CharacterObject reference = ref character2;
+                        var obj = (WS_Transports.TransportObject)client.Character.OnTransport;
+                        ref var character2 = ref client.Character;
+                        ref var reference = ref character2;
                         WS_Base.BaseUnit Unit = character2;
                         obj.AddPassenger(ref Unit);
                         reference = (WS_PlayerData.CharacterObject)Unit;
@@ -129,8 +129,8 @@ namespace Mangos.World.Handlers
             {
                 if (client.Character.OnTransport is WS_Transports.TransportObject obj2)
                 {
-                    ref WS_PlayerData.CharacterObject character3 = ref client.Character;
-                    ref WS_PlayerData.CharacterObject reference = ref character3;
+                    ref var character3 = ref client.Character;
+                    ref var reference = ref character3;
                     WS_Base.BaseUnit Unit = character3;
                     obj2.RemovePassenger(ref Unit);
                     reference = (WS_PlayerData.CharacterObject)Unit;
@@ -139,35 +139,35 @@ namespace Mangos.World.Handlers
             }
             if (((uint)client.Character.charMovementFlags & 0x200000u) != 0)
             {
-                float swimAngle = packet.GetFloat();
+                var swimAngle = packet.GetFloat();
             }
             packet.GetInt32();
             if (((uint)client.Character.charMovementFlags & 0x2000u) != 0)
             {
-                uint airTime = packet.GetUInt32();
-                float sinAngle = packet.GetFloat();
-                float cosAngle = packet.GetFloat();
-                float xySpeed = packet.GetFloat();
+                var airTime = packet.GetUInt32();
+                var sinAngle = packet.GetFloat();
+                var cosAngle = packet.GetFloat();
+                var xySpeed = packet.GetFloat();
             }
             if (((uint)client.Character.charMovementFlags & 0x4000000u) != 0)
             {
-                float unk1 = packet.GetFloat();
+                var unk1 = packet.GetFloat();
             }
             checked
             {
                 if (client.Character.exploreCheckQueued_ && !client.Character.DEAD)
                 {
-                    int exploreFlag = WorldServiceLocator._WS_Maps.GetAreaFlag(client.Character.positionX, client.Character.positionY, (int)client.Character.MapID);
+                    var exploreFlag = WorldServiceLocator._WS_Maps.GetAreaFlag(client.Character.positionX, client.Character.positionY, (int)client.Character.MapID);
                     if (exploreFlag != 65535)
                     {
-                        int areaFlag = exploreFlag % 32;
-                        byte areaFlagOffset = (byte)(exploreFlag / 32);
+                        var areaFlag = exploreFlag % 32;
+                        var areaFlagOffset = (byte)(exploreFlag / 32);
                         if (!WorldServiceLocator._Functions.HaveFlag(client.Character.ZonesExplored[areaFlagOffset], (byte)areaFlag))
                         {
                             WorldServiceLocator._Functions.SetFlag(ref client.Character.ZonesExplored[areaFlagOffset], (byte)areaFlag, flagValue: true);
-                            int GainedXP = WorldServiceLocator._WS_Maps.AreaTable[exploreFlag].Level * 10;
+                            var GainedXP = WorldServiceLocator._WS_Maps.AreaTable[exploreFlag].Level * 10;
                             GainedXP = WorldServiceLocator._WS_Maps.AreaTable[exploreFlag].Level * 10;
-                            Packets.PacketClass SMSG_EXPLORATION_EXPERIENCE = new Packets.PacketClass(Opcodes.SMSG_EXPLORATION_EXPERIENCE);
+                            var SMSG_EXPLORATION_EXPERIENCE = new Packets.PacketClass(Opcodes.SMSG_EXPLORATION_EXPERIENCE);
                             SMSG_EXPLORATION_EXPERIENCE.AddInt32(WorldServiceLocator._WS_Maps.AreaTable[exploreFlag].ID);
                             SMSG_EXPLORATION_EXPERIENCE.AddInt32(GainedXP);
                             client.Send(ref SMSG_EXPLORATION_EXPERIENCE);
@@ -188,7 +188,7 @@ namespace Mangos.World.Handlers
                     }
                     if (client.Character.spellCasted[1] != null)
                     {
-                        WS_Spells.CastSpellParameters castSpellParameters = client.Character.spellCasted[1];
+                        var castSpellParameters = client.Character.spellCasted[1];
                         if (unchecked((0u - ((!castSpellParameters.Finished) ? 1u : 0u)) & ((uint)WorldServiceLocator._WS_Spells.SPELLs[castSpellParameters.SpellID].interruptFlags & (true ? 1u : 0u))) != 0)
                         {
                             client.Character.FinishSpell(CurrentSpellTypes.CURRENT_GENERIC_SPELL);
@@ -200,13 +200,13 @@ namespace Mangos.World.Handlers
                 {
                     client.Character.RemoveAurasByInterruptFlag(16);
                 }
-                int MsTime = WorldServiceLocator._WS_Network.MsTime();
-                int ClientTimeDelay = (int)(MsTime - Time);
-                int MoveTime = (int)(Time - checked(MsTime - ClientTimeDelay) + 500 + MsTime);
+                var MsTime = WorldServiceLocator._WS_Network.MsTime();
+                var ClientTimeDelay = (int)(MsTime - Time);
+                var MoveTime = (int)(Time - checked(MsTime - ClientTimeDelay) + 500 + MsTime);
                 packet.AddInt32(MoveTime, 10);
-                Packets.PacketClass response = new Packets.PacketClass(packet.OpCode);
+                var response = new Packets.PacketClass(packet.OpCode);
                 response.AddPackGUID(client.Character.GUID);
-                byte[] tempArray = new byte[packet.Data.Length - 6 + 1];
+                var tempArray = new byte[packet.Data.Length - 6 + 1];
                 Array.Copy(packet.Data, 6, tempArray, 0, packet.Data.Length - 6);
                 response.AddByteArray(tempArray);
                 client.Character.SendToNearPlayers(ref response, 0uL, ToSelf: false);
@@ -224,12 +224,12 @@ namespace Mangos.World.Handlers
 
         public void OnControlledMovementPacket(ref Packets.PacketClass packet, ref WS_Base.BaseUnit Controlled, ref WS_PlayerData.CharacterObject Controller)
         {
-            int MovementFlags = packet.GetInt32();
-            uint Time = packet.GetUInt32();
-            float PositionX = packet.GetFloat();
-            float PositionY = packet.GetFloat();
-            float PositionZ = packet.GetFloat();
-            float Orientation = packet.GetFloat();
+            var MovementFlags = packet.GetInt32();
+            var Time = packet.GetUInt32();
+            var PositionX = packet.GetFloat();
+            var PositionY = packet.GetFloat();
+            var PositionZ = packet.GetFloat();
+            var Orientation = packet.GetFloat();
             if (Controlled is WS_PlayerData.CharacterObject characterObject)
             {
                 characterObject.charMovementFlags = MovementFlags;
@@ -245,15 +245,15 @@ namespace Mangos.World.Handlers
                 creatureObject.positionZ = PositionZ;
                 creatureObject.orientation = Orientation;
             }
-            int MsTime = WorldServiceLocator._WS_Network.MsTime();
+            var MsTime = WorldServiceLocator._WS_Network.MsTime();
             checked
             {
-                int ClientTimeDelay = (int)(MsTime - Time);
-                int MoveTime = (int)(Time - checked(MsTime - ClientTimeDelay) + 500 + MsTime);
+                var ClientTimeDelay = (int)(MsTime - Time);
+                var MoveTime = (int)(Time - checked(MsTime - ClientTimeDelay) + 500 + MsTime);
                 packet.AddInt32(MoveTime, 10);
-                Packets.PacketClass response = new Packets.PacketClass(packet.OpCode);
+                var response = new Packets.PacketClass(packet.OpCode);
                 response.AddPackGUID(Controlled.GUID);
-                byte[] tempArray = new byte[packet.Data.Length - 6 + 1];
+                var tempArray = new byte[packet.Data.Length - 6 + 1];
                 Array.Copy(packet.Data, 6, tempArray, 0, packet.Data.Length - 6);
                 response.AddByteArray(tempArray);
                 Controlled.SendToNearPlayers(ref response, Controller.GUID);
@@ -291,12 +291,12 @@ namespace Mangos.World.Handlers
         public void OnChangeSpeed(ref Packets.PacketClass packet, ref WS_Network.ClientClass client)
         {
             packet.GetInt16();
-            ulong GUID = packet.GetUInt64();
+            var GUID = packet.GetUInt64();
             if (GUID == client.Character.GUID)
             {
                 packet.GetInt32();
-                int flags = packet.GetInt32();
-                int time = packet.GetInt32();
+                var flags = packet.GetInt32();
+                var time = packet.GetInt32();
                 client.Character.positionX = packet.GetFloat();
                 client.Character.positionY = packet.GetFloat();
                 client.Character.positionZ = packet.GetFloat();
@@ -321,7 +321,7 @@ namespace Mangos.World.Handlers
                     packet.GetFloat();
                     packet.GetFloat();
                 }
-                float newSpeed = packet.GetFloat();
+                var newSpeed = packet.GetFloat();
                 checked
                 {
                     client.Character.antiHackSpeedChanged_--;
@@ -349,7 +349,7 @@ namespace Mangos.World.Handlers
 
         public void SendAreaTriggerMessage(ref WS_Network.ClientClass client, string Text)
         {
-            Packets.PacketClass p = new Packets.PacketClass(Opcodes.SMSG_AREA_TRIGGER_MESSAGE);
+            var p = new Packets.PacketClass(Opcodes.SMSG_AREA_TRIGGER_MESSAGE);
             p.AddInt32(Text.Length);
             p.AddString(Text);
             client.Send(ref p);
@@ -365,9 +365,9 @@ namespace Mangos.World.Handlers
                     return;
                 }
                 packet.GetInt16();
-                int triggerID = packet.GetInt32();
+                var triggerID = packet.GetInt32();
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_AREATRIGGER [triggerID={2}]", client.IP, client.Port, triggerID);
-                DataTable q = new DataTable();
+                var q = new DataTable();
                 q.Clear();
                 WorldServiceLocator._WorldServer.WorldDatabase.Query($"SELECT entry, quest FROM quest_relations WHERE actor=2 and role=0 and entry = {triggerID};", ref q);
                 if (q.Rows.Count > 0)
@@ -438,7 +438,7 @@ namespace Mangos.World.Handlers
             catch (Exception ex)
             {
                 ProjectData.SetProjectError(ex);
-                Exception e = ex;
+                var e = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.CRITICAL, "Error when entering areatrigger.{0}", Environment.NewLine + e);
                 ProjectData.ClearProjectError();
             }
@@ -454,7 +454,7 @@ namespace Mangos.World.Handlers
             {
                 OnMovementPacket(ref packet, ref client);
                 packet.Offset = 6;
-                int movFlags = packet.GetInt32();
+                var movFlags = packet.GetInt32();
                 packet.GetUInt32();
                 packet.GetFloat();
                 packet.GetFloat();
@@ -472,20 +472,20 @@ namespace Mangos.World.Handlers
                 {
                     packet.GetFloat();
                 }
-                int FallTime = packet.GetInt32();
+                var FallTime = packet.GetInt32();
                 checked
                 {
                     if (FallTime > 1100 && !client.Character.DEAD && client.Character.positionZ > WorldServiceLocator._WS_Maps.GetWaterLevel(client.Character.positionX, client.Character.positionY, (int)client.Character.MapID) && !client.Character.HaveAuraType(AuraEffects_Names.SPELL_AURA_FEATHER_FALL))
                     {
-                        int safe_fall = client.Character.GetAuraModifier(AuraEffects_Names.SPELL_AURA_SAFE_FALL);
+                        var safe_fall = client.Character.GetAuraModifier(AuraEffects_Names.SPELL_AURA_SAFE_FALL);
                         if (safe_fall > 0)
                         {
                             FallTime = ((FallTime > safe_fall * 10) ? (FallTime - safe_fall * 10) : 0);
                         }
                         if (FallTime > 1100)
                         {
-                            float FallPerc = (float)(FallTime / 1100.0);
-                            int FallDamage = (int)Math.Round((FallPerc * FallPerc - 1f) / 9f * client.Character.Life.Maximum);
+                            var FallPerc = (float)(FallTime / 1100.0);
+                            var FallDamage = (int)Math.Round((FallPerc * FallPerc - 1f) / 9f * client.Character.Life.Maximum);
                             if (FallDamage > 0)
                             {
                                 if (FallDamage > client.Character.Life.Maximum)
@@ -493,8 +493,8 @@ namespace Mangos.World.Handlers
                                     FallDamage = client.Character.Life.Maximum;
                                 }
                                 client.Character.LogEnvironmentalDamage(DamageTypes.DMG_FIRE, FallDamage);
-                                WS_PlayerData.CharacterObject character = client.Character;
-                                int damage = FallDamage;
+                                var character = client.Character;
+                                var damage = FallDamage;
                                 WS_Base.BaseUnit Attacker = null;
                                 character.DealDamage(damage, Attacker);
                                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.USER, "[{0}:{1}] Client fall time: {2}  Damage: {3}", client.IP, client.Port, FallTime, FallDamage);
@@ -507,8 +507,8 @@ namespace Mangos.World.Handlers
                         }
                         if (client.Character.LogoutTimer != null)
                         {
-                            Packets.UpdateClass UpdateData = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
-                            Packets.PacketClass SMSG_UPDATE_OBJECT = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                            var UpdateData = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
+                            var SMSG_UPDATE_OBJECT = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                             try
                             {
                                 SMSG_UPDATE_OBJECT.AddInt32(1);
@@ -524,7 +524,7 @@ namespace Mangos.World.Handlers
                             {
                                 SMSG_UPDATE_OBJECT.Dispose();
                             }
-                            Packets.PacketClass packetACK = new Packets.PacketClass(Opcodes.SMSG_STANDSTATE_CHANGE_ACK);
+                            var packetACK = new Packets.PacketClass(Opcodes.SMSG_STANDSTATE_CHANGE_ACK);
                             try
                             {
                                 packetACK.AddInt8(1);
@@ -541,7 +541,7 @@ namespace Mangos.World.Handlers
             catch (Exception ex)
             {
                 ProjectData.SetProjectError(ex);
-                Exception e = ex;
+                var e = ex;
                 WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "Error when falling.{0}", Environment.NewLine + e);
                 ProjectData.ClearProjectError();
             }
@@ -554,7 +554,7 @@ namespace Mangos.World.Handlers
                 if (packet.Data.Length - 1 >= 9 && client.Character != null)
                 {
                     packet.GetInt16();
-                    int newZone = packet.GetInt32();
+                    var newZone = packet.GetInt32();
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_ZONEUPDATE [newZone={2}]", client.IP, client.Port, newZone);
                     client.Character.ZoneID = newZone;
                     client.Character.exploreCheckQueued_ = true;
@@ -582,7 +582,7 @@ namespace Mangos.World.Handlers
             UpdateCell(ref client.Character);
             client.Character.GroupUpdateFlag |= 0x100u;
             client.Character.ZoneCheck();
-            WS_Maps wS_Maps = WorldServiceLocator._WS_Maps;
+            var wS_Maps = WorldServiceLocator._WS_Maps;
             WS_Base.BaseObject objCharacter = client.Character;
             if (wS_Maps.IsOutsideOfMap(ref objCharacter))
             {
@@ -601,13 +601,13 @@ namespace Mangos.World.Handlers
             {
                 WorldServiceLocator._WS_Spells.CheckDuelDistance(ref client.Character);
             }
-            ulong[] array = client.Character.creaturesNear.ToArray();
-            foreach (ulong cGUID in array)
+            var array = client.Character.creaturesNear.ToArray();
+            foreach (var cGUID in array)
             {
                 if (WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(cGUID) && WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID].aiScript != null && (WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID].aiScript is WS_Creatures_AI.DefaultAI || WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID].aiScript is WS_Creatures_AI.GuardAI) && !WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID].IsDead && !WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID].aiScript.InCombat() && !client.Character.inCombatWith.Contains(cGUID) && client.Character.GetReaction(WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID].Faction) == TReaction.HOSTILE && WorldServiceLocator._WS_Combat.GetDistance(WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID], client.Character) <= WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID].AggroRange(client.Character))
                 {
-                    WS_Creatures_AI.TBaseAI aiScript = WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID].aiScript;
-                    ref WS_PlayerData.CharacterObject character = ref client.Character;
+                    var aiScript = WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID].aiScript;
+                    ref var character = ref client.Character;
                     WS_Base.BaseUnit Attacker = character;
                     aiScript.OnGenerateHate(ref Attacker, 1);
                     character = (WS_PlayerData.CharacterObject)Attacker;
@@ -616,12 +616,12 @@ namespace Mangos.World.Handlers
                     WorldServiceLocator._WorldServer.WORLD_CREATUREs[cGUID].aiScript.DoThink();
                 }
             }
-            ulong[] array2 = client.Character.inCombatWith.ToArray();
-            foreach (ulong CombatUnit in array2)
+            var array2 = client.Character.inCombatWith.ToArray();
+            foreach (var CombatUnit in array2)
             {
                 if (WorldServiceLocator._CommonGlobalFunctions.GuidIsCreature(CombatUnit) && WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(CombatUnit) && WorldServiceLocator._WorldServer.WORLD_CREATUREs[CombatUnit].aiScript != null)
                 {
-                    WS_Creatures.CreatureObject creatureObject = WorldServiceLocator._WorldServer.WORLD_CREATUREs[CombatUnit];
+                    var creatureObject = WorldServiceLocator._WorldServer.WORLD_CREATUREs[CombatUnit];
                     if (creatureObject.aiScript.aiTarget != null && creatureObject.aiScript.aiTarget == client.Character)
                     {
                         creatureObject.SetToRealPosition();
@@ -707,9 +707,9 @@ namespace Mangos.World.Handlers
                     ProjectData.ClearProjectError();
                 }
             }
-            ulong[] list = Character.SeenBy.ToArray();
-            ulong[] array = list;
-            foreach (ulong GUID in array)
+            var list = Character.SeenBy.ToArray();
+            var array = list;
+            foreach (var GUID in array)
             {
                 if (WorldServiceLocator._WorldServer.CHARACTERs[GUID].playersNear.Contains(Character.GUID))
                 {
@@ -723,8 +723,8 @@ namespace Mangos.World.Handlers
             Character.playersNear.Clear();
             Character.SeenBy.Clear();
             list = Character.creaturesNear.ToArray();
-            ulong[] array2 = list;
-            foreach (ulong GUID2 in array2)
+            var array2 = list;
+            foreach (var GUID2 in array2)
             {
                 if (WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID2].SeenBy.Contains(Character.GUID))
                 {
@@ -733,8 +733,8 @@ namespace Mangos.World.Handlers
             }
             Character.creaturesNear.Clear();
             list = Character.gameObjectsNear.ToArray();
-            ulong[] array3 = list;
-            foreach (ulong GUID3 in array3)
+            var array3 = list;
+            foreach (var GUID3 in array3)
             {
                 if (WorldServiceLocator._CommonGlobalFunctions.GuidIsMoTransport(GUID3))
                 {
@@ -750,8 +750,8 @@ namespace Mangos.World.Handlers
             }
             Character.gameObjectsNear.Clear();
             list = Character.corpseObjectsNear.ToArray();
-            ulong[] array4 = list;
-            foreach (ulong GUID4 in array4)
+            var array4 = list;
+            foreach (var GUID4 in array4)
             {
                 if (WorldServiceLocator._WorldServer.WORLD_CORPSEOBJECTs[GUID4].SeenBy.Contains(Character.GUID))
                 {
@@ -767,8 +767,8 @@ namespace Mangos.World.Handlers
 
         public void MoveCell(ref WS_PlayerData.CharacterObject Character)
         {
-            byte oldX = Character.CellX;
-            byte oldY = Character.CellY;
+            var oldX = Character.CellX;
+            var oldY = Character.CellY;
             WorldServiceLocator._WS_Maps.GetMapTile(Character.positionX, Character.positionY, ref Character.CellX, ref Character.CellY);
             if (WorldServiceLocator._WS_Maps.Maps[Character.MapID].Tiles[Character.CellX, Character.CellY] == null)
             {
@@ -786,15 +786,15 @@ namespace Mangos.World.Handlers
 
         public void UpdateCell(ref WS_PlayerData.CharacterObject Character)
         {
-            ulong[] list = Character.playersNear.ToArray();
-            ulong[] array = list;
-            foreach (ulong GUID in array)
+            var list = Character.playersNear.ToArray();
+            var array = list;
+            foreach (var GUID in array)
             {
-                WS_PlayerData.CharacterObject obj = Character;
+                var obj = Character;
                 Dictionary<ulong, WS_PlayerData.CharacterObject> cHARACTERs;
                 ulong key;
                 WS_Base.BaseObject objCharacter = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = GUID];
-                bool flag = obj.CanSee(ref objCharacter);
+                var flag = obj.CanSee(ref objCharacter);
                 cHARACTERs[key] = (WS_PlayerData.CharacterObject)objCharacter;
                 if (!flag)
                 {
@@ -804,7 +804,7 @@ namespace Mangos.World.Handlers
                     WorldServiceLocator._WorldServer.CHARACTERs[GUID].SeenBy.Remove(Character.GUID);
                     Character.playersNear.Remove(GUID);
                 }
-                WS_PlayerData.CharacterObject characterObject = WorldServiceLocator._WorldServer.CHARACTERs[GUID];
+                var characterObject = WorldServiceLocator._WorldServer.CHARACTERs[GUID];
                 objCharacter = Character;
                 flag = characterObject.CanSee(ref objCharacter);
                 Character = (WS_PlayerData.CharacterObject)objCharacter;
@@ -818,17 +818,17 @@ namespace Mangos.World.Handlers
                 }
             }
             list = Character.creaturesNear.ToArray();
-            ulong[] array2 = list;
-            foreach (ulong GUID2 in array2)
+            var array2 = list;
+            foreach (var GUID2 in array2)
             {
                 int num;
                 if (WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(GUID2))
                 {
-                    WS_PlayerData.CharacterObject obj2 = Character;
+                    var obj2 = Character;
                     Dictionary<ulong, WS_Creatures.CreatureObject> wORLD_CREATUREs;
                     ulong key;
                     WS_Base.BaseObject objCharacter = (wORLD_CREATUREs = WorldServiceLocator._WorldServer.WORLD_CREATUREs)[key = GUID2];
-                    bool flag = obj2.CanSee(ref objCharacter);
+                    var flag = obj2.CanSee(ref objCharacter);
                     wORLD_CREATUREs[key] = (WS_Creatures.CreatureObject)objCharacter;
                     num = ((!flag) ? 1 : 0);
                 }
@@ -846,16 +846,16 @@ namespace Mangos.World.Handlers
                 }
             }
             list = Character.gameObjectsNear.ToArray();
-            ulong[] array3 = list;
-            foreach (ulong GUID3 in array3)
+            var array3 = list;
+            foreach (var GUID3 in array3)
             {
                 if (WorldServiceLocator._CommonGlobalFunctions.GuidIsMoTransport(GUID3))
                 {
-                    WS_PlayerData.CharacterObject obj3 = Character;
+                    var obj3 = Character;
                     Dictionary<ulong, WS_Transports.TransportObject> wORLD_TRANSPORTs;
                     ulong key;
                     WS_Base.BaseObject objCharacter = (wORLD_TRANSPORTs = WorldServiceLocator._WorldServer.WORLD_TRANSPORTs)[key = GUID3];
-                    bool flag = obj3.CanSee(ref objCharacter);
+                    var flag = obj3.CanSee(ref objCharacter);
                     wORLD_TRANSPORTs[key] = (WS_Transports.TransportObject)objCharacter;
                     if (!flag)
                     {
@@ -868,11 +868,11 @@ namespace Mangos.World.Handlers
                 }
                 else
                 {
-                    WS_PlayerData.CharacterObject obj4 = Character;
+                    var obj4 = Character;
                     Dictionary<ulong, WS_GameObjects.GameObjectObject> wORLD_GAMEOBJECTs;
                     ulong key;
                     WS_Base.BaseObject objCharacter = (wORLD_GAMEOBJECTs = WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs)[key = GUID3];
-                    bool flag = obj4.CanSee(ref objCharacter);
+                    var flag = obj4.CanSee(ref objCharacter);
                     wORLD_GAMEOBJECTs[key] = (WS_GameObjects.GameObjectObject)objCharacter;
                     if (!flag)
                     {
@@ -885,14 +885,14 @@ namespace Mangos.World.Handlers
                 }
             }
             list = Character.dynamicObjectsNear.ToArray();
-            ulong[] array4 = list;
-            foreach (ulong GUID4 in array4)
+            var array4 = list;
+            foreach (var GUID4 in array4)
             {
-                WS_PlayerData.CharacterObject obj5 = Character;
+                var obj5 = Character;
                 Dictionary<ulong, WS_DynamicObjects.DynamicObjectObject> wORLD_DYNAMICOBJECTs;
                 ulong key;
                 WS_Base.BaseObject objCharacter = (wORLD_DYNAMICOBJECTs = WorldServiceLocator._WorldServer.WORLD_DYNAMICOBJECTs)[key = GUID4];
-                bool flag = obj5.CanSee(ref objCharacter);
+                var flag = obj5.CanSee(ref objCharacter);
                 wORLD_DYNAMICOBJECTs[key] = (WS_DynamicObjects.DynamicObjectObject)objCharacter;
                 if (!flag)
                 {
@@ -904,14 +904,14 @@ namespace Mangos.World.Handlers
                 }
             }
             list = Character.corpseObjectsNear.ToArray();
-            ulong[] array5 = list;
-            foreach (ulong GUID5 in array5)
+            var array5 = list;
+            foreach (var GUID5 in array5)
             {
-                WS_PlayerData.CharacterObject obj6 = Character;
+                var obj6 = Character;
                 Dictionary<ulong, WS_Corpses.CorpseObject> wORLD_CORPSEOBJECTs;
                 ulong key;
                 WS_Base.BaseObject objCharacter = (wORLD_CORPSEOBJECTs = WorldServiceLocator._WorldServer.WORLD_CORPSEOBJECTs)[key = GUID5];
-                bool flag = obj6.CanSee(ref objCharacter);
+                var flag = obj6.CanSee(ref objCharacter);
                 wORLD_CORPSEOBJECTs[key] = (WS_Corpses.CorpseObject)objCharacter;
                 if (!flag)
                 {
@@ -1022,28 +1022,28 @@ namespace Mangos.World.Handlers
         [MethodImpl(MethodImplOptions.Synchronized)]
         public void UpdatePlayersInCell(ref WS_Maps.TMapTile MapTile, ref WS_PlayerData.CharacterObject Character)
         {
-            WS_Maps.TMapTile tMapTile = MapTile;
-            ulong[] list = tMapTile.PlayersHere.ToArray();
-            ulong[] array = list;
-            foreach (ulong GUID in array)
+            var tMapTile = MapTile;
+            var list = tMapTile.PlayersHere.ToArray();
+            var array = list;
+            foreach (var GUID in array)
             {
                 if (!WorldServiceLocator._WorldServer.CHARACTERs[GUID].SeenBy.Contains(Character.GUID))
                 {
-                    WS_PlayerData.CharacterObject obj = Character;
+                    var obj = Character;
                     Dictionary<ulong, WS_PlayerData.CharacterObject> cHARACTERs;
                     ulong key;
                     WS_Base.BaseObject objCharacter = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = GUID];
-                    bool flag = obj.CanSee(ref objCharacter);
+                    var flag = obj.CanSee(ref objCharacter);
                     cHARACTERs[key] = (WS_PlayerData.CharacterObject)objCharacter;
                     if (flag)
                     {
-                        Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                        var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                         packet.AddInt32(1);
                         packet.AddInt8(0);
-                        Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
+                        var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
                         WorldServiceLocator._WorldServer.CHARACTERs[GUID].FillAllUpdateFlags(ref tmpUpdate);
-                        Packets.UpdateClass updateClass = tmpUpdate;
-                        WS_PlayerData.CharacterObject updateObject = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = GUID];
+                        var updateClass = tmpUpdate;
+                        var updateObject = (cHARACTERs = WorldServiceLocator._WorldServer.CHARACTERs)[key = GUID];
                         updateClass.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject);
                         cHARACTERs[key] = updateObject;
                         tmpUpdate.Dispose();
@@ -1055,16 +1055,16 @@ namespace Mangos.World.Handlers
                 }
                 if (!Character.SeenBy.Contains(GUID))
                 {
-                    WS_PlayerData.CharacterObject characterObject = WorldServiceLocator._WorldServer.CHARACTERs[GUID];
+                    var characterObject = WorldServiceLocator._WorldServer.CHARACTERs[GUID];
                     WS_Base.BaseObject objCharacter = Character;
-                    bool flag = characterObject.CanSee(ref objCharacter);
+                    var flag = characterObject.CanSee(ref objCharacter);
                     Character = (WS_PlayerData.CharacterObject)objCharacter;
                     if (flag)
                     {
-                        Packets.PacketClass myPacket = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                        var myPacket = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                         myPacket.AddInt32(1);
                         myPacket.AddInt8(0);
-                        Packets.UpdateClass myTmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
+                        var myTmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_PLAYER);
                         Character.FillAllUpdateFlags(ref myTmpUpdate);
                         myTmpUpdate.AddToPacket(ref myPacket, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref Character);
                         myTmpUpdate.Dispose();
@@ -1079,27 +1079,27 @@ namespace Mangos.World.Handlers
 
         public void UpdateCreaturesAndGameObjectsInCell(ref WS_Maps.TMapTile MapTile, ref WS_PlayerData.CharacterObject Character)
         {
-            Packets.UpdatePacketClass packet = new Packets.UpdatePacketClass();
-            WS_Maps.TMapTile tMapTile = MapTile;
-            ulong[] list = tMapTile.CreaturesHere.ToArray();
-            ulong[] array = list;
-            foreach (ulong GUID in array)
+            var packet = new Packets.UpdatePacketClass();
+            var tMapTile = MapTile;
+            var list = tMapTile.CreaturesHere.ToArray();
+            var array = list;
+            foreach (var GUID in array)
             {
                 if (!Character.creaturesNear.Contains(GUID) && WorldServiceLocator._WorldServer.WORLD_CREATUREs.ContainsKey(GUID))
                 {
-                    WS_PlayerData.CharacterObject obj = Character;
+                    var obj = Character;
                     Dictionary<ulong, WS_Creatures.CreatureObject> wORLD_CREATUREs;
                     ulong key;
                     WS_Base.BaseObject objCharacter = (wORLD_CREATUREs = WorldServiceLocator._WorldServer.WORLD_CREATUREs)[key = GUID];
-                    bool flag = obj.CanSee(ref objCharacter);
+                    var flag = obj.CanSee(ref objCharacter);
                     wORLD_CREATUREs[key] = (WS_Creatures.CreatureObject)objCharacter;
                     if (flag)
                     {
-                        Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_UNIT);
+                        var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_UNIT);
                         WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].FillAllUpdateFlags(ref tmpUpdate);
-                        Packets.UpdateClass updateClass = tmpUpdate;
+                        var updateClass = tmpUpdate;
                         Packets.PacketClass packet2 = packet;
-                        WS_Creatures.CreatureObject updateObject = (wORLD_CREATUREs = WorldServiceLocator._WorldServer.WORLD_CREATUREs)[key = GUID];
+                        var updateObject = (wORLD_CREATUREs = WorldServiceLocator._WorldServer.WORLD_CREATUREs)[key = GUID];
                         updateClass.AddToPacket(ref packet2, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject);
                         wORLD_CREATUREs[key] = updateObject;
                         packet = (Packets.UpdatePacketClass)packet2;
@@ -1110,8 +1110,8 @@ namespace Mangos.World.Handlers
                 }
             }
             list = tMapTile.GameObjectsHere.ToArray();
-            ulong[] array2 = list;
-            foreach (ulong GUID2 in array2)
+            var array2 = list;
+            foreach (var GUID2 in array2)
             {
                 if (Character.gameObjectsNear.Contains(GUID2))
                 {
@@ -1119,17 +1119,17 @@ namespace Mangos.World.Handlers
                 }
                 if (WorldServiceLocator._CommonGlobalFunctions.GuidIsMoTransport(GUID2))
                 {
-                    WS_PlayerData.CharacterObject obj2 = Character;
+                    var obj2 = Character;
                     Dictionary<ulong, WS_Transports.TransportObject> wORLD_TRANSPORTs;
                     ulong key;
                     WS_Base.BaseObject objCharacter = (wORLD_TRANSPORTs = WorldServiceLocator._WorldServer.WORLD_TRANSPORTs)[key = GUID2];
-                    bool flag = obj2.CanSee(ref objCharacter);
+                    var flag = obj2.CanSee(ref objCharacter);
                     wORLD_TRANSPORTs[key] = (WS_Transports.TransportObject)objCharacter;
                     if (flag)
                     {
-                        Packets.UpdateClass tmpUpdate3 = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
+                        var tmpUpdate3 = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
                         WorldServiceLocator._WorldServer.WORLD_TRANSPORTs[GUID2].FillAllUpdateFlags(ref tmpUpdate3, ref Character);
-                        Packets.UpdateClass updateClass2 = tmpUpdate3;
+                        var updateClass2 = tmpUpdate3;
                         Packets.PacketClass packet2 = packet;
                         WS_GameObjects.GameObjectObject updateObject2 = (wORLD_TRANSPORTs = WorldServiceLocator._WorldServer.WORLD_TRANSPORTs)[key = GUID2];
                         updateClass2.AddToPacket(ref packet2, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject2);
@@ -1142,19 +1142,19 @@ namespace Mangos.World.Handlers
                 }
                 else
                 {
-                    WS_PlayerData.CharacterObject obj3 = Character;
+                    var obj3 = Character;
                     Dictionary<ulong, WS_GameObjects.GameObjectObject> wORLD_GAMEOBJECTs;
                     ulong key;
                     WS_Base.BaseObject objCharacter = (wORLD_GAMEOBJECTs = WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs)[key = GUID2];
-                    bool flag = obj3.CanSee(ref objCharacter);
+                    var flag = obj3.CanSee(ref objCharacter);
                     wORLD_GAMEOBJECTs[key] = (WS_GameObjects.GameObjectObject)objCharacter;
                     if (flag)
                     {
-                        Packets.UpdateClass tmpUpdate2 = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
+                        var tmpUpdate2 = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
                         WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GUID2].FillAllUpdateFlags(ref tmpUpdate2, ref Character);
-                        Packets.UpdateClass updateClass3 = tmpUpdate2;
+                        var updateClass3 = tmpUpdate2;
                         Packets.PacketClass packet2 = packet;
-                        WS_GameObjects.GameObjectObject updateObject2 = (wORLD_GAMEOBJECTs = WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs)[key = GUID2];
+                        var updateObject2 = (wORLD_GAMEOBJECTs = WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs)[key = GUID2];
                         updateClass3.AddToPacket(ref packet2, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject2);
                         wORLD_GAMEOBJECTs[key] = updateObject2;
                         packet = (Packets.UpdatePacketClass)packet2;
@@ -1165,24 +1165,24 @@ namespace Mangos.World.Handlers
                 }
             }
             list = tMapTile.DynamicObjectsHere.ToArray();
-            ulong[] array3 = list;
-            foreach (ulong GUID3 in array3)
+            var array3 = list;
+            foreach (var GUID3 in array3)
             {
                 if (!Character.dynamicObjectsNear.Contains(GUID3))
                 {
-                    WS_PlayerData.CharacterObject obj4 = Character;
+                    var obj4 = Character;
                     Dictionary<ulong, WS_DynamicObjects.DynamicObjectObject> wORLD_DYNAMICOBJECTs;
                     ulong key;
                     WS_Base.BaseObject objCharacter = (wORLD_DYNAMICOBJECTs = WorldServiceLocator._WorldServer.WORLD_DYNAMICOBJECTs)[key = GUID3];
-                    bool flag = obj4.CanSee(ref objCharacter);
+                    var flag = obj4.CanSee(ref objCharacter);
                     wORLD_DYNAMICOBJECTs[key] = (WS_DynamicObjects.DynamicObjectObject)objCharacter;
                     if (flag)
                     {
-                        Packets.UpdateClass tmpUpdate4 = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_DYNAMICOBJECT);
+                        var tmpUpdate4 = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_DYNAMICOBJECT);
                         WorldServiceLocator._WorldServer.WORLD_DYNAMICOBJECTs[GUID3].FillAllUpdateFlags(ref tmpUpdate4);
-                        Packets.UpdateClass updateClass4 = tmpUpdate4;
+                        var updateClass4 = tmpUpdate4;
                         Packets.PacketClass packet2 = packet;
-                        WS_DynamicObjects.DynamicObjectObject updateObject3 = (wORLD_DYNAMICOBJECTs = WorldServiceLocator._WorldServer.WORLD_DYNAMICOBJECTs)[key = GUID3];
+                        var updateObject3 = (wORLD_DYNAMICOBJECTs = WorldServiceLocator._WorldServer.WORLD_DYNAMICOBJECTs)[key = GUID3];
                         updateClass4.AddToPacket(ref packet2, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT_SELF, ref updateObject3);
                         wORLD_DYNAMICOBJECTs[key] = updateObject3;
                         packet = (Packets.UpdatePacketClass)packet2;
@@ -1196,7 +1196,7 @@ namespace Mangos.World.Handlers
             if (packet.UpdatesCount > 0)
             {
                 packet.CompressUpdatePacket();
-                WS_Network.ClientClass client = Character.client;
+                var client = Character.client;
                 Packets.PacketClass packet2 = packet;
                 client.Send(ref packet2);
                 packet = (Packets.UpdatePacketClass)packet2;
@@ -1206,28 +1206,28 @@ namespace Mangos.World.Handlers
 
         public void UpdateCreaturesInCell(ref WS_Maps.TMapTile MapTile, ref WS_PlayerData.CharacterObject Character)
         {
-            WS_Maps.TMapTile tMapTile = MapTile;
-            ulong[] list = tMapTile.CreaturesHere.ToArray();
-            ulong[] array = list;
-            foreach (ulong GUID in array)
+            var tMapTile = MapTile;
+            var list = tMapTile.CreaturesHere.ToArray();
+            var array = list;
+            foreach (var GUID in array)
             {
                 if (!Character.creaturesNear.Contains(GUID))
                 {
-                    WS_PlayerData.CharacterObject obj = Character;
+                    var obj = Character;
                     Dictionary<ulong, WS_Creatures.CreatureObject> wORLD_CREATUREs;
                     ulong key;
                     WS_Base.BaseObject objCharacter = (wORLD_CREATUREs = WorldServiceLocator._WorldServer.WORLD_CREATUREs)[key = GUID];
-                    bool flag = obj.CanSee(ref objCharacter);
+                    var flag = obj.CanSee(ref objCharacter);
                     wORLD_CREATUREs[key] = (WS_Creatures.CreatureObject)objCharacter;
                     if (flag)
                     {
-                        Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                        var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                         packet.AddInt32(1);
                         packet.AddInt8(0);
-                        Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_UNIT);
+                        var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_UNIT);
                         WorldServiceLocator._WorldServer.WORLD_CREATUREs[GUID].FillAllUpdateFlags(ref tmpUpdate);
-                        Packets.UpdateClass updateClass = tmpUpdate;
-                        WS_Creatures.CreatureObject updateObject = (wORLD_CREATUREs = WorldServiceLocator._WorldServer.WORLD_CREATUREs)[key = GUID];
+                        var updateClass = tmpUpdate;
+                        var updateObject = (wORLD_CREATUREs = WorldServiceLocator._WorldServer.WORLD_CREATUREs)[key = GUID];
                         updateClass.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject);
                         wORLD_CREATUREs[key] = updateObject;
                         tmpUpdate.Dispose();
@@ -1242,21 +1242,21 @@ namespace Mangos.World.Handlers
 
         public void UpdateGameObjectsInCell(ref WS_Maps.TMapTile MapTile, ref WS_PlayerData.CharacterObject Character)
         {
-            WS_Maps.TMapTile tMapTile = MapTile;
-            ulong[] list = tMapTile.GameObjectsHere.ToArray();
-            ulong[] array = list;
-            foreach (ulong GUID in array)
+            var tMapTile = MapTile;
+            var list = tMapTile.GameObjectsHere.ToArray();
+            var array = list;
+            foreach (var GUID in array)
             {
                 if (!Character.gameObjectsNear.Contains(GUID))
                 {
                     int num;
                     if (WorldServiceLocator._CommonGlobalFunctions.GuidIsGameObject(GUID) && WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs.ContainsKey(GUID))
                     {
-                        WS_PlayerData.CharacterObject obj = Character;
+                        var obj = Character;
                         Dictionary<ulong, WS_GameObjects.GameObjectObject> wORLD_GAMEOBJECTs;
                         ulong key;
                         WS_Base.BaseObject objCharacter = (wORLD_GAMEOBJECTs = WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs)[key = GUID];
-                        bool flag = obj.CanSee(ref objCharacter);
+                        var flag = obj.CanSee(ref objCharacter);
                         wORLD_GAMEOBJECTs[key] = (WS_GameObjects.GameObjectObject)objCharacter;
                         num = (flag ? 1 : 0);
                     }
@@ -1266,15 +1266,15 @@ namespace Mangos.World.Handlers
                     }
                     if (num != 0)
                     {
-                        Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                        var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                         packet.AddInt32(1);
                         packet.AddInt8(0);
-                        Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
+                        var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_GAMEOBJECT);
                         WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs[GUID].FillAllUpdateFlags(ref tmpUpdate, ref Character);
-                        Packets.UpdateClass updateClass = tmpUpdate;
+                        var updateClass = tmpUpdate;
                         Dictionary<ulong, WS_GameObjects.GameObjectObject> wORLD_GAMEOBJECTs;
                         ulong key;
-                        WS_GameObjects.GameObjectObject updateObject = (wORLD_GAMEOBJECTs = WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs)[key = GUID];
+                        var updateObject = (wORLD_GAMEOBJECTs = WorldServiceLocator._WorldServer.WORLD_GAMEOBJECTs)[key = GUID];
                         updateClass.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject);
                         wORLD_GAMEOBJECTs[key] = updateObject;
                         tmpUpdate.Dispose();
@@ -1289,28 +1289,28 @@ namespace Mangos.World.Handlers
 
         public void UpdateCorpseObjectsInCell(ref WS_Maps.TMapTile MapTile, ref WS_PlayerData.CharacterObject Character)
         {
-            WS_Maps.TMapTile tMapTile = MapTile;
-            ulong[] list = tMapTile.CorpseObjectsHere.ToArray();
-            ulong[] array = list;
-            foreach (ulong GUID in array)
+            var tMapTile = MapTile;
+            var list = tMapTile.CorpseObjectsHere.ToArray();
+            var array = list;
+            foreach (var GUID in array)
             {
                 if (!Character.corpseObjectsNear.Contains(GUID))
                 {
-                    WS_PlayerData.CharacterObject obj = Character;
+                    var obj = Character;
                     Dictionary<ulong, WS_Corpses.CorpseObject> wORLD_CORPSEOBJECTs;
                     ulong key;
                     WS_Base.BaseObject objCharacter = (wORLD_CORPSEOBJECTs = WorldServiceLocator._WorldServer.WORLD_CORPSEOBJECTs)[key = GUID];
-                    bool flag = obj.CanSee(ref objCharacter);
+                    var flag = obj.CanSee(ref objCharacter);
                     wORLD_CORPSEOBJECTs[key] = (WS_Corpses.CorpseObject)objCharacter;
                     if (flag)
                     {
-                        Packets.PacketClass packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
+                        var packet = new Packets.PacketClass(Opcodes.SMSG_UPDATE_OBJECT);
                         packet.AddInt32(1);
                         packet.AddInt8(0);
-                        Packets.UpdateClass tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_CORPSE);
+                        var tmpUpdate = new Packets.UpdateClass(WorldServiceLocator._Global_Constants.FIELD_MASK_SIZE_CORPSE);
                         WorldServiceLocator._WorldServer.WORLD_CORPSEOBJECTs[GUID].FillAllUpdateFlags(ref tmpUpdate);
-                        Packets.UpdateClass updateClass = tmpUpdate;
-                        WS_Corpses.CorpseObject updateObject = (wORLD_CORPSEOBJECTs = WorldServiceLocator._WorldServer.WORLD_CORPSEOBJECTs)[key = GUID];
+                        var updateClass = tmpUpdate;
+                        var updateObject = (wORLD_CORPSEOBJECTs = WorldServiceLocator._WorldServer.WORLD_CORPSEOBJECTs)[key = GUID];
                         updateClass.AddToPacket(ref packet, ObjectUpdateType.UPDATETYPE_CREATE_OBJECT, ref updateObject);
                         wORLD_CORPSEOBJECTs[key] = updateObject;
                         tmpUpdate.Dispose();

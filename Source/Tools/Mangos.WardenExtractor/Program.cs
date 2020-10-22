@@ -42,7 +42,7 @@ namespace Mangos.WardenExtractor
             Console.WriteLine("5: Quit this program");
             Console.ForegroundColor = ConsoleColor.DarkMagenta;
             Console.Write("Your choice: ");
-            string sInput = Console.ReadLine();
+            var sInput = Console.ReadLine();
             if (sInput == "1")
             {
                 Module_CacheExtract.ExtractCache();
@@ -69,7 +69,7 @@ namespace Mangos.WardenExtractor
 
         public static string ToHex(ref byte[] bBytes)
         {
-            string tmpStr = "";
+            var tmpStr = "";
             for (int i = 0, loopTo = bBytes.Length - 1; i <= loopTo; i++)
             {
                 if (bBytes[i] < 16)
@@ -87,8 +87,8 @@ namespace Mangos.WardenExtractor
 
         public static string Reverse(string str)
         {
-            string tmpStr = "";
-            for (int i = str.Length - 1; i >= 0; i -= 1)
+            var tmpStr = "";
+            for (var i = str.Length - 1; i >= 0; i -= 1)
                 tmpStr += Conversions.ToString(str[i]);
             return tmpStr;
         }
@@ -98,7 +98,7 @@ namespace Mangos.WardenExtractor
             if (bytes.Length == 0)
                 return new byte[] { };
             var tmpBytes = new byte[bytes.Length];
-            for (int i = bytes.Length - 1; i >= 0; i -= 1)
+            for (var i = bytes.Length - 1; i >= 0; i -= 1)
                 tmpBytes[bytes.Length - 1 - i] = bytes[i];
             return tmpBytes;
         }
@@ -135,15 +135,15 @@ namespace Mangos.WardenExtractor
 
             public static byte[] Init(byte[] @base)
             {
-                int val = 0;
-                int position = 0;
+                var val = 0;
+                var position = 0;
                 byte temp;
                 var key = new byte[258];
-                for (int i = 0; i <= 256 - 1; i++)
+                for (var i = 0; i <= 256 - 1; i++)
                     key[i] = (byte)i;
                 key[256] = 0;
                 key[257] = 0;
-                for (int i = 1; i <= 64; i++)
+                for (var i = 1; i <= 64; i++)
                 {
                     val = val + key[i * 4 - 4] + @base[position % @base.Length];
                     val &= 0xFF;

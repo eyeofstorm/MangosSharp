@@ -42,7 +42,7 @@ namespace Mangos.World.Warden
 
         private int ByteArrPtr(ref byte[] arr)
         {
-            int pData = Malloc(arr.Length);
+            var pData = Malloc(arr.Length);
             Marshal.Copy(arr, 0, new IntPtr(pData), arr.Length);
             return pData;
         }
@@ -51,8 +51,8 @@ namespace Mangos.World.Warden
         {
             checked
             {
-                int tmpHandle = Marshal.AllocHGlobal(length + 4).ToInt32();
-                int lockedHandle = NativeMethods.GlobalLock(tmpHandle, "") + 4;
+                var tmpHandle = Marshal.AllocHGlobal(length + 4).ToInt32();
+                var lockedHandle = NativeMethods.GlobalLock(tmpHandle, "") + 4;
                 Marshal.WriteInt32(new IntPtr(lockedHandle - 4), tmpHandle);
                 return lockedHandle;
             }
@@ -60,14 +60,14 @@ namespace Mangos.World.Warden
 
         private void Free(int ptr)
         {
-            int tmpHandle = Marshal.ReadInt32(new IntPtr(checked(ptr - 4)));
+            var tmpHandle = Marshal.ReadInt32(new IntPtr(checked(ptr - 4)));
             NativeMethods.GlobalUnlock(tmpHandle, "");
             Marshal.FreeHGlobal(new IntPtr(tmpHandle));
         }
 
         public void SendWardenPacket(ref WS_PlayerData.CharacterObject objCharacter, ref Packets.PacketClass Packet)
         {
-            byte[] b = new byte[checked(Packet.Data.Length - 4 - 1 + 1)];
+            var b = new byte[checked(Packet.Data.Length - 4 - 1 + 1)];
             Buffer.BlockCopy(Packet.Data, 4, b, 0, b.Length);
             WS_Handlers_Warden.RC4.Crypt(ref b, objCharacter.WardenData.KeyIn);
             Buffer.BlockCopy(b, 0, Packet.Data, 4, b.Length);

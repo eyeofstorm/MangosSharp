@@ -169,7 +169,7 @@ namespace Mangos.World.Quests
             if (((uint)Quest.SpecialFlags & 8u) != 0)
             {
                 ObjectiveFlags |= 8;
-                int i = 0;
+                var i = 0;
                 do
                 {
                     if (ObjectivesType[i] == 0)
@@ -236,11 +236,11 @@ namespace Mangos.World.Quests
         {
             if (ObjectivesDeliver > 0)
             {
-                ItemObject tmpItem = new ItemObject(ObjectivesDeliver, objCharacter.GUID);
+                var tmpItem = new ItemObject(ObjectivesDeliver, objCharacter.GUID);
                 if (!objCharacter.ItemADD(ref tmpItem))
                 {
                     tmpItem.Delete();
-                    Packets.PacketClass response = new Packets.PacketClass(Opcodes.SMSG_QUESTGIVER_QUEST_FAILED);
+                    var response = new Packets.PacketClass(Opcodes.SMSG_QUESTGIVER_QUEST_FAILED);
                     response.AddInt32(ID);
                     response.AddInt32(4);
                     objCharacter.client.Send(ref response);
@@ -291,7 +291,7 @@ namespace Mangos.World.Quests
 
         public virtual int GetProgress(bool ForSave = false)
         {
-            int tmpProgress = 0;
+            var tmpProgress = 0;
             checked
             {
                 if (ForSave)
@@ -396,13 +396,13 @@ namespace Mangos.World.Quests
                     Count = (byte)unchecked((uint)(ObjectivesItemCount[index] - ProgressItem[index]));
                 }
             }
-            ref byte reference = ref ProgressItem[index];
+            ref var reference = ref ProgressItem[index];
             checked
             {
                 reference = (byte)unchecked((uint)(reference + Count));
                 IsCompleted();
                 objCharacter.TalkUpdateQuest(Slot);
-                int ItemCount = Count - 1;
+                var ItemCount = Count - 1;
                 WorldServiceLocator._WorldServer.ALLQUESTS.SendQuestMessageAddItem(ref objCharacter.client, ObjectivesItem[index], ItemCount);
             }
         }
@@ -415,7 +415,7 @@ namespace Mangos.World.Quests
                 {
                     Count = ProgressItem[index];
                 }
-                ref byte reference = ref ProgressItem[index];
+                ref var reference = ref ProgressItem[index];
                 reference = (byte)unchecked((uint)(reference - Count));
                 IsCompleted();
                 objCharacter.TalkUpdateQuest(Slot);

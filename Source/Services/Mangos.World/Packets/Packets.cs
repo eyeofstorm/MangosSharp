@@ -28,7 +28,7 @@ namespace Mangos.World.Globals
     {
         public void DumpPacket(byte[] data, WS_Network.ClientClass client = null, int start = 0)
         {
-            string buffer = "";
+            var buffer = "";
             checked
             {
                 try
@@ -36,8 +36,8 @@ namespace Mangos.World.Globals
                     buffer = ((client != null) ? (buffer + $"[{client.IP}:{client.Port}] DEBUG: Packet Dump - Length={data.Length - start}{Environment.NewLine}") : (buffer + $"DEBUG: Packet Dump{Environment.NewLine}"));
                     if (checked(data.Length - start) % 16 == 0)
                     {
-                        int num = data.Length - 1;
-                        for (int i = start; i <= num; i += 16)
+                        var num = data.Length - 1;
+                        for (var i = start; i <= num; i += 16)
                         {
                             buffer = buffer + "|  " + BitConverter.ToString(data, i, 16).Replace("-", " ");
                             buffer = buffer + " |  " + Encoding.ASCII.GetString(data, i, 16).Replace("\t", "?").Replace("\b", "?")
@@ -48,7 +48,7 @@ namespace Mangos.World.Globals
                     }
                     else
                     {
-                        int num2 = data.Length - 1 - 16;
+                        var num2 = data.Length - 1 - 16;
                         int i;
                         for (i = start; i <= num2; i += 16)
                         {
@@ -78,7 +78,7 @@ namespace Mangos.World.Globals
                 catch (Exception ex)
                 {
                     ProjectData.SetProjectError(ex);
-                    Exception e = ex;
+                    var e = ex;
                     WorldServiceLocator._WorldServer.Log.WriteLine(LogType.FAILED, "Error dumping packet: {0}{1}", Environment.NewLine, e.ToString());
                     ProjectData.ClearProjectError();
                 }

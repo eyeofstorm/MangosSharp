@@ -78,13 +78,13 @@ namespace Mangos.World.Server
                     try
                     {
                         WorldServiceLocator._WorldServer.CHARACTERs_Lock.AcquireReaderLock(WorldServiceLocator._Global_Constants.DEFAULT_LOCK_TIMEOUT);
-                        foreach (KeyValuePair<ulong, WS_PlayerData.CharacterObject> Character in WorldServiceLocator._WorldServer.CHARACTERs)
+                        foreach (var Character in WorldServiceLocator._WorldServer.CHARACTERs)
                         {
                             if (Character.Value.DEAD || Character.Value.underWaterTimer != null || Character.Value.LogoutTimer != null || Character.Value.client == null)
                             {
                                 continue;
                             }
-                            WS_PlayerData.CharacterObject value = Character.Value;
+                            var value = Character.Value;
                             BaseMana = value.Mana.Current;
                             BaseRage = value.Rage.Current;
                             BaseEnergy = value.Energy.Current;
@@ -228,7 +228,7 @@ namespace Mangos.World.Server
                     catch (Exception ex2)
                     {
                         ProjectData.SetProjectError(ex2);
-                        Exception ex = ex2;
+                        var ex = ex2;
                         WorldServiceLocator._WorldServer.Log.WriteLine(LogType.WARNING, "Error at regenerate.{0}", Environment.NewLine + ex);
                         ProjectData.ClearProjectError();
                     }

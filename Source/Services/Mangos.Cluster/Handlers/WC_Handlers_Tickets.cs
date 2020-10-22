@@ -40,13 +40,13 @@ namespace Mangos.Cluster.Handlers
             if (packet.Data.Length - 1 < 14)
                 return;
             packet.GetInt16();
-            SuggestionType suggestion = (SuggestionType)packet.GetInt32();
-            int cLength = packet.GetInt32();
-            string cString = clusterServiceLocator._Functions.EscapeString(packet.GetString());
+            var suggestion = (SuggestionType)packet.GetInt32();
+            var cLength = packet.GetInt32();
+            var cString = clusterServiceLocator._Functions.EscapeString(packet.GetString());
             if (packet.Data.Length - 1 < 14 + cString.Length + 5)
                 return;
-            int tLength = packet.GetInt32();
-            string tString = clusterServiceLocator._Functions.EscapeString(packet.GetString());
+            var tLength = packet.GetInt32();
+            var tString = clusterServiceLocator._Functions.EscapeString(packet.GetString());
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_BUG [2]", client.IP, client.Port, suggestion);
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.INFORMATION, "Bug report [{0}:{1} Lengths:{2}, {3}] " + cString + Constants.vbCrLf + tString, cLength.ToString(), tLength.ToString());
         }
@@ -96,11 +96,11 @@ namespace Mangos.Cluster.Handlers
         public void On_CMSG_GMTICKET_CREATE(PacketClass packet, ClientClass client)
         {
             packet.GetInt16();
-            uint ticket_map = packet.GetUInt32();
-            float ticket_x = packet.GetFloat();
-            float ticket_y = packet.GetFloat();
-            float ticket_z = packet.GetFloat();
-            string ticket_text = clusterServiceLocator._Functions.EscapeString(packet.GetString());
+            var ticket_map = packet.GetUInt32();
+            var ticket_x = packet.GetFloat();
+            var ticket_y = packet.GetFloat();
+            var ticket_z = packet.GetFloat();
+            var ticket_text = clusterServiceLocator._Functions.EscapeString(packet.GetString());
             var MySQLResult = new DataTable();
             clusterServiceLocator._WorldCluster.GetCharacterDatabase().Query(string.Format("SELECT * FROM characters_tickets WHERE char_guid = {0};", client.Character.Guid), ref MySQLResult);
             var SMSG_GMTICKET_CREATE = new PacketClass(Opcodes.SMSG_GMTICKET_CREATE);
@@ -156,7 +156,7 @@ namespace Mangos.Cluster.Handlers
             if (packet.Data.Length - 1 < 7)
                 return;
             packet.GetInt16();
-            string ticket_text = clusterServiceLocator._Functions.EscapeString(packet.GetString());
+            var ticket_text = clusterServiceLocator._Functions.EscapeString(packet.GetString());
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_GMTICKET_UPDATETEXT [{2}]", client.IP, client.Port, ticket_text);
             clusterServiceLocator._WorldCluster.GetCharacterDatabase().Update(string.Format("UPDATE characters_tickets SET char_guid={0}, ticket_text=\"{1}\";", client.Character.Guid, ticket_text));
         }
@@ -164,7 +164,7 @@ namespace Mangos.Cluster.Handlers
         public void On_CMSG_WHOIS(PacketClass packet, ClientClass client)
         {
             packet.GetInt16();
-            string Name = packet.GetString();
+            var Name = packet.GetString();
             clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "[{0}:{1}] CMSG_WHOIS [{2}]", client.IP, client.Port, Name);
             var response = new PacketClass(Opcodes.SMSG_WHOIS);
             response.AddString("This feature is not available yet.");
