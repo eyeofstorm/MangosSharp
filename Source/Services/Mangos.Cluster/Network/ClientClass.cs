@@ -33,24 +33,28 @@ using Mangos.Common.Legacy;
 using Mangos.Network.Tcp;
 using Mangos.Network.Tcp.Extensions;
 using Microsoft.VisualBasic;
+using static System.GC;
+using static System.Net.Sockets.SocketFlags;
+using static System.Threading.Interlocked;
+using static System.Threading.Thread;
 
 namespace Mangos.Cluster.Network
 {
     public class ClientClass : ClientInfo, ITcpClient
     {
-        private readonly ClusterServiceLocator clusterServiceLocator;
+        private readonly ClusterServiceLocator _clusterServiceLocator;
 
         public ClientClass(ClusterServiceLocator clusterServiceLocator, Socket socket)
         {
-            this.clusterServiceLocator = clusterServiceLocator;
-            this.socket = socket;
+            _clusterServiceLocator = clusterServiceLocator;
+            _socket = socket;
         }
 
-        private readonly Socket socket;
+        private readonly Socket _socket;
         public WcHandlerCharacter.CharacterObject Character;
-        public byte[] SS_Hash;
+        public byte[] SsHash;
         public bool Encryption = false;
-        private readonly byte[] Key = { 0, 0, 0, 0 };
+        private readonly byte[] _key = { 0, 0, 0, 0 };
 
         public ClientInfo GetClientInfo()
         {
@@ -65,45 +69,69 @@ namespace Mangos.Cluster.Network
             return ci;
         }
 
-        public async Task OnConnectAsync()
+        public async Task  OnConnectAsync()
         {
-            if (socket is null)
+            if (_socket is null)
                 throw new ApplicationException("socket doesn't exist!");
-            if (clusterServiceLocator._WorldCluster.CLIENTs is null)
+            if (_clusterServiceLocator.WorldCluster.ClienTs is null)
                 throw new ApplicationException("Clients doesn't exist!");
-            var remoteEndPoint = (IPEndPoint)socket.RemoteEndPoint;
-            IP = remoteEndPoint.Address.ToString();
-            Port = (uint)remoteEndPoint.Port;
+            if (_socket.RemoteEndPoint != null)
+            {
+                var remoteEndPoint = _socket.RemoteEndPoint as IPEndPoint;
+                if (remoteEndPoint?.Address != null) IP = remoteEndPoint.Address.ToString();
+                if (remoteEndPoint != null) Port = (uint) remoteEndPoint.Port;
+            }
 
             // DONE: Connection spam protection
-            if (clusterServiceLocator._WC_Network.LastConnections.ContainsKey(clusterServiceLocator._WC_Network.Ip2Int(IP)))
+            if (IP != null && _clusterServiceLocator.WcNetwork?.LastConnections?.ContainsKey(_clusterServiceLocator.WcNetwork.Ip2Int(IP)) == true)
             {
-                if (DateAndTime.Now > clusterServiceLocator._WC_Network.LastConnections[clusterServiceLocator._WC_Network.Ip2Int(IP)])
+                if (DateTime.Now > _clusterServiceLocator.WcNetwork.LastConnections[_clusterServiceLocator.WcNetwork.Ip2Int(IP)])
                 {
-                    clusterServiceLocator._WC_Network.LastConnections[clusterServiceLocator._WC_Network.Ip2Int(IP)] = DateAndTime.Now.AddSeconds(5d);
+                    _clusterServiceLocator.WcNetwork.LastConnections[_clusterServiceLocator.WcNetwork.Ip2Int(IP)] = DateTime.Now.AddSeconds(5d);
                 }
                 else
                 {
-                    socket.Close();
+                    _socket.Close();
                     Dispose();
                     return;
                 }
             }
             else
             {
-                clusterServiceLocator._WC_Network.LastConnections.Add(clusterServiceLocator._WC_Network.Ip2Int(IP), DateAndTime.Now.AddSeconds(5d));
+                if (_clusterServiceLocator.WcNetwork != null)
+                {
+                    if (IP != null)
+                    {
+                        var i = _clusterServiceLocator.WcNetwork.Ip2Int(IP);
+                        if (_clusterServiceLocator.WcNetwork?.LastConnections != null && !(_clusterServiceLocator.WcNetwork?.LastConnections).ContainsKey(i))
+                            _clusterServiceLocator.WcNetwork?.LastConnections?.Add(i, DateTime.Now.AddSeconds(5d));
+                    }
+                }
             }
 
-            clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.DEBUG, "Incoming connection from [{0}:{1}]", IP, Port);
+            if (_clusterServiceLocator != null)
+            {
+                if (IP != null)
+                    _clusterServiceLocator.WorldCluster.Log?.WriteLine(LogType.DEBUG,
+                        "Incoming connection from [{0}:{1}]",
+                        IP, Port);
 
-            // Send Auth Challenge
-            var p = new PacketClass(Opcodes.SMSG_AUTH_CHALLENGE);
-            p.AddInt32((int)Index);
-            Send(p);
-            Index = (uint)Interlocked.Increment(ref clusterServiceLocator._WorldCluster.CLIETNIDs);
-            lock (((ICollection)clusterServiceLocator._WorldCluster.CLIENTs).SyncRoot)
-                clusterServiceLocator._WorldCluster.CLIENTs.Add(Index, this);
-            clusterServiceLocator._WC_Stats.ConnectionsIncrement();
+                // Send Auth Challenge
+                using var p = new PacketClass(Opcodes.SMSG_AUTH_CHALLENGE);
+                p.AddInt32((int) Index);
+                Send(p);
+
+                Index = (uint) Increment(ref _clusterServiceLocator.WorldCluster.ClietniDs);
+                var root = (_clusterServiceLocator.WorldCluster.ClienTs as ICollection).SyncRoot;
+                var syncRoot = root;
+                lock (syncRoot)
+                {
+                    if (!_clusterServiceLocator.WorldCluster.ClienTs.ContainsKey(Index))
+                        _clusterServiceLocator.WorldCluster.ClienTs?.Add(Index, this);
+                }
+
+                _clusterServiceLocator?.WcStats?.ConnectionsIncrement();
+            }
         }
 
         public async void HandleAsync(ChannelReader<byte> reader, ChannelWriter<byte> writer, CancellationToken cancellationToken)
@@ -111,55 +139,61 @@ namespace Mangos.Cluster.Network
             var buffer = new byte[8192];
             while (!cancellationToken.IsCancellationRequested)
             {
-                await reader.ReadAsync(buffer, 0, 6);
-                if (Encryption)
+                if (reader != null)
                 {
-                    Decode(buffer);
+                    await reader.ReadAsync(buffer, 0, 6);
+                    if (Encryption)
+                    {
+                        Decode(buffer);
+                    }
+                    var length = buffer[1] + buffer[0] * 256 + 2;
+                    await reader.ReadAsync(buffer, 6, length - 6);
                 }
-                var length = buffer[1] + buffer[0] * 256 + 2;
-                await reader.ReadAsync(buffer, 6, length - 6);
 
-                var packet = new PacketClass(buffer);
+                using var packet = new PacketClass(buffer);
                 OnPacket(packet);
             }
         }
 
         public void OnPacket(PacketClass p)
         {
-            if (socket is null)
+            if (p == null) throw new ArgumentNullException(nameof(p));
+            if (_socket is null)
                 throw new ApplicationException("socket is Null!");
-            if (clusterServiceLocator._WorldCluster.CLIENTs is null)
+            if (_clusterServiceLocator.WorldCluster.ClienTs is null)
                 throw new ApplicationException("Clients doesn't exist!");
-            if (clusterServiceLocator._WorldCluster.GetPacketHandlers() is null)
+            if (_clusterServiceLocator.WorldCluster.GetPacketHandlers() is null)
                 throw new ApplicationException("PacketHandler is empty!");
 
-            var _client = this;
+            var client = this;
 
-            if (clusterServiceLocator._WorldCluster.GetConfig().PacketLogging)
+            if (_clusterServiceLocator.WorldCluster.GetConfig().PacketLogging)
             {
-                var argclient = this;
-                clusterServiceLocator._Packets.LogPacket(p.Data, false, _client);
+                if (p.Data != null) _clusterServiceLocator.Packets?.LogPacket(p.Data, false, client);
             }
 
-            if (!clusterServiceLocator._WorldCluster.GetPacketHandlers().ContainsKey(p.OpCode))
+            if (!_clusterServiceLocator.WorldCluster.GetPacketHandlers().ContainsKey(p.OpCode))
             {
                 if (Character is null || !Character.IsInWorld)
                 {
-                    socket?.Dispose();
-                    socket?.Close();
+                    _socket?.Dispose();
+                    _socket?.Close();
 
-                    clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.WARNING, "[{0}:{1}] Unknown Opcode 0x{2:X} [{2}], DataLen={4}", IP, Port, p.OpCode, Constants.vbCrLf, p.Length);
-                    clusterServiceLocator._Packets.DumpPacket(p.Data, _client);
+                    _clusterServiceLocator?.WorldCluster.Log.WriteLine(LogType.WARNING,
+                        "[{0}:{1}] Unknown Opcode 0x{2:X} [{2}], DataLen={4}", IP, Port, p.OpCode, Constants.vbCrLf,
+                        p.Length);
+                    if (p.Data != null) _clusterServiceLocator?.Packets?.DumpPacket(p.Data, client);
                 }
                 else
                 {
                     try
                     {
-                        Character.GetWorld.ClientPacket(Index, p.Data);
+                        if (p.Data != null) Character?.GetWorld?.ClientPacket(Index, p.Data);
                     }
                     catch
                     {
-                        clusterServiceLocator._WC_Network.WorldServer.Disconnect("NULL", new List<uint> { Character.Map });
+                        _clusterServiceLocator.WcNetwork?.WorldServer?.Disconnect("NULL",
+                            new List<uint> {Character.Map});
                     }
                 }
             }
@@ -167,35 +201,40 @@ namespace Mangos.Cluster.Network
             {
                 try
                 {
-                    clusterServiceLocator._WorldCluster.GetPacketHandlers()[p.OpCode].Invoke(p, _client);
+                    var packets = _clusterServiceLocator.WorldCluster.GetPacketHandlers();
+                    if (packets != null && packets.ContainsKey(p.OpCode)) packets[p.OpCode].Invoke(p, client);
                 }
                 catch (Exception e)
                 {
-                    clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.FAILED, "Opcode handler {2}:{2:X} caused an error: {1}{0}", e.ToString(), Constants.vbCrLf, p.OpCode);
+                    _clusterServiceLocator.WorldCluster.Log?.WriteLine(LogType.FAILED,
+                        "Opcode handler {2}:{2:X} caused an error: {1}{0}", e.ToString(), Constants.vbCrLf,
+                        p.OpCode);
                 }
             }
         }
 
         public void Send(byte[] data)
         {
-            if (!socket.Connected)
+            if (data == null) throw new ArgumentNullException(nameof(data));
+            if (!_socket.Connected)
                 return;
             try
             {
-                if (clusterServiceLocator._WorldCluster.GetConfig().PacketLogging)
+                if (_clusterServiceLocator.WorldCluster != null && _clusterServiceLocator != null && _clusterServiceLocator.WorldCluster.GetConfig().PacketLogging)
                 {
                     var argclient = this;
-                    clusterServiceLocator._Packets.LogPacket(data, true, argclient);
+                    _clusterServiceLocator.Packets?.LogPacket(data, true, argclient);
                 }
 
                 if (Encryption)
                     Encode(data);
-                socket.BeginSend(data, 0, data.Length, SocketFlags.None, OnSendComplete, null);
+                _socket?.BeginSend(data, 0, data.Length, None, OnSendComplete, null);
             }
-            catch (Exception Err)
+            catch (Exception err)
             {
                 // NOTE: If it's a error here it means the connection is closed?
-                clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.CRITICAL, "Connection from [{0}:{1}] caused an error {2}{3}", IP, Port, Err.ToString(), Constants.vbCrLf);
+                _clusterServiceLocator?.WorldCluster?.Log?.WriteLine(LogType.CRITICAL,
+                    "Connection from [{0}:{1}] caused an error {2}{3}", IP, Port, err.ToString(), Constants.vbCrLf);
                 Delete();
             }
         }
@@ -204,33 +243,34 @@ namespace Mangos.Cluster.Network
         {
             if (packet == null)
                 throw new ApplicationException("Packet doesn't contain data!");
-            if (socket == null)
+            if (_socket == null)
                 return;
-            if (!socket.Connected)
+            if (!_socket.Connected)
                 return;
 
-            using (packet)
+            using var @class = packet;
+            try
             {
-                try
+                if (packet.Data == null) return;
+                var data = packet.Data ?? throw new ArgumentNullException(nameof(packet));
+                if (_clusterServiceLocator.WorldCluster != null && _clusterServiceLocator != null && _clusterServiceLocator.WorldCluster.GetConfig().PacketLogging)
                 {
-                    var data = packet.Data;
-                    if (clusterServiceLocator._WorldCluster.GetConfig().PacketLogging)
-                    {
-                        var argclient = this;
-                        clusterServiceLocator._Packets.LogPacket(data, true, argclient);
-                    }
-
-                    if (Encryption)
-                        Encode(data);
-
-                    socket.BeginSend(data, 0, data.Length, SocketFlags.None, OnSendComplete, null);
+                    var argclient = this;
+                    _clusterServiceLocator.Packets?.LogPacket(data, true, argclient);
                 }
-                catch (Exception err)
-                {
-                    // NOTE: If it's a error here it means the connection is closed?
-                    clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.CRITICAL, "Connection from [{0}:{1}] caused an error {2}{3}", IP, Port, err.ToString(), Constants.vbCrLf);
-                    Delete();
-                }
+
+                if (Encryption)
+                    Encode(data);
+
+                _socket.BeginSend(data, 0, data.Length, None, OnSendComplete, null);
+            }
+            catch (Exception err)
+            {
+                // NOTE: If it's a error here it means the connection is closed?
+                if (IP != null)
+                    _clusterServiceLocator?.WorldCluster?.Log?.WriteLine(LogType.CRITICAL,
+                        "Connection from [{0}:{1}] caused an error {2}{3}", IP, Port, err.ToString(), Constants.vbCrLf);
+                Delete();
             }
         }
 
@@ -238,41 +278,47 @@ namespace Mangos.Cluster.Network
         {
             if (packet is null)
                 throw new ApplicationException("Packet doesn't contain data!");
-            if (!socket.Connected)
+            if (!_socket.Connected)
                 return;
             try
             {
-                var data = (byte[])packet.Data.Clone();
-                if (clusterServiceLocator._WorldCluster.GetConfig().PacketLogging)
+                if (packet.Data != null)
                 {
-                    var argclient = this;
-                    clusterServiceLocator._Packets.LogPacket(data, true, argclient);
-                }
+                    var data = packet.Data.Clone() as byte[];
+                    var logging = _clusterServiceLocator?.WorldCluster?.GetConfig().PacketLogging;
+                    var packetLogging = logging;
+                    if (packetLogging != null && packetLogging == true)
+                    {
+                        var argclient = this;
+                        _clusterServiceLocator.Packets?.LogPacket(data, true, argclient);
+                    }
 
-                if (Encryption)
-                    Encode(data);
-                socket.BeginSend(data, 0, data.Length, SocketFlags.None, OnSendComplete, null);
+                    if (Encryption && data != null) Encode(data);
+                    if (data != null) _socket?.BeginSend(data, 0, data.Length, None, OnSendComplete, null);
+                }
             }
-            catch (Exception Err)
+            catch (Exception err)
             {
                 // NOTE: If it's a error here it means the connection is closed?
-                clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.CRITICAL, "Connection from [{0}:{1}] caused an error {2}{3}", IP, Port, Err.ToString(), Constants.vbCrLf);
+                _clusterServiceLocator?.WorldCluster?.Log.WriteLine(LogType.CRITICAL, "Connection from [{0}:{1}] caused an error {2}{3}", IP, Port, err.ToString(), Constants.vbCrLf);
                 Delete();
             }
 
             // Don't forget to clean after using this function
+            packet.Dispose();
         }
 
         public void OnSendComplete(IAsyncResult ar)
         {
-            if (socket is object)
+            if (_socket == null) return;
+            if (ar == null) return;
+            var bytesSent = _socket.EndSend(ar);
+            if (_clusterServiceLocator?.WcStats != null)
             {
-                var bytesSent = socket.EndSend(ar);
-                Interlocked.Add(ref clusterServiceLocator._WC_Stats.DataTransferOut, bytesSent);
+                Add(ref _clusterServiceLocator.WcStats.DataTransferOut, bytesSent);
             }
         }
 
-        /* TODO ERROR: Skipped RegionDirectiveTrivia */
         private bool _disposedValue; // To detect redundant calls
 
         // IDisposable
@@ -286,39 +332,43 @@ namespace Mangos.Cluster.Network
                 // On Error Resume Next
                 // May have to trap and use exception handler rather than the on error resume next rubbish
 
-                if (socket is object)
-                    socket.Close();
-                lock (((ICollection)clusterServiceLocator._WorldCluster.CLIENTs).SyncRoot)
-                    clusterServiceLocator._WorldCluster.CLIENTs.Remove(Index);
-                if (Character is object)
+                _socket?.Close();
+                if (_clusterServiceLocator != null)
                 {
-                    if (Character.IsInWorld)
+                    var syncRoot = (_clusterServiceLocator.WorldCluster?.ClienTs as ICollection)?.SyncRoot;
+                    if (syncRoot != null)
+                        lock (syncRoot)
+                        {
+                            if ((_clusterServiceLocator.WorldCluster?.ClienTs).ContainsKey(Index))
+                                _clusterServiceLocator.WorldCluster?.ClienTs?.Remove(Index);
+                        }
+
+                    if (Character != null && !(Character is { IsInWorld: true }))
                     {
                         Character.IsInWorld = false;
                         Character.GetWorld.ClientDisconnect(Index);
                     }
 
-                    Character.Dispose();
-                }
+                    Character?.Dispose();
 
-                Character = null;
-                clusterServiceLocator._WC_Stats.ConnectionsDecrement();
+                    Character = null;
+                    _clusterServiceLocator.WcStats?.ConnectionsDecrement();
+                }
             }
 
             _disposedValue = true;
         }
 
-        // This code added by Visual Basic to correctly implement the disposable pattern.
         public void Dispose()
         {
             // Do not change this code.  Put cleanup code in Dispose(ByVal disposing As Boolean) above.
             Dispose(true);
-            GC.SuppressFinalize(this);
+            SuppressFinalize(this);
         }
-        /* TODO ERROR: Skipped EndRegionDirectiveTrivia */
+
         public void Delete()
         {
-            socket.Close();
+            _socket?.Close();
             Dispose();
         }
 
@@ -327,9 +377,13 @@ namespace Mangos.Cluster.Network
             for (var i = 0; i < 6; i++)
             {
                 var tmp = data[i];
-                data[i] = (byte)(SS_Hash[Key[1]] ^ (256 + data[i] - Key[0]) % 256);
-                Key[0] = tmp;
-                Key[1] = (byte)((Key[1] + 1) % 40);
+                if (i >= 0 && data.Length > i)
+                    if (SsHash != null)
+                        if (_key != null)
+                            data[i] = (byte) (SsHash[_key[1]] ^ (256 + data[i] - _key[0]) % 256);
+                if (_key == null) continue;
+                _key[0] = tmp;
+                _key[1] = (byte) ((_key[1] + 1) % 40);
             }
         }
 
@@ -337,27 +391,33 @@ namespace Mangos.Cluster.Network
         {
             for (var i = 0; i < 4; i++)
             {
-                data[i] = (byte)(((SS_Hash[Key[3]] ^ data[i]) + Key[2]) % 256);
-                Key[2] = data[i];
-                Key[3] = (byte)((Key[3] + 1) % 40);
+                if (data != null)
+                {
+                    if (SsHash != null)
+                        if (_key != null)
+                            data[i] = (byte) (((SsHash[_key[3]] ^ data[i]) + _key[2]) % 256);
+                    if (_key != null) _key[2] = data[i];
+                }
+
+                if (_key != null) _key[3] = (byte) ((_key[3] + 1) % 40);
             }
         }
 
         public void EnQueue(object state)
         {
-            while (clusterServiceLocator._WorldCluster.CHARACTERs.Count > clusterServiceLocator._WorldCluster.GetConfig().ServerPlayerLimit)
+            while (_clusterServiceLocator.WorldCluster.CharacteRs.Count > _clusterServiceLocator.WorldCluster.GetConfig().ServerPlayerLimit)
             {
-                if (!socket.Connected)
+                if (_socket != null && !_socket.Connected)
                     return;
                 new PacketClass(Opcodes.SMSG_AUTH_RESPONSE).AddInt8((byte)LoginResponse.LOGIN_WAIT_QUEUE);
-                new PacketClass(Opcodes.SMSG_AUTH_RESPONSE).AddInt32(clusterServiceLocator._WorldCluster.CLIENTs.Count - clusterServiceLocator._WorldCluster.CHARACTERs.Count);            // amount of players in queue
+                new PacketClass(Opcodes.SMSG_AUTH_RESPONSE).AddInt32(_clusterServiceLocator.WorldCluster.ClienTs.Count - _clusterServiceLocator.WorldCluster.CharacteRs.Count);            // amount of players in queue
                 Send(new PacketClass(Opcodes.SMSG_AUTH_RESPONSE));
-                clusterServiceLocator._WorldCluster.Log.WriteLine(LogType.INFORMATION, "[{1}:{2}] AUTH_WAIT_QUEUE: Server player limit reached!", IP, Port);
-                Thread.Sleep(6000);
+                _clusterServiceLocator.WorldCluster.Log.WriteLine(LogType.INFORMATION, "[{1}:{2}] AUTH_WAIT_QUEUE: Server player limit reached!", IP, Port);
+                Sleep(6000);
             }
 
-            var argclient = this;
-            clusterServiceLocator._WC_Handlers_Auth.SendLoginOk(argclient);
+            var clientele = this;
+            _clusterServiceLocator.WcHandlersAuth?.SendLoginOk(clientele);
         }
     }
 }

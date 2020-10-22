@@ -3325,7 +3325,7 @@ namespace Mangos.World.Spells
             {
                 return SpellFailedReason.SPELL_FAILED_ERROR;
             }
-            var LootType = LootType.LOOTTYPE_CORPSE;
+            LootType LootType = LootType.LOOTTYPE_CORPSE;
             ulong targetGUID;
             int lockID;
             if (Target.goTarget != null)

@@ -17,15 +17,14 @@
 //
 
 using System;
-using Microsoft.VisualBasic;
 
 namespace Mangos.Cluster.Network
 {
     public class WorldInfo
     {
         public int Latency;
-        public DateTime Started = DateAndTime.Now;
-        public float CPUUsage;
+        public DateTime Started = new DateTime();
+        public float CpuUsage;
         public ulong MemoryUsage;
     }
 }

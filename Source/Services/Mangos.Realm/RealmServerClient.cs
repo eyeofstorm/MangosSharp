@@ -35,6 +35,7 @@ using Mangos.Network.Tcp.Extensions;
 using Mangos.Storage.Account;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
+using static System.Array;
 
 namespace Mangos.Realm
 {
@@ -167,7 +168,7 @@ namespace Mangos.Realm
                     case var @case when @case == AccountState.LOGIN_OK:
                         {
                             var account = new byte[(data[33])];
-                            Array.Copy(data, 34, account, 0, data[33]);
+                            Copy(data, 34, account, 0, data[33]);
                             if (Conversions.ToBoolean(Operators.ConditionalCompareObjectNotEqual(accountInfo.sha_pass_hash.Length, 40, false))) // Invalid password type, should always be 40 characters
                             {
                                 var dataResponse = new byte[2];
@@ -196,13 +197,13 @@ namespace Mangos.Realm
                                     dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_CHALLENGE;
                                     dataResponse[1] = (byte)AccountState.LOGIN_OK;
                                     dataResponse[2] = (byte)Conversion.Val("&H00");
-                                    Array.Copy(authEngineClass.PublicB, 0, dataResponse, 3, 32);
+                                    Copy(authEngineClass.PublicB, 0, dataResponse, 3, 32);
                                     dataResponse[35] = (byte)authEngineClass.g.Length;
                                     dataResponse[36] = authEngineClass.g[0];
                                     dataResponse[37] = 32;
-                                    Array.Copy(authEngineClass.N, 0, dataResponse, 38, 32);
-                                    Array.Copy(authEngineClass.Salt, 0, dataResponse, 70, 32);
-                                    Array.Copy(AuthEngineClass.CrcSalt, 0, dataResponse, 102, 16);
+                                    Copy(authEngineClass.N, 0, dataResponse, 38, 32);
+                                    Copy(authEngineClass.Salt, 0, dataResponse, 70, 32);
+                                    Copy(AuthEngineClass.CrcSalt, 0, dataResponse, 102, 16);
                                     dataResponse[118] = 0; // Added in 1.12.x client branch? Security Flags (&H0...&H4)?
                                     await writer.WriteAsync(dataResponse);
                                 }
@@ -320,7 +321,7 @@ namespace Mangos.Realm
                 r.Close();
                 // fs.Close()
                 var result = md5.ComputeHash(buffer);
-                Array.Copy(result, 0, dataResponse, 15, 16);
+                Copy(result, 0, dataResponse, 15, 16);
                 await writer.WriteAsync(dataResponse);
             }
             else
@@ -340,9 +341,9 @@ namespace Mangos.Realm
             var data = new byte[1].Concat(body).ToArray();
 
             var a = new byte[32];
-            Array.Copy(data, 1, a, 0, 32);
+            Copy(data, 1, a, 0, 32);
             var m1 = new byte[20];
-            Array.Copy(data, 33, m1, 0, 20);
+            Copy(data, 33, m1, 0, 20);
             // Dim CRC_Hash(19) As Byte
             // Array.Copy(data, 53, CRC_Hash, 0, 20)
             // Dim NumberOfKeys as Byte = data(73)
@@ -379,7 +380,7 @@ namespace Mangos.Realm
                 var dataResponse = new byte[26];
                 dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
                 dataResponse[1] = (byte)AccountState.LOGIN_OK;
-                Array.Copy(authEngineClass.M2, 0, dataResponse, 2, 20);
+                Copy(authEngineClass.M2, 0, dataResponse, 2, 20);
                 dataResponse[22] = 0;
                 dataResponse[23] = 0;
                 dataResponse[24] = 0;
