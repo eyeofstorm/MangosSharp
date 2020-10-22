@@ -224,7 +224,7 @@ namespace Mangos.World.Server
                                                 ref var caster2 = ref ((WS_Totems.TotemObject)objCharacter).Caster;
                                                 ref var reference = ref caster2;
                                                 var objCharacter2 = (WS_PlayerData.CharacterObject)caster2;
-                                                List<WS_Base.BaseUnit> partyMembersAtPoint = wS_Spells2.GetPartyMembersAtPoint(ref objCharacter2, objCharacter.ActiveSpells[i].Aura_Info[k].GetRadius, objCharacter.positionX, objCharacter.positionY, objCharacter.positionZ);
+                                                var partyMembersAtPoint = wS_Spells2.GetPartyMembersAtPoint(ref objCharacter2, objCharacter.ActiveSpells[i].Aura_Info[k].GetRadius, objCharacter.positionX, objCharacter.positionY, objCharacter.positionZ);
                                                 reference = objCharacter2;
                                                 Targets = partyMembersAtPoint;
                                                 break;

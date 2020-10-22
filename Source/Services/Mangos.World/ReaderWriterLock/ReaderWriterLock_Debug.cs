@@ -47,7 +47,9 @@ namespace Mangos.World.ReaderWriterLock
             switch (s)
             {
                 case null:
+                {
                     return;
+                }
             }
 
             ID = ID switch
@@ -66,7 +68,7 @@ namespace Mangos.World.ReaderWriterLock
             var array = sf;
             foreach (var frame in array)
             {
-                WriteLine($"\t{frame.GetMethod()!.Name}");
+                WriteLine($"\t{frame?.GetMethod()!.Name}");
             }
 
             WriteLine($"NewLock {ID}");
@@ -84,23 +86,24 @@ namespace Mangos.World.ReaderWriterLock
             var array = sf;
             foreach (var frame in array)
             {
-                WriteLine($"\t{frame.GetMethod()!.Name}");
+                WriteLine($"\t{frame?.GetMethod()!.Name}");
             }
-            @lock.AcquireReaderLock(millisecondsTimeout: t);
+
+            @lock?.AcquireReaderLock(millisecondsTimeout: t);
         }
 
         public void ReleaseReaderLock()
         {
             try
             {
-                @lock.ReleaseReaderLock();
+                @lock?.ReleaseReaderLock();
                 var st = new StackTrace();
                 WriteLine($"ReleaseReaderLock {ID} from:");
                 var sf = st.GetFrames();
                 var array = sf;
                 foreach (var frame in array)
                 {
-                    WriteLine($"\t{ frame.GetMethod()!.Name}");
+                    WriteLine($"\t{ frame?.GetMethod()!.Name}");
                 }
             }
             catch (Exception ex2)
@@ -118,22 +121,22 @@ namespace Mangos.World.ReaderWriterLock
             var sf = st.GetFrames();
             foreach (var frame in sf)
             {
-                WriteLine($"\t{ frame.GetMethod()!.Name}");
+                WriteLine($"\t{ frame?.GetMethod()!.Name}");
             }
-            @lock.AcquireWriterLock(millisecondsTimeout: t);
+            @lock?.AcquireWriterLock(millisecondsTimeout: t);
         }
 
         public void ReleaseWriterLock()
         {
             try
             {
-                @lock.ReleaseWriterLock();
+                @lock?.ReleaseWriterLock();
                 WriteLine("ReleaseWriterLock " + ID + " from:");
                 var sf = new StackTrace().GetFrames();
                 var array = sf;
                 foreach (var frame in array)
                 {
-                    WriteLine("\t" + frame.GetMethod()!.Name);
+                    WriteLine("\t" + frame?.GetMethod()!.Name);
                 }
             }
             catch (Exception ex2)
@@ -144,15 +147,16 @@ namespace Mangos.World.ReaderWriterLock
             }
         }
 
-        public bool IsWriterLockHeld => @lock.IsWriterLockHeld;
-
-        public bool IsReaderLockHeld => @lock.IsReaderLockHeld;
+        public bool IsReaderLockHeld => @lock != null && (@lock.IsReaderLockHeld);
 
         public void WriteLine(string str)
         {
-            if (str is null)
+            switch (str)
             {
-                throw new ArgumentNullException(nameof(str));
+                case null:
+                {
+                    throw new ArgumentNullException(nameof(str));
+                }
             }
 
             lock (WriteQueue)
