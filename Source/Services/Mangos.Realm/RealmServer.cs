@@ -17,23 +17,25 @@
 //
 
 using System;
-using System.Net;
 using System.Reflection;
 using System.Threading.Tasks;
 using Mangos.Configuration;
 using Mangos.Loggers;
 using Mangos.Network.Tcp;
 using Mangos.Storage.MySql;
+using static System.Console;
+using static System.Net.IPEndPoint;
+using static System.Reflection.Assembly;
 
 namespace Mangos.Realm
 {
     public class RealmServer
     {
-        private readonly ILogger logger;
-        private readonly MySqlAccountStorage accountStorage;
-        private readonly IConfigurationProvider<RealmServerConfiguration> configurationProvider;
+        private readonly ILogger _logger;
+        private readonly MySqlAccountStorage _accountStorage;
+        private readonly IConfigurationProvider<RealmServerConfiguration> _configurationProvider;
 
-        private readonly TcpServer tcpServer;
+        private readonly TcpServer _tcpServer;
 
         public RealmServer(
             ILogger logger,
@@ -41,10 +43,10 @@ namespace Mangos.Realm
             IConfigurationProvider<RealmServerConfiguration> configurationProvider,
             TcpServer tcpServer)
         {
-            this.logger = logger;
-            this.accountStorage = accountStorage;
-            this.configurationProvider = configurationProvider;
-            this.tcpServer = tcpServer;
+            if (logger != null) _logger = logger;
+            if (accountStorage != null) _accountStorage = accountStorage;
+            if (configurationProvider != null) _configurationProvider = configurationProvider;
+            if (tcpServer != null) _tcpServer = tcpServer;
         }
 
         public async Task StartAsync()
@@ -54,38 +56,60 @@ namespace Mangos.Realm
             await ConnectToDatabaseAsync();
             await StartTcpServer();
 
-            Console.ReadLine();
+            ReadLine();
         }
 
         private async Task ConnectToDatabaseAsync()
         {
-            var configuration = await configurationProvider.GetConfigurationAsync();
-            await accountStorage.ConnectAsync(configuration.AccountConnectionString);
+            if (_configurationProvider != null)
+            {
+                var configuration = await _configurationProvider.GetConfigurationAsync();
+                if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+                if (_accountStorage != null)
+                    if (configuration.AccountConnectionString != null)
+                        await _accountStorage.ConnectAsync(configuration.AccountConnectionString);
+            }
         }
 
         private async Task StartTcpServer()
         {
-            var configuration = await configurationProvider.GetConfigurationAsync();
-            var endpoint = IPEndPoint.Parse(configuration.RealmServerEndpoint);
-            tcpServer.Start(endpoint, 10);
+            if (_configurationProvider != null)
+            {
+                var configuration = await _configurationProvider.GetConfigurationAsync();
+                if (configuration == null) throw new ArgumentNullException(nameof(configuration));
+                if (configuration.RealmServerEndpoint != null)
+                {
+                    var endpoint = Parse(configuration.RealmServerEndpoint) ??
+                                   throw new ArgumentNullException(
+                                       $"IPEndPoint.Parse(configuration.RealmServerEndpoint)");
+                    _tcpServer?.Start(endpoint, 10);
+                }
+            }
         }
 
         private void LogInitialInformation()
         {
-            var assembly = Assembly.GetExecutingAssembly();
-            var assemblyTitle = assembly.GetCustomAttribute<AssemblyTitleAttribute>().Title;
-            var product = assembly.GetCustomAttribute<AssemblyProductAttribute>().Product;
-            var copyright = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>().Copyright;
+            var assembly = GetExecutingAssembly();
+            var assemblyTitle = assembly.GetCustomAttribute<AssemblyTitleAttribute>()?.Title;
+            var product = assembly.GetCustomAttribute<AssemblyProductAttribute>()?.Product;
+            var copyright = assembly.GetCustomAttribute<AssemblyCopyrightAttribute>()?.Copyright;
 
-            Console.Title = $"{assemblyTitle} v{Assembly.GetExecutingAssembly().GetName().Version}";
-            logger.Debug(product);
-            logger.Debug(copyright);
-            logger.Message(@" __  __      _  _  ___  ___  ___               ");
-            logger.Message(@"|  \/  |__ _| \| |/ __|/ _ \/ __|   We Love    ");
-            logger.Message(@"| |\/| / _` | .` | (_ | (_) \__ \   Vanilla Wow");
-            logger.Message(@"|_|  |_\__,_|_|\_|\___|\___/|___/              ");
-            logger.Message("                                                ");
-            logger.Message("Website / Forum / Support: https://getmangos.eu/");
+            if (assemblyTitle != null)
+            {
+                var version = GetExecutingAssembly().GetName().Version;
+                if (version is { })
+                    Title = $"{assemblyTitle} v{version}";
+            }
+
+            if (_logger == null) return;
+            _logger.Debug(product);
+            _logger.Debug(copyright);
+            _logger.Message(@" __  __      _  _  ___  ___  ___               ");
+            _logger.Message(@"|  \/  |__ _| \| |/ __|/ _ \/ __|   We Love    ");
+            _logger.Message(@"| |\/| / _` | .` | (_ | (_) \__ \   Vanilla Wow");
+            _logger.Message(@"|_|  |_\__,_|_|\_|\___|\___/|___/              ");
+            _logger.Message("                                                ");
+            _logger.Message("Website / Forum / Support: https://getmangos.eu/");
         }
     }
 }

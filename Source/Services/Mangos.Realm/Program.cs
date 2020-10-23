@@ -16,6 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+using System;
 using System.Threading.Tasks;
 using Autofac;
 using Mangos.Common.Globals;
@@ -35,8 +36,9 @@ namespace Mangos.Realm
     {
         public async static Task Main(string[] args)
         {
-            var container = CreateContainer();
-            var realmServer = container.Resolve<RealmServer>();
+            if (args == null) throw new ArgumentNullException(nameof(args));
+            var container = CreateContainer() ?? throw new ArgumentNullException(nameof(args));
+            var realmServer = container.Resolve<RealmServer>() ?? throw new ArgumentNullException(nameof(args));
             await realmServer.StartAsync();
         }
 
@@ -53,6 +55,7 @@ namespace Mangos.Realm
 
         public static void RegisterConfiguration(ContainerBuilder builder)
         {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
             builder.Register(x => new XmlFileConfigurationProvider<RealmServerConfiguration>(
                     x.Resolve<ILogger>(), "configs/RealmServer.ini"))
                 .As<IConfigurationProvider<RealmServerConfiguration>>()
@@ -63,16 +66,19 @@ namespace Mangos.Realm
 
         public static void RegisterLoggers(ContainerBuilder builder)
         {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
             builder.RegisterType<ConsoleLogger>().As<ILogger>().SingleInstance();
         }
 
         private static void RegisterTcpServer(ContainerBuilder builder)
         {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
             builder.RegisterType<TcpServer>().AsSelf().SingleInstance();
         }
 
         public static void RegisterStorages(ContainerBuilder builder)
         {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
             builder.RegisterType<MySqlAccountStorage>()
                 .AsSelf()
                 .As<IAccountStorage>()
@@ -81,6 +87,7 @@ namespace Mangos.Realm
 
         public static void RegisterServices(ContainerBuilder builder)
         {
+            if (builder == null) throw new ArgumentNullException(nameof(builder));
             builder.RegisterType<Converter>().As<Converter>().SingleInstance();
             builder.RegisterType<MangosGlobalConstants>().As<MangosGlobalConstants>().SingleInstance();
 

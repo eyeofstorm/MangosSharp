@@ -16,6 +16,7 @@
 // Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+using System;
 using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
@@ -28,30 +29,37 @@ namespace Mangos.Realm.Factories
 {
     public class RealmServerClientFactory : ITcpClientFactory
     {
-        private readonly ILogger logger;
-        private readonly IAccountStorage accountStorage;
-        private readonly Converter converter;
-        private readonly MangosGlobalConstants mangosGlobalConstants;
+        private readonly ILogger _logger;
+        private readonly IAccountStorage _accountStorage;
+        private readonly Converter _converter;
+        private readonly MangosGlobalConstants _mangosGlobalConstants;
 
         public RealmServerClientFactory(ILogger logger,
             IAccountStorage accountStorage,
             Converter converter,
             MangosGlobalConstants mangosGlobalConstants)
         {
-            this.logger = logger;
-            this.accountStorage = accountStorage;
-            this.converter = converter;
-            this.mangosGlobalConstants = mangosGlobalConstants;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _accountStorage = accountStorage ?? throw new ArgumentNullException(nameof(accountStorage));
+            _converter = converter ?? throw new ArgumentNullException(nameof(converter));
+            _mangosGlobalConstants = mangosGlobalConstants ?? throw new ArgumentNullException(nameof(mangosGlobalConstants));
         }
 
         public async Task<ITcpClient> CreateTcpClientAsync(Socket clientSocket)
         {
-            return new RealmServerClient(
-                logger,
-                accountStorage,
-                converter,
-                mangosGlobalConstants,
-                (IPEndPoint)clientSocket.RemoteEndPoint);
+            if (clientSocket == null) throw new ArgumentNullException(nameof(clientSocket));
+            if (_logger == null) throw new ArgumentNullException(nameof(_logger));
+            if (_accountStorage == null) throw new ArgumentNullException(nameof(_accountStorage));
+            if (_converter == null) throw new ArgumentNullException(nameof(_converter));
+            if (_mangosGlobalConstants == null) throw new ArgumentNullException(nameof(_mangosGlobalConstants));
+            if (clientSocket.RemoteEndPoint != null)
+                return new RealmServerClient(
+                    _logger,
+                    _accountStorage,
+                    _converter,
+                    _mangosGlobalConstants,
+                    clientSocket.RemoteEndPoint as IPEndPoint);
+            return null;
         }
     }
 }

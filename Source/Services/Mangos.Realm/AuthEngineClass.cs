@@ -18,15 +18,19 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Numerics;
 using System.Security.Cryptography;
+using static System.Array;
+using static System.Buffer;
+using static System.Numerics.BigInteger;
 
 namespace Mangos.Realm
 {
     public sealed class AuthEngineClass
     {
-        public static readonly byte[] CrcSalt;
-        private static readonly Random _random;
+        public static readonly byte[] CrcSalt = new byte[16];
+        private static readonly Random Random = new Random();
 
         private byte[] _a;
         private readonly byte[] _b;
@@ -57,9 +61,7 @@ namespace Mangos.Realm
 
         static AuthEngineClass()
         {
-            CrcSalt = new byte[16];
-            _random = new Random();
-            _random.NextBytes(CrcSalt);
+            if (CrcSalt != null) Random?.NextBytes(CrcSalt);
         }
 
         public AuthEngineClass()
@@ -77,39 +79,43 @@ namespace Mangos.Realm
         private void CalculateB()
         {
             // Dim encoding1 As New UTF7Encoding
-            _random.NextBytes(_b);
+            Random.NextBytes(_b);
             var ptr1 = new BigInteger();
             var ptr2 = new BigInteger();
             var ptr3 = new BigInteger();
             // Dim ptr4 As IntPtr = BN_new("")
-            Array.Reverse(_b);
-            _bNb = new BigInteger(_b, isUnsigned: true, isBigEndian: true);
-            Array.Reverse(_b);
-            ptr1 = BigInteger.ModPow(_bNg, _bNb, _bNn);
+            Reverse(_b);
+            _bNb = new BigInteger(_b, true, true);
+            Reverse(_b);
+            ptr1 = ModPow(_bNg, _bNb, _bNn);
             ptr2 = _bNk * _bNv;
             ptr3 = ptr1 + ptr2;
             _bnPublicB = ptr3 % _bNn;
-            PublicB = _bnPublicB.ToByteArray(isUnsigned: true, isBigEndian: true);
-            Array.Reverse(PublicB);
+            PublicB = _bnPublicB.ToByteArray(true, true);
+            if (PublicB != null) Reverse(PublicB);
         }
 
         private void CalculateK()
         {
-            var algorithm1 = new SHA1Managed();
-            var list1 = new ArrayList();
-            list1 = Split(_s);
-            list1[0] = algorithm1.ComputeHash((byte[])list1[0]);
-            list1[1] = algorithm1.ComputeHash((byte[])list1[1]);
-            SsHash = Combine((byte[])list1[0], (byte[])list1[1]);
+            using var algorithm1 = new SHA1Managed();
+            var list1 = Split(_s) ?? throw new ArgumentNullException($"SplARG0it(_s)");
+            if (list1.Count > 0) list1[0] = algorithm1.ComputeHash(list1[0] as byte[]);
+            if (list1.Count > 1) list1[1] = algorithm1.ComputeHash(list1[1] as byte[]);
+
+            if (list1.Count > 0) SsHash = Combine(list1[0] as byte[], (byte[])list1[1]);
         }
 
         public void CalculateM2(byte[] m1Loc)
         {
-            var algorithm1 = new SHA1Managed();
-            var buffer1 = new byte[(_a.Length + m1Loc.Length + SsHash.Length)];
-            Buffer.BlockCopy(_a, 0, buffer1, 0, _a.Length);
-            Buffer.BlockCopy(m1Loc, 0, buffer1, _a.Length, m1Loc.Length);
-            Buffer.BlockCopy(SsHash, 0, buffer1, _a.Length + m1Loc.Length, SsHash.Length);
+            if (m1Loc == null) throw new ArgumentNullException(nameof(m1Loc));
+            if (m1Loc.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(m1Loc));
+            using var algorithm1 = new SHA1Managed();
+            if (_a == null) throw new ArgumentNullException(nameof(_a));
+            if (SsHash == null) throw new ArgumentNullException(nameof(SsHash));
+            var buffer1 = new byte[_a.Length + m1Loc.Length + SsHash.Length];
+            BlockCopy(_a, 0, buffer1, 0, _a.Length);
+            BlockCopy(m1Loc, 0, buffer1, _a.Length, m1Loc.Length);
+            BlockCopy(SsHash, 0, buffer1, _a.Length + m1Loc.Length, SsHash.Length);
             M2 = algorithm1.ComputeHash(buffer1);
         }
 
@@ -121,85 +127,112 @@ namespace Mangos.Realm
             // Dim ptr4 As IntPtr = BN_new("")
             _bns = new BigInteger();
             _s = new byte[32];
-            ptr1 = BigInteger.ModPow(_bNv, _bnu, _bNn);
+            ptr1 = ModPow(_bNv, _bnu, _bNn);
             ptr2 = _bna * ptr1;
-            _bns = BigInteger.ModPow(ptr2, _bNb, _bNn);
-            _s = _bns.ToByteArray(isUnsigned: true, isBigEndian: true);
-            Array.Reverse(_s);
+            _bns = ModPow(ptr2, _bNb, _bNn);
+            _s = _bns.ToByteArray(true, true);
+            if (_s != null) Reverse(_s);
             CalculateK();
         }
 
         public void CalculateU(byte[] a)
         {
+            if (a == null) throw new ArgumentNullException(nameof(a));
+            if (a.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(a));
             _a = a;
-            var algorithm1 = new SHA1Managed();
-            var buffer1 = new byte[(a.Length + PublicB.Length)];
-            Buffer.BlockCopy(a, 0, buffer1, 0, a.Length);
-            Buffer.BlockCopy(PublicB, 0, buffer1, a.Length, PublicB.Length);
-            _u = algorithm1.ComputeHash(buffer1);
-            Array.Reverse(_u);
-            _bnu = new BigInteger(_u, isUnsigned: true, isBigEndian: true);
-            Array.Reverse(_u);
-            Array.Reverse(a);
-            _bna = new BigInteger(a, isUnsigned: true, isBigEndian: true);
-            Array.Reverse(a);
+            using var algorithm1 = new SHA1Managed();
+            if (PublicB != null)
+            {
+                var buffer1 = new byte[a.Length + PublicB.Length];
+                BlockCopy(a, 0, buffer1, 0, a.Length);
+                BlockCopy(PublicB, 0, buffer1, a.Length, PublicB.Length);
+                _u = algorithm1.ComputeHash(buffer1);
+            }
+
+            if (_u != null)
+            {
+                Reverse(_u);
+                _bnu = new BigInteger(_u, true, true);
+                Reverse(_u);
+            }
+
+            Reverse(a);
+            _bna = new BigInteger(a, true, true);
+            Reverse(a);
             CalculateS();
         }
 
         private void CalculateV()
         {
-            _bNv = BigInteger.ModPow(_bNg, _bNx, _bNn);
+            _bNv = ModPow(_bNg, _bNx, _bNn);
             CalculateB();
         }
 
         public void CalculateX(byte[] username, byte[] pwHash)
         {
+            if (username == null) throw new ArgumentNullException(nameof(username));
+            if (pwHash == null) throw new ArgumentNullException(nameof(pwHash));
+            if (username.Length == 0)
+                throw new ArgumentException("Value cannot be an empty collection.", nameof(username));
+            if (pwHash.Length == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(pwHash));
             _username = username;
-            var algorithm1 = new SHA1Managed();
-            // Dim encoding1 As New UTF7Encoding
-            byte[] buffer3;
-            buffer3 = new byte[20];
-            byte[] buffer5;
-            buffer5 = new byte[(Salt.Length + 20)];
-            Buffer.BlockCopy(pwHash, 0, buffer5, Salt.Length, 20);
-            Buffer.BlockCopy(Salt, 0, buffer5, 0, Salt.Length);
-            buffer3 = algorithm1.ComputeHash(buffer5);
-            Array.Reverse(buffer3);
-            _bNx = new BigInteger(buffer3, isUnsigned: true, isBigEndian: true);
-            Array.Reverse(g);
-            _bNg = new BigInteger(g, isUnsigned: true, isBigEndian: true);
-            Array.Reverse(g);
-            Array.Reverse(_k);
-            _bNk = new BigInteger(_k, isUnsigned: true, isBigEndian: true);
-            Array.Reverse(_k);
-            Array.Reverse(N);
-            _bNn = new BigInteger(N, isUnsigned: true, isBigEndian: true);
-            Array.Reverse(N);
+            using var algorithm1 = new SHA1Managed();
+            if (Salt != null)
+            {
+                var buffer5 = new byte[Salt.Length + 20];
+                BlockCopy(pwHash, 0, buffer5, Salt.Length, 20);
+                BlockCopy(Salt, 0, buffer5, 0, Salt.Length);
+                var buffer3 = algorithm1.ComputeHash(buffer5);
+
+                Reverse(buffer3);
+                _bNx = new BigInteger(buffer3, true, true);
+            }
+
+            if (g != null)
+            {
+                Reverse(g);
+                _bNg = new BigInteger(g, true, true);
+                Reverse(g);
+            }
+
+            if (_k != null)
+            {
+                Reverse(_k);
+                _bNk = new BigInteger(_k, true, true);
+                Reverse(_k);
+            }
+
+            if (N != null)
+            {
+                Reverse(N);
+                _bNn = new BigInteger(N, true, true);
+                Reverse(N);
+            }
+
             CalculateV();
         }
 
         public void CalculateM1()
         {
-            var algorithm1 = new SHA1Managed();
-            byte[] nHash;
-            nHash = new byte[20];
-            byte[] gHash;
-            gHash = new byte[20];
-            byte[] ngHash;
-            ngHash = new byte[20];
-            byte[] userHash;
-            userHash = new byte[20];
-            nHash = algorithm1.ComputeHash(N);
-            gHash = algorithm1.ComputeHash(g);
-            userHash = algorithm1.ComputeHash(_username);
-            for (var i = 0; i <= 19; i++)
-                ngHash[i] = (byte)(nHash[i] ^ gHash[i]);
-            var temp = Concat(ngHash, userHash);
-            temp = Concat(temp, Salt);
-            temp = Concat(temp, _a);
-            temp = Concat(temp, PublicB);
-            temp = Concat(temp, SsHash);
-            M1 = algorithm1.ComputeHash(temp);
+            using var algorithm1 = new SHA1Managed();
+            var ngHash = new byte[20];
+            if (N == null) return;
+            var nHash = algorithm1.ComputeHash(N);
+            if (g == null) return;
+            var gHash = algorithm1.ComputeHash(g);
+            if (_username == null) return;
+            var userHash = algorithm1.ComputeHash(_username);
+            var i = 0;
+            for (; i <= 19; i++)
+            {
+                if (i >= 0 && ngHash.Length > i) ngHash[i] = (byte)(nHash[i] ^ gHash[i]);
+            }
+            var temp = Concat(ngHash, userHash) ?? throw new ArgumentNullException($"Concat(ngHash, userHash)");
+            if (Salt != null) temp = Concat(temp, Salt);
+            if (_a != null) temp = Concat(temp, _a);
+            if (PublicB != null) temp = Concat(temp, PublicB);
+            if (SsHash != null) temp = Concat(temp, SsHash);
+            if (temp != null) M1 = algorithm1.ComputeHash(temp);
         }
 
         // Public Sub CalculateM1_Full()
@@ -254,58 +287,72 @@ namespace Mangos.Realm
         // M1 = sha2.ComputeHash(temp)
         // End Sub
 
-        private byte[] Combine(byte[] Bytes1, byte[] Bytes2)
+        private static byte[] Combine(IReadOnlyList<byte> bytes1, IReadOnlyList<byte> bytes2)
         {
-            if (Bytes1.Length != Bytes2.Length)
+            if (bytes1 == null) throw new ArgumentNullException(nameof(bytes1));
+            if (bytes2 == null) throw new ArgumentNullException(nameof(bytes2));
+            if (bytes1.Count == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(bytes1));
+            if (bytes2.Count == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(bytes2));
+            if (bytes1.Count != bytes2.Count)
                 return null;
-            var CombineBuffer = new byte[(Bytes1.Length + Bytes2.Length)];
-            var Counter = 0;
-            for (int i = 0, loopTo = CombineBuffer.Length - 1; i <= loopTo; i += 2)
+            var combineBuffer = new byte[bytes1.Count + bytes2.Count];
+            var counter = 0;
+            int i = 0, loopTo = combineBuffer.Length - 1;
+            for (; i <= loopTo; i += 2)
             {
-                CombineBuffer[i] = Bytes1[Counter];
-                Counter += 1;
+                if (i >= 0 && combineBuffer.Length > i) combineBuffer[i] = bytes1[counter];
+                counter += 1;
             }
 
-            Counter = 0;
-            for (int i = 1, loopTo1 = CombineBuffer.Length - 1; i <= loopTo1; i += 2)
+            counter = 0;
+            var loopTo1 = combineBuffer.Length - 1;
+            for (i = 1; i <= loopTo1; i += 2)
             {
-                CombineBuffer[i] = Bytes2[Counter];
-                Counter += 1;
+                if (i >= 0 && combineBuffer.Length > i) combineBuffer[i] = bytes2[counter];
+                counter += 1;
             }
 
-            return CombineBuffer;
+            return combineBuffer;
         }
 
-        public byte[] Concat(byte[] Buffer1, byte[] Buffer2)
+        public byte[] Concat(byte[] buffer1, byte[] buffer2)
         {
-            var ConcatBuffer = new byte[(Buffer1.Length + Buffer2.Length)];
-            Array.Copy(Buffer1, ConcatBuffer, Buffer1.Length);
-            Array.Copy(Buffer2, 0, ConcatBuffer, Buffer1.Length, Buffer2.Length);
-            return ConcatBuffer;
+            if (buffer1 == null) throw new ArgumentNullException(nameof(buffer1));
+            if (buffer2 == null) throw new ArgumentNullException(nameof(buffer2));
+            if (buffer1.Length == 0)
+                throw new ArgumentException("Value cannot be an empty collection.", nameof(buffer1));
+            if (buffer2.Length == 0)
+                throw new ArgumentException("Value cannot be an empty collection.", nameof(buffer2));
+            var concatBuffer = new byte[buffer1.Length + buffer2.Length];
+            Copy(buffer1, concatBuffer, buffer1.Length);
+            Copy(buffer2, 0, concatBuffer, buffer1.Length, buffer2.Length);
+            return concatBuffer;
         }
 
-        private ArrayList Split(byte[] ByteBuffer)
+        private static ArrayList Split(IReadOnlyList<byte> byteBuffer)
         {
-            var SplitBuffer1 = new byte[(int)(ByteBuffer.Length / 2d - 1d + 1)];
-            var SplitBuffer2 = new byte[(int)(ByteBuffer.Length / 2d - 1d + 1)];
-            var ReturnList = new ArrayList();
-            var Counter = 0;
-            for (int i = 0, loopTo = SplitBuffer1.Length - 1; i <= loopTo; i++)
+            if (byteBuffer == null) throw new ArgumentNullException(nameof(byteBuffer));
+            if (byteBuffer.Count == 0)
+                throw new ArgumentException("Value cannot be an empty collection.", nameof(byteBuffer));
+            var splitBuffer1 = new byte[(int)(byteBuffer.Count / 2d - 1d + 1)];
+            var splitBuffer2 = new byte[(int)(byteBuffer.Count / 2d - 1d + 1)];
+            var returnList = new ArrayList {splitBuffer1, splitBuffer2};
+            var counter = 0;
+            var i = 0;
+            for (var loopTo = splitBuffer1.Length - 1; i <= loopTo; i++)
             {
-                SplitBuffer1[i] = ByteBuffer[Counter];
-                Counter += 2;
+                if (i >= 0 && splitBuffer1.Length > i) splitBuffer1[i] = byteBuffer[counter];
+                counter += 2;
             }
 
-            Counter = 1;
-            for (int i = 0, loopTo1 = SplitBuffer2.Length - 1; i <= loopTo1; i++)
+            counter = 1;
+            var loopTo1 = splitBuffer2.Length - 1;
+            for (i = 0; i <= loopTo1; i++)
             {
-                SplitBuffer2[i] = ByteBuffer[Counter];
-                Counter += 2;
+                if (i >= 0 && splitBuffer2.Length > i) splitBuffer2[i] = byteBuffer[counter];
+                counter += 2;
             }
-
-            ReturnList.Add(SplitBuffer1);
-            ReturnList.Add(SplitBuffer2);
-            return ReturnList;
+            return returnList;
         }
     }
 }

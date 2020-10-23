@@ -17,14 +17,15 @@
 //
 
 using System;
-using Microsoft.VisualBasic;
+using static System.BitConverter;
+using static System.Buffer;
+using static Microsoft.VisualBasic.Strings;
 
 namespace Mangos.Realm
 {
     public class Converter
     {
 
-        /* TODO ERROR: Skipped RegionDirectiveTrivia */
         public byte ToByte(byte[] d, ref int offset)
         {
             return d[offset + 1];
@@ -38,15 +39,15 @@ namespace Mangos.Realm
         // Float
         public void ToBytes(double a, byte[] b, ref int t)
         {
-            var buffer1 = BitConverter.GetBytes(a);
-            Buffer.BlockCopy(buffer1, 0, b, t, buffer1.Length);
+            var buffer1 = GetBytes(a);
+            BlockCopy(buffer1, 0, b, t, buffer1.Length);
             t += buffer1.Length;
         }
 
         public void ToBytes(float a, byte[] b, ref int t)
         {
-            var buffer1 = BitConverter.GetBytes(a);
-            Buffer.BlockCopy(buffer1, 0, b, t, buffer1.Length);
+            var buffer1 = GetBytes(a);
+            BlockCopy(buffer1, 0, b, t, buffer1.Length);
             t += buffer1.Length;
         }
         // Int16
@@ -98,28 +99,25 @@ namespace Mangos.Realm
             var loopTo = chArray2.Length - 1;
             for (num1 = 0; num1 <= loopTo; num1++)
             {
-                b[t] = (byte)Strings.Asc(chArray2[num1]);
+                b[t] = (byte)Asc(chArray2[num1]);
                 t += 1;
             }
         }
-        /* TODO ERROR: Skipped EndRegionDirectiveTrivia */
-        /* TODO ERROR: Skipped RegionDirectiveTrivia */
+
         public double ToDouble(byte[] d, ref int offset)
         {
             var num1 = BitConverter.ToDouble(d, offset);
             offset += 8;
             return num1;
         }
-        /* TODO ERROR: Skipped EndRegionDirectiveTrivia */
-        /* TODO ERROR: Skipped RegionDirectiveTrivia */
+
         public float ToFloat(byte[] d, ref int offset)
         {
-            var single1 = BitConverter.ToSingle(d, offset);
+            var single1 = ToSingle(d, offset);
             offset += 4;
             return single1;
         }
-        /* TODO ERROR: Skipped EndRegionDirectiveTrivia */
-        /* TODO ERROR: Skipped RegionDirectiveTrivia */
+
         public short ToInt16(byte[] d, ref int offset)
         {
             var num1 = BitConverter.ToInt16(d, offset);
@@ -133,8 +131,7 @@ namespace Mangos.Realm
             offset += 2;
             return num1;
         }
-        /* TODO ERROR: Skipped EndRegionDirectiveTrivia */
-        /* TODO ERROR: Skipped RegionDirectiveTrivia */
+
         public int ToInt32(byte[] d, ref int offset)
         {
             var num1 = BitConverter.ToInt32(d, offset);
@@ -148,8 +145,7 @@ namespace Mangos.Realm
             offset += 4;
             return num1;
         }
-        /* TODO ERROR: Skipped EndRegionDirectiveTrivia */
-        /* TODO ERROR: Skipped RegionDirectiveTrivia */
+
         public long ToInt64(byte[] d, ref int offset)
         {
             var num1 = BitConverter.ToInt64(d, offset);
@@ -163,6 +159,5 @@ namespace Mangos.Realm
             offset += 8;
             return num1;
         }
-        /* TODO ERROR: Skipped EndRegionDirectiveTrivia */
     }
 }

@@ -36,20 +36,31 @@ using Mangos.Storage.Account;
 using Microsoft.VisualBasic;
 using Microsoft.VisualBasic.CompilerServices;
 using static System.Array;
+using static System.BitConverter;
+using static System.Enum;
+using static System.IO.FileMode;
+using static System.String;
+using static Mangos.Common.Enums.Authentication.AuthCMD;
+using static Mangos.Common.Enums.Global.AccountState;
+using static Mangos.Realm.AuthEngineClass;
+using static Microsoft.VisualBasic.CompilerServices.Conversions;
+using static Microsoft.VisualBasic.CompilerServices.Operators;
+using static Microsoft.VisualBasic.Conversion;
+using static Microsoft.VisualBasic.FileSystem;
 
 namespace Mangos.Realm
 {
     public class RealmServerClient : ITcpClient
     {
-        private readonly ILogger logger;
-        private readonly IAccountStorage accountStorage;
-        private readonly Converter converter;
-        private readonly MangosGlobalConstants mangosGlobalConstants;
+        private readonly ILogger _logger;
+        private readonly IAccountStorage _accountStorage;
+        private readonly Converter _converter;
+        private readonly MangosGlobalConstants _mangosGlobalConstants;
 
-        private readonly AuthEngineClass authEngineClass;
+        private readonly AuthEngineClass _authEngineClass = new AuthEngineClass();
 
-        private readonly Dictionary<AuthCMD, Func<ChannelReader<byte>, ChannelWriter<byte>, Task>> packetHandlers;
-        private readonly IPEndPoint remoteEnpoint;
+        private readonly Dictionary<AuthCMD, Func<ChannelReader<byte>, ChannelWriter<byte>, Task>> _packetHandlers;
+        private readonly IPEndPoint _remoteEnpoint;
 
 
         public string Account = "";
@@ -62,14 +73,13 @@ namespace Mangos.Realm
             MangosGlobalConstants mangosGlobalConstants,
             IPEndPoint remoteEnpoint)
         {
-            this.logger = logger;
-            this.accountStorage = accountStorage;
-            this.converter = converter;
-            this.mangosGlobalConstants = mangosGlobalConstants;
-            this.remoteEnpoint = remoteEnpoint;
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            if (accountStorage != null) _accountStorage = accountStorage;
+            if (converter != null) _converter = converter;
+            if (mangosGlobalConstants != null) _mangosGlobalConstants = mangosGlobalConstants;
+            if (remoteEnpoint != null) _remoteEnpoint = remoteEnpoint;
 
-            authEngineClass = new AuthEngineClass();
-            packetHandlers = GetPacketHandlers();
+            _packetHandlers = GetPacketHandlers();
         }
 
         public async void HandleAsync(
@@ -77,12 +87,15 @@ namespace Mangos.Realm
             ChannelWriter<byte> writer,
             CancellationToken cancellationToken)
         {
+            if (reader == null) throw new ArgumentNullException(nameof(reader));
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
             while (!cancellationToken.IsCancellationRequested)
             {
-                var header = await reader.ReadAsync(1).ToListAsync();
+                var header = await reader.ReadAsync(1).ToListAsync(cancellationToken);
+                if (header.Count <= 0) continue;
                 var opcode = (AuthCMD)header[0];
 
-                await packetHandlers[opcode](reader, writer);
+                if (_packetHandlers.ContainsKey(opcode)) await _packetHandlers[opcode](reader, writer);
             }
         }
 
@@ -90,248 +103,352 @@ namespace Mangos.Realm
         {
             return new Dictionary<AuthCMD, Func<ChannelReader<byte>, ChannelWriter<byte>, Task>>
             {
-                [AuthCMD.CMD_AUTH_LOGON_CHALLENGE] = On_RS_LOGON_CHALLENGE,
-                [AuthCMD.CMD_AUTH_RECONNECT_CHALLENGE] = On_RS_LOGON_CHALLENGE,
-                [AuthCMD.CMD_AUTH_LOGON_PROOF] = On_RS_LOGON_PROOF,
-                [AuthCMD.CMD_AUTH_REALMLIST] = On_RS_REALMLIST,
-                [AuthCMD.CMD_XFER_ACCEPT] = On_CMD_XFER_ACCEPT,
-                [AuthCMD.CMD_XFER_RESUME] = On_CMD_XFER_RESUME,
-                [AuthCMD.CMD_XFER_CANCEL] = On_CMD_XFER_CANCEL,
+                [CMD_AUTH_LOGON_CHALLENGE] = On_RS_LOGON_CHALLENGE,
+                [CMD_AUTH_RECONNECT_CHALLENGE] = On_RS_LOGON_CHALLENGE,
+                [CMD_AUTH_LOGON_PROOF] = On_RS_LOGON_PROOF,
+                [CMD_AUTH_REALMLIST] = On_RS_REALMLIST,
+                [CMD_XFER_ACCEPT] = On_CMD_XFER_ACCEPT,
+                [CMD_XFER_RESUME] = On_CMD_XFER_RESUME,
+                [CMD_XFER_CANCEL] = On_CMD_XFER_CANCEL,
             };
         }
 
         public async Task On_RS_LOGON_CHALLENGE(ChannelReader<byte> reader, ChannelWriter<byte> writer)
         {
-            var header = await reader.ReadAsync(3).ToListAsync();
-            var length = BitConverter.ToInt16(new[] { header[1], header[2] });
-            var body = await reader.ReadAsync(length).ToListAsync();
-            var data = new byte[1].Concat(header).Concat(body).ToArray();
-
-            var iUpper = data[33] - 1;
-            string packetAccount;
-            string packetIp;
-            AccountState accState; // = AccountState.LOGIN_DBBUSY
-
-            // Read account name from packet
-            packetAccount = "";
-            for (int i = 0, loopTo = iUpper; i <= loopTo; i++)
-                packetAccount += Conversions.ToString((char)data[34 + i]);
-            Account = packetAccount;
-
-            // Read users ip from packet
-            packetIp = ((int)data[29]) + "." + ((int)data[30]) + "." + ((int)data[31]) + "." + ((int)data[32]);
-
-            // Get the client build from packet.
-            int bMajor = data[8];
-            int bMinor = data[9];
-            int bRevision = data[10];
-            int clientBuild = BitConverter.ToInt16(new[] { data[11], data[12] }, 0);
-            var clientLanguage = Conversions.ToString((char)data[24]) + (char)data[23] + (char)data[22] + (char)data[21];
-
-            // DONE: Check if our build can join the server
-            // If ((RequiredVersion1 = 0 AndAlso RequiredVersion2 = 0 AndAlso RequiredVersion3 = 0) OrElse
-            // (bMajor = RequiredVersion1 AndAlso bMinor = RequiredVersion2 AndAlso bRevision = RequiredVersion3)) AndAlso
-            // clientBuild >= RequiredBuildLow AndAlso clientBuild <= RequiredBuildHigh Then
-            if (bMajor == 0 & bMinor == 0 & bRevision == 0)
+            if (reader != null)
             {
-                var dataResponse = new byte[2];
-                dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
-                dataResponse[1] = (byte)AccountState.LOGIN_BADVERSION;
-                await writer.WriteAsync(dataResponse);
-            }
-            else if (clientBuild == mangosGlobalConstants.Required_Build_1_12_1 | clientBuild == mangosGlobalConstants.Required_Build_1_12_2 | clientBuild == mangosGlobalConstants.Required_Build_1_12_3)
-            {
-                // TODO: in the far future should check if the account is expired too
-                var accountInfo = await accountStorage.GetAccountInfoAsync(packetAccount);
-                try
-                {
-                    // Check Account state
-                    if (accountInfo != null)
-                    {
-                        accState = await accountStorage.IsBannedAccountAsync(accountInfo.id)
-                            ? AccountState.LOGIN_BANNED
-                            : AccountState.LOGIN_OK;
-                    }
-                    else
-                    {
-                        accState = AccountState.LOGIN_UNKNOWN_ACCOUNT;
-                    }
-                }
-                catch
-                {
-                    accState = AccountState.LOGIN_DBBUSY;
-                }
+                var header = await reader.ReadAsync(3).ToListAsync();
+                var length = ToInt16(new[] { header[1], header[2] });
+                var body = await reader.ReadAsync(length).ToListAsync();
+                var data = new byte[1].Concat(header).Concat(body).ToArray();
 
-                // DONE: Send results to client
-                switch (accState)
+                if (data.Length > 33)
                 {
-                    case var @case when @case == AccountState.LOGIN_OK:
+                    var iUpper = data[33] - 1;
+                    // Read account name from packet
+                    var packetAccount = "";
+                    for (int i = 0, loopTo = iUpper; i <= loopTo; i++)
+                        packetAccount += Conversions.ToString((char)data[34 + i]);
+                    Account = packetAccount;
+
+                    // Read users ip from packet
+                    if (data.Length > 29)
+                    {
+                        if (data.Length > 30)
                         {
-                            var account = new byte[(data[33])];
-                            Copy(data, 34, account, 0, data[33]);
-                            if (Conversions.ToBoolean(Operators.ConditionalCompareObjectNotEqual(accountInfo.sha_pass_hash.Length, 40, false))) // Invalid password type, should always be 40 characters
+                            if (data.Length > 31)
                             {
-                                var dataResponse = new byte[2];
-                                dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
-                                dataResponse[1] = (byte)AccountState.LOGIN_BAD_PASS;
-                                await writer.WriteAsync(dataResponse);
-                            }
-                            else // Bail out with something meaningful
-                            {
-                                Access = (AccessLevel)Enum.Parse(typeof(AccessLevel), accountInfo.gmlevel);
-                                var hash = new byte[20];
-                                for (var i = 0; i <= 39; i += 2)
-                                    hash[i / 2] = (byte)Conversions.ToInteger(Operators.ConcatenateObject("&H", accountInfo.sha_pass_hash.Substring(i, 2)));
-
-                                // Language = clientLanguage
-                                // If Not IsDBNull(result.Rows(0).Item("expansion")) Then
-                                // Expansion = result.Rows(0).Item("expansion")
-                                // Else
-                                // Expansion = ExpansionLevel.NORMAL
-                                // End If
-
-                                try
+                                if (data.Length > 32)
                                 {
-                                    authEngineClass.CalculateX(account, hash);
-                                    var dataResponse = new byte[119];
-                                    dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_CHALLENGE;
-                                    dataResponse[1] = (byte)AccountState.LOGIN_OK;
-                                    dataResponse[2] = (byte)Conversion.Val("&H00");
-                                    Copy(authEngineClass.PublicB, 0, dataResponse, 3, 32);
-                                    dataResponse[35] = (byte)authEngineClass.g.Length;
-                                    dataResponse[36] = authEngineClass.g[0];
-                                    dataResponse[37] = 32;
-                                    Copy(authEngineClass.N, 0, dataResponse, 38, 32);
-                                    Copy(authEngineClass.Salt, 0, dataResponse, 70, 32);
-                                    Copy(AuthEngineClass.CrcSalt, 0, dataResponse, 102, 16);
-                                    dataResponse[118] = 0; // Added in 1.12.x client branch? Security Flags (&H0...&H4)?
-                                    await writer.WriteAsync(dataResponse);
-                                }
-                                catch (Exception ex)
-                                {
-                                    logger.Error("Error loading AuthEngine: {0}", ex);
+                                    var packetIp = (int)data[29] + "." + ((int)data[30]) + "." + (int)data[31] + "." + ((int)data[32]);
                                 }
                             }
-
-                            return;
                         }
+                    }
 
-                    case var case1 when case1 == AccountState.LOGIN_UNKNOWN_ACCOUNT:
+                    // Get the client build from packet.
+                    if (data.Length > 8)
+                    {
+                        int bMajor = data[8];
+                        if (data.Length > 9)
                         {
-                            var dataResponse = new byte[2];
-                            dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
-                            dataResponse[1] = (byte)AccountState.LOGIN_UNKNOWN_ACCOUNT;
-                            await writer.WriteAsync(dataResponse);
-                            return;
-                        }
+                            int bMinor = data[9];
+                            if (data.Length > 10)
+                            {
+                                int bRevision = data[10];
+                                if (data.Length > 11)
+                                {
+                                    if (data.Length > 12)
+                                    {
+                                        int clientBuild = ToInt16(new[] { data[11], data[12] }, 0);
+                                        if (data.Length > 24)
+                                        {
+                                            if (data.Length > 23)
+                                            {
+                                                if (data.Length > 22)
+                                                {
+                                                    if (data.Length > 21)
+                                                    {
+                                                        var clientLanguage = Conversions.ToString((char)data[24]) + (char)data[23] + (char)data[22] + (char)data[21];
+                                                    }
+                                                }
+                                            }
+                                        }
 
-                    case var case2 when case2 == AccountState.LOGIN_BANNED:
-                        {
-                            var dataResponse = new byte[2];
-                            dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
-                            dataResponse[1] = (byte)AccountState.LOGIN_BANNED;
-                            await writer.WriteAsync(dataResponse);
-                            return;
-                        }
+                                        // DONE: Check if our build can join the server
+                                        // If ((RequiredVersion1 = 0 AndAlso RequiredVersion2 = 0 AndAlso RequiredVersion3 = 0) OrElse
+                                        // (bMajor = RequiredVersion1 AndAlso bMinor = RequiredVersion2 AndAlso bRevision = RequiredVersion3)) AndAlso
+                                        // clientBuild >= RequiredBuildLow AndAlso clientBuild <= RequiredBuildHigh Then
+                                        if (bMajor == 0 & bMinor == 0 & bRevision == 0)
+                                        {
+                                            var dataResponse = new byte[2];
+                                            if (dataResponse.Length > 0) dataResponse[0] = (byte)CMD_AUTH_LOGON_PROOF;
+                                            if (dataResponse.Length > 1)
+                                                dataResponse[1] = (byte)LOGIN_BADVERSION;
+                                            await writer.WriteAsync(dataResponse);
+                                        }
+                                        else if (_mangosGlobalConstants != null && clientBuild == _mangosGlobalConstants.Required_Build_1_12_1 |
+                                            clientBuild == _mangosGlobalConstants.Required_Build_1_12_2 |
+                                            clientBuild == _mangosGlobalConstants.Required_Build_1_12_3)
+                                        {
+                                            // TODO: in the far future should check if the account is expired too
+                                            if (_accountStorage != null)
+                                            {
+                                                var accountInfo = await _accountStorage.GetAccountInfoAsync(packetAccount);
+                                                AccountState accState;
+                                                try
+                                                {
+                                                    // Check Account state
+                                                    if (accountInfo != null)
+                                                    {
+                                                        accState = await _accountStorage.IsBannedAccountAsync(accountInfo.id)
+                                                            ? LOGIN_BANNED
+                                                            : LOGIN_OK;
+                                                    }
+                                                    else
+                                                    {
+                                                        accState = LOGIN_UNKNOWN_ACCOUNT;
+                                                    }
+                                                }
+                                                catch
+                                                {
+                                                    accState = LOGIN_DBBUSY;
+                                                }
 
-                    case var case3 when case3 == AccountState.LOGIN_NOTIME:
-                        {
-                            var dataResponse = new byte[2];
-                            dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
-                            dataResponse[1] = (byte)AccountState.LOGIN_NOTIME;
-                            await writer.WriteAsync(dataResponse);
-                            return;
-                        }
+                                                // DONE: Send results to client
+                                                switch (accState)
+                                                {
+                                                    case var @case when @case == LOGIN_OK:
+                                                    {
+                                                        if (data.Length > 33)
+                                                        {
+                                                            var account = new byte[(data[33])];
+                                                            if (data.Length > 33) Copy(data, 34, account, 0, data[33]);
+                                                            if (accountInfo?.sha_pass_hash != null && ToBoolean(ConditionalCompareObjectNotEqual(
+                                                                accountInfo.sha_pass_hash.Length, 40, false))
+                                                            ) // Invalid password type, should always be 40 characters
+                                                            {
+                                                                var dataResponse = new byte[2];
+                                                                if (dataResponse.Length > 0)
+                                                                    dataResponse[0] = (byte)CMD_AUTH_LOGON_PROOF;
+                                                                if (dataResponse.Length > 1) dataResponse[1] = (byte)LOGIN_BAD_PASS;
+                                                                await writer.WriteAsync(dataResponse);
+                                                            }
+                                                            else // Bail out with something meaningful
+                                                            {
+                                                                if (accountInfo == null) return;
+                                                                if (accountInfo.gmlevel != null)
+                                                                    Access = (AccessLevel) Parse(typeof(AccessLevel),
+                                                                        accountInfo.gmlevel);
+                                                                var hash = new byte[20];
+                                                                for (var i = 0; i <= 39; i += 2)
+                                                                    if (accountInfo.sha_pass_hash != null)
+                                                                        hash[i / 2] =
+                                                                            (byte) ToInteger(ConcatenateObject("&H",
+                                                                                accountInfo.sha_pass_hash.Substring(i,
+                                                                                    2)));
 
-                    case var case4 when case4 == AccountState.LOGIN_ALREADYONLINE:
-                        {
-                            var dataResponse = new byte[2];
-                            dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
-                            dataResponse[1] = (byte)AccountState.LOGIN_ALREADYONLINE;
-                            await writer.WriteAsync(dataResponse);
-                            return;
-                        }
+                                                                // Language = clientLanguage
+                                                                // If Not IsDBNull(result.Rows(0).Item("expansion")) Then
+                                                                // Expansion = result.Rows(0).Item("expansion")
+                                                                // Else
+                                                                // Expansion = ExpansionLevel.NORMAL
+                                                                // End If
 
-                    case var case5 when case5 == AccountState.LOGIN_FAILED:
-                        {
-                            break;
-                        }
+                                                                try
+                                                                {
+                                                                    _authEngineClass.CalculateX(account, hash);
+                                                                    var dataResponse = new byte[119];
+                                                                    if (dataResponse.Length > 0)
+                                                                        dataResponse[0] =
+                                                                            (byte) CMD_AUTH_LOGON_CHALLENGE;
+                                                                    if (dataResponse.Length > 1)
+                                                                        dataResponse[1] = (byte) LOGIN_OK;
+                                                                    if (dataResponse.Length > 2)
+                                                                        dataResponse[2] = (byte) Val("&H00");
+                                                                    Copy(_authEngineClass.PublicB, 0, dataResponse,
+                                                                        3, 32);
+                                                                    if (dataResponse.Length > 35)
+                                                                        dataResponse[35] =
+                                                                            (byte) _authEngineClass.g.Length;
+                                                                    if (dataResponse.Length > 36)
+                                                                        dataResponse[36] = _authEngineClass.g[0];
+                                                                    if (dataResponse.Length > 37) dataResponse[37] = 32;
+                                                                    Copy(_authEngineClass.N, 0, dataResponse, 38,
+                                                                        32);
+                                                                    Copy(_authEngineClass.Salt, 0, dataResponse, 70,
+                                                                        32);
+                                                                    Copy(CrcSalt, 0, dataResponse,
+                                                                        102, 16);
+                                                                    if (dataResponse.Length > 118)
+                                                                        dataResponse[118] =
+                                                                            0; // Added in 1.12.x client branch? Security Flags (&H0...&H4)?
+                                                                    await writer.WriteAsync(dataResponse);
+                                                                }
+                                                                catch (Exception ex)
+                                                                {
+                                                                    _logger.Error("Error loading AuthEngine: {0}",
+                                                                        ex);
+                                                                }
+                                                            }
+                                                        }
 
-                    case var case6 when case6 == AccountState.LOGIN_BAD_PASS:
-                        {
-                            break;
-                        }
+                                                        return;
+                                                    }
 
-                    case var case7 when case7 == AccountState.LOGIN_DBBUSY:
-                        {
-                            break;
-                        }
+                                                    case var case1 when case1 == LOGIN_UNKNOWN_ACCOUNT:
+                                                    {
+                                                        var dataResponse = new byte[2];
+                                                        if (dataResponse.Length > 0)
+                                                            dataResponse[0] = (byte)CMD_AUTH_LOGON_PROOF;
+                                                        if (dataResponse.Length > 1)
+                                                            dataResponse[1] = (byte)LOGIN_UNKNOWN_ACCOUNT;
+                                                        await writer.WriteAsync(dataResponse);
+                                                        return;
+                                                    }
 
-                    case var case8 when case8 == AccountState.LOGIN_BADVERSION:
-                        {
-                            break;
-                        }
+                                                    case var case2 when case2 == LOGIN_BANNED:
+                                                    {
+                                                        var dataResponse = new byte[2];
+                                                        if (dataResponse.Length > 0)
+                                                            dataResponse[0] = (byte)CMD_AUTH_LOGON_PROOF;
+                                                        if (dataResponse.Length > 1)
+                                                            dataResponse[1] = (byte)LOGIN_BANNED;
+                                                        await writer.WriteAsync(dataResponse);
+                                                        return;
+                                                    }
 
-                    case var case9 when case9 == AccountState.LOGIN_DOWNLOADFILE:
-                        {
-                            break;
-                        }
+                                                    case var case3 when case3 == LOGIN_NOTIME:
+                                                    {
+                                                        var dataResponse = new byte[2];
+                                                        if (dataResponse.Length > 0)
+                                                            dataResponse[0] = (byte)CMD_AUTH_LOGON_PROOF;
+                                                        if (dataResponse.Length > 1)
+                                                            dataResponse[1] = (byte)LOGIN_NOTIME;
+                                                        await writer.WriteAsync(dataResponse);
+                                                        return;
+                                                    }
 
-                    case var case10 when case10 == AccountState.LOGIN_SUSPENDED:
-                        {
-                            break;
-                        }
+                                                    case var case4 when case4 == LOGIN_ALREADYONLINE:
+                                                    {
+                                                        var dataResponse = new byte[2];
+                                                        if (dataResponse.Length > 0)
+                                                            dataResponse[0] = (byte)CMD_AUTH_LOGON_PROOF;
+                                                        if (dataResponse.Length > 1)
+                                                            dataResponse[1] = (byte)LOGIN_ALREADYONLINE;
+                                                        await writer.WriteAsync(dataResponse);
+                                                        return;
+                                                    }
 
-                    case var case11 when case11 == AccountState.LOGIN_PARENTALCONTROL:
-                        {
-                            break;
-                        }
+                                                    case var case5 when case5 == LOGIN_FAILED:
+                                                    {
+                                                        break;
+                                                    }
 
-                    default:
-                        {
-                            var dataResponse = new byte[2];
-                            dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
-                            dataResponse[1] = (byte)AccountState.LOGIN_FAILED;
-                            await writer.WriteAsync(dataResponse);
-                            return;
+                                                    case var case6 when case6 == LOGIN_BAD_PASS:
+                                                    {
+                                                        break;
+                                                    }
+
+                                                    case var case7 when case7 == LOGIN_DBBUSY:
+                                                    {
+                                                        break;
+                                                    }
+
+                                                    case var case8 when case8 == LOGIN_BADVERSION:
+                                                    {
+                                                        break;
+                                                    }
+
+                                                    case var case9 when case9 == LOGIN_DOWNLOADFILE:
+                                                    {
+                                                        break;
+                                                    }
+
+                                                    case var case10 when case10 == LOGIN_SUSPENDED:
+                                                    {
+                                                        break;
+                                                    }
+
+                                                    case var case11 when case11 == LOGIN_PARENTALCONTROL:
+                                                    {
+                                                        break;
+                                                    }
+
+                                                    default:
+                                                    {
+                                                        var dataResponse = new byte[2];
+                                                        if (dataResponse.Length > 0)
+                                                            dataResponse[0] = (byte)CMD_AUTH_LOGON_PROOF;
+                                                        if (dataResponse.Length > 1)
+                                                            dataResponse[1] = (byte)LOGIN_FAILED;
+                                                        await writer.WriteAsync(dataResponse);
+                                                        return;
+                                                    }
+                                                }
+                                            }
+                                        }
+                                        else if (!IsNullOrEmpty(Dir("Updates/wow-patch-" +
+                                                                    Val("&H" + Hex(data[12]) + Hex(data[11])) + "-" +
+                                                                    (char) data[24] + (char) data[23] +
+                                                                    (char) data[22] + (char) data[21] + ".mpq")))
+                                        {
+                                            // Send UPDATE_MPQ
+                                            UpdateFile = "Updates/wow-patch-" +
+                                                         Val("&H" + Hex(data[12]) + Hex(data[11])) + "-" +
+                                                         (char) data[24] + (char) data[23] + (char) data[22] +
+                                                         (char) data[21] + ".mpq";
+                                            var dataResponse = new byte[31];
+                                            if (dataResponse.Length > 0) dataResponse[0] = (byte)CMD_XFER_INITIATE;
+                                            // Name Len 0x05 -> sizeof(Patch)
+                                            var i = 1;
+                                            _converter.ToBytes(ToByte(5), dataResponse, ref i);
+                                            // Name 'Patch'
+                                            _converter.ToBytes("Patch", dataResponse, ref i);
+                                            // Size 0x34 C4 0D 00 = 902,196 byte (180->181 enGB)
+                                            _converter.ToBytes(ToInteger(FileLen(UpdateFile)), dataResponse, ref i);
+                                            // Unknown 0x0 always
+                                            _converter.ToBytes(0, dataResponse, ref i);
+                                            // MD5 CheckSum
+                                            byte[] result;
+                                            using (var md5 = new MD5CryptoServiceProvider())
+                                            {
+                                                BinaryReader r;
+                                                await using (var fs = new FileStream(UpdateFile, Open))
+                                                {
+                                                    r = new BinaryReader(fs);
+                                                }
+
+                                                var buffer = r.ReadBytes((int)FileLen(UpdateFile));
+                                                r.Close();
+                                                // fs.Close()
+                                                result = md5.ComputeHash(buffer);
+                                            }
+
+                                            Copy(result, 0, dataResponse, 15, 16);
+                                            await writer.WriteAsync(dataResponse);
+                                        }
+                                        else
+                                        {
+                                            // Send BAD_VERSION
+                                            _logger.Warning("WRONG_VERSION [" + (char) data[6] + (char) data[5] +
+                                                            (char) data[4] + " " + data[8] + "." + data[9] + "." +
+                                                            data[10] + "." + Val("&H" + Hex(data[12]) + Hex(data[11])) +
+                                                            " " + (char) data[15] + (char) data[14] + (char) data[13] +
+                                                            " " + (char) data[19] + (char) data[18] + (char) data[17] +
+                                                            " " + (char) data[24] + (char) data[23] + (char) data[22] +
+                                                            (char) data[21] + "]");
+                                            var dataResponse = new byte[2];
+                                            dataResponse[0] = (byte)CMD_AUTH_LOGON_PROOF;
+                                            dataResponse[1] = (byte)LOGIN_BADVERSION;
+                                            await writer.WriteAsync(dataResponse);
+                                        }
+                                    }
+                                }
+                            }
                         }
+                    }
                 }
-            }
-            else if (!string.IsNullOrEmpty(FileSystem.Dir("Updates/wow-patch-" + Conversion.Val("&H" + Conversion.Hex(data[12]) + Conversion.Hex(data[11])) + "-" + (char)data[24] + (char)data[23] + (char)data[22] + (char)data[21] + ".mpq")))
-            {
-                // Send UPDATE_MPQ
-                UpdateFile = "Updates/wow-patch-" + Conversion.Val("&H" + Conversion.Hex(data[12]) + Conversion.Hex(data[11])) + "-" + (char)data[24] + (char)data[23] + (char)data[22] + (char)data[21] + ".mpq";
-                var dataResponse = new byte[31];
-                dataResponse[0] = (byte)AuthCMD.CMD_XFER_INITIATE;
-                // Name Len 0x05 -> sizeof(Patch)
-                var i = 1;
-                converter.ToBytes(Conversions.ToByte(5), dataResponse, ref i);
-                // Name 'Patch'
-                converter.ToBytes("Patch", dataResponse, ref i);
-                // Size 0x34 C4 0D 00 = 902,196 byte (180->181 enGB)
-                converter.ToBytes(Conversions.ToInteger(FileSystem.FileLen(UpdateFile)), dataResponse, ref i);
-                // Unknown 0x0 always
-                converter.ToBytes(0, dataResponse, ref i);
-                // MD5 CheckSum
-                var md5 = new MD5CryptoServiceProvider();
-                byte[] buffer;
-                var fs = new FileStream(UpdateFile, FileMode.Open);
-                var r = new BinaryReader(fs);
-                buffer = r.ReadBytes((int)FileSystem.FileLen(UpdateFile));
-                r.Close();
-                // fs.Close()
-                var result = md5.ComputeHash(buffer);
-                Copy(result, 0, dataResponse, 15, 16);
-                await writer.WriteAsync(dataResponse);
-            }
-            else
-            {
-                // Send BAD_VERSION
-                logger.Warning("WRONG_VERSION [" + (char)data[6] + (char)data[5] + (char)data[4] + " " + data[8] + "." + data[9] + "." + data[10] + "." + Conversion.Val("&H" + Conversion.Hex(data[12]) + Conversion.Hex(data[11])) + " " + (char)data[15] + (char)data[14] + (char)data[13] + " " + (char)data[19] + (char)data[18] + (char)data[17] + " " + (char)data[24] + (char)data[23] + (char)data[22] + (char)data[21] + "]");
-                var dataResponse = new byte[2];
-                dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
-                dataResponse[1] = (byte)AccountState.LOGIN_BADVERSION;
-                await writer.WriteAsync(dataResponse);
             }
         }
 
@@ -350,15 +467,15 @@ namespace Mangos.Realm
             // Dim unk as Byte = data(74)
 
             // Calculate U and M1
-            authEngineClass.CalculateU(a);
-            authEngineClass.CalculateM1();
+            _authEngineClass.CalculateU(a);
+            _authEngineClass.CalculateM1();
             // AuthEngine.CalculateCRCHash()
 
             // Check M1=ClientM1
             var passCheck = true;
             for (byte i = 0; i <= 19; i++)
             {
-                if (m1[i] != authEngineClass.M1[i])
+                if (m1[i] != _authEngineClass.M1[i])
                 {
                     passCheck = false;
                     break;
@@ -368,19 +485,19 @@ namespace Mangos.Realm
             if (!passCheck)
             {
                 // Wrong pass
-                logger.Debug("Wrong password for user {0}.", Account);
+                _logger.Debug("Wrong password for user {0}.", Account);
                 var dataResponse = new byte[2];
-                dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
-                dataResponse[1] = (byte)AccountState.LOGIN_BAD_PASS;
+                dataResponse[0] = (byte)CMD_AUTH_LOGON_PROOF;
+                dataResponse[1] = (byte)LOGIN_BAD_PASS;
                 await writer.WriteAsync(dataResponse);
             }
             else
             {
-                authEngineClass.CalculateM2(m1);
+                _authEngineClass.CalculateM2(m1);
                 var dataResponse = new byte[26];
-                dataResponse[0] = (byte)AuthCMD.CMD_AUTH_LOGON_PROOF;
-                dataResponse[1] = (byte)AccountState.LOGIN_OK;
-                Copy(authEngineClass.M2, 0, dataResponse, 2, 20);
+                dataResponse[0] = (byte)CMD_AUTH_LOGON_PROOF;
+                dataResponse[1] = (byte)LOGIN_OK;
+                Copy(_authEngineClass.M2, 0, dataResponse, 2, 20);
                 dataResponse[22] = 0;
                 dataResponse[23] = 0;
                 dataResponse[24] = 0;
@@ -392,9 +509,9 @@ namespace Mangos.Realm
 
                 // For i as Integer = 0 To AuthEngine.SS_Hash.Length - 1
                 for (var i = 0; i <= 40 - 1; i++)
-                    sshash = authEngineClass.SsHash[i] < 16 ? sshash + "0" + Conversion.Hex(authEngineClass.SsHash[i]) : sshash + Conversion.Hex(authEngineClass.SsHash[i]);
-                await accountStorage.UpdateAccountAsync(sshash, remoteEnpoint.Address.ToString(), Strings.Format(DateAndTime.Now, "yyyy-MM-dd"), Account);
-                logger.Debug("Auth success for user {0} [{1}]", Account, sshash);
+                    sshash = _authEngineClass.SsHash[i] < 16 ? sshash + "0" + Hex(_authEngineClass.SsHash[i]) : sshash + Hex(_authEngineClass.SsHash[i]);
+                await _accountStorage.UpdateAccountAsync(sshash, _remoteEnpoint.Address.ToString(), Strings.Format(DateAndTime.Now, "yyyy-MM-dd"), Account);
+                _logger.Debug("Auth success for user {0} [{1}]", Account, sshash);
             }
         }
 
@@ -406,7 +523,7 @@ namespace Mangos.Realm
             var packetLen = 0;
 
             // Fetch RealmList Data
-            var realmList = await accountStorage.GetRealmListAsync();
+            var realmList = await _accountStorage.GetRealmListAsync();
             foreach (var row in realmList)
             {
                 packetLen = packetLen
@@ -420,7 +537,7 @@ namespace Mangos.Realm
             var dataResponse = new byte[packetLen + 9 + 1];
 
             // (byte) Opcode
-            dataResponse[0] = (byte)AuthCMD.CMD_AUTH_REALMLIST;
+            dataResponse[0] = (byte)CMD_AUTH_REALMLIST;
 
             // (uint16) Packet Length
             dataResponse[2] = (byte)((packetLen + 7) / 256);
@@ -439,36 +556,36 @@ namespace Mangos.Realm
             foreach (var realmListItem in realmList)
             {
                 // Get Number of Characters for the Realm
-                var characterCount = await accountStorage.GetNumcharsAsync(realmListItem.id);
+                var characterCount = await _accountStorage.GetNumcharsAsync(realmListItem.id);
 
                 // (uint8) Realm Icon
                 // 0 -> Normal; 1 -> PvP; 6 -> RP; 8 -> RPPvP;
-                converter.ToBytes(Conversions.ToByte(realmListItem.icon), dataResponse, ref tmp);
+                _converter.ToBytes(ToByte(realmListItem.icon), dataResponse, ref tmp);
                 // (uint8) IsLocked
                 // 0 -> none; 1 -> locked
-                converter.ToBytes(Conversions.ToByte(0), dataResponse, ref tmp);
+                _converter.ToBytes(ToByte(0), dataResponse, ref tmp);
                 // (uint8) unk
-                converter.ToBytes(Conversions.ToByte(0), dataResponse, ref tmp);
+                _converter.ToBytes(ToByte(0), dataResponse, ref tmp);
                 // (uint8) unk
-                converter.ToBytes(Conversions.ToByte(0), dataResponse, ref tmp);
+                _converter.ToBytes(ToByte(0), dataResponse, ref tmp);
                 // (uint8) Realm Color
                 // 0 -> Green; 1 -> Red; 2 -> Offline;
-                converter.ToBytes(Conversions.ToByte(realmListItem.realmflags), dataResponse, ref tmp);
+                _converter.ToBytes(ToByte(realmListItem.realmflags), dataResponse, ref tmp);
                 // (string) Realm Name (zero terminated)
-                converter.ToBytes(Conversions.ToString(realmListItem.name), dataResponse, ref tmp);
-                converter.ToBytes(Conversions.ToByte(0), dataResponse, ref tmp); // \0
+                _converter.ToBytes(Conversions.ToString(realmListItem.name), dataResponse, ref tmp);
+                _converter.ToBytes(ToByte(0), dataResponse, ref tmp); // \0
                                                                                  // (string) Realm Address ("ip:port", zero terminated)
-                converter.ToBytes(Operators.ConcatenateObject(Operators.ConcatenateObject(realmListItem.address, ":"), realmListItem.port).ToString(), dataResponse, ref tmp);
-                converter.ToBytes(Conversions.ToByte(0), dataResponse, ref tmp); // \0
+                _converter.ToBytes(ConcatenateObject(ConcatenateObject(realmListItem.address, ":"), realmListItem.port).ToString(), dataResponse, ref tmp);
+                _converter.ToBytes(ToByte(0), dataResponse, ref tmp); // \0
                                                                                  // (float) Population
                                                                                  // 400F -> Full; 5F -> Medium; 1.6F -> Low; 200F -> New; 2F -> High
                                                                                  // 00 00 48 43 -> Recommended
                                                                                  // 00 00 C8 43 -> Full
                                                                                  // 9C C4 C0 3F -> Low
                                                                                  // BC 74 B3 3F -> Low
-                converter.ToBytes(Conversions.ToSingle(realmListItem.population), dataResponse, ref tmp);
+                _converter.ToBytes(ToSingle(realmListItem.population), dataResponse, ref tmp);
                 // (byte) Number of character at this realm for this account
-                converter.ToBytes(Conversions.ToByte(characterCount), dataResponse, ref tmp);
+                _converter.ToBytes(ToByte(characterCount), dataResponse, ref tmp);
                 // (byte) Timezone
                 // 0x01 - Development
                 // 0x02 - USA
@@ -500,9 +617,9 @@ namespace Mangos.Realm
                 // 0x1C - QA Server
                 // 0x1D - CN9
                 // 0x1E - Test Server 2
-                converter.ToBytes(Conversions.ToByte(realmListItem.timezone), dataResponse, ref tmp);
+                _converter.ToBytes(ToByte(realmListItem.timezone), dataResponse, ref tmp);
                 // (byte) Unknown (may be 2 -> TestRealm, / 6 -> ?)
-                converter.ToBytes(Conversions.ToByte(0), dataResponse, ref tmp);
+                _converter.ToBytes(ToByte(0), dataResponse, ref tmp);
             }
 
             dataResponse[tmp] = 2; // 2=list of realms 0=wizard
