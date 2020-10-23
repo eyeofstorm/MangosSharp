@@ -124,7 +124,7 @@ namespace Mangos.Cluster.Network
                     var syncRoot = (_clusterServiceLocator.WorldCluster.ClienTs as ICollection).SyncRoot;
                     lock (syncRoot)
                     {
-                        foreach (var value in _clusterServiceLocator.WorldCluster.ClienTs.Cast<ClientClass>().Where(
+                        foreach (var value in _clusterServiceLocator?.WorldCluster?.ClienTs.Cast<ClientClass>().Where(
                             value =>
                             {
                                 if (value == null) throw new ArgumentNullException(nameof(value));
