@@ -494,21 +494,13 @@ namespace Mangos.World
 
         private void GenericExceptionHandler(object sender, UnhandledExceptionEventArgs e)
         {
-            if (sender is null)
-            {
-                throw new ArgumentNullException(nameof(sender));
-            }
-
-            if (e is null)
-            {
-                throw new ArgumentNullException(nameof(e));
-            }
-
-            var EX = (Exception)e.ExceptionObject;
-            Log.WriteLine(LogType.CRITICAL, EX + Environment.NewLine);
+            var ex = (Exception)e.ExceptionObject;
+            Log.WriteLine(LogType.CRITICAL, ex + Constants.vbCrLf);
             Log.WriteLine(LogType.FAILED, "Unexpected error has occured. An 'WorldServer-Error-yyyy-mmm-d-h-mm.log' file has been created. Check your log folder for more information.");
-            new StreamWriter(new FileStream(string.Format("WorldServer-Error-{0}.log", Strings.Format(DateAndTime.Now, "yyyy-MMM-d-H-mm")), FileMode.Create)).Write(EX.ToString());
-            new StreamWriter(new FileStream(string.Format("WorldServer-Error-{0}.log", Strings.Format(DateAndTime.Now, "yyyy-MMM-d-H-mm")), FileMode.Create)).Close();
+            TextWriter tw = new StreamWriter(new FileStream(
+                $"WorldServer-Error-{Strings.Format(DateTime.Now, "yyyy-MMM-d-H-mm")}.log", FileMode.Create));
+            tw.Write(ex.ToString());
+            tw.Close();
         }
     }
 }

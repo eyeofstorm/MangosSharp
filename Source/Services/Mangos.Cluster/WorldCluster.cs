@@ -469,8 +469,8 @@ namespace Mangos.Cluster
             var ex = (Exception)e.ExceptionObject;
             Log.WriteLine(LogType.CRITICAL, ex + Constants.vbCrLf);
             Log.WriteLine(LogType.FAILED, "Unexpected error has occured. An 'WorldCluster-Error-yyyy-mmm-d-h-mm.log' file has been created. Check your log folder for more information.");
-            TextWriter tw;
-            tw = new StreamWriter(new FileStream(string.Format("WorldCluster-Error-{0}.log", Strings.Format(DateAndTime.Now, "yyyy-MMM-d-H-mm")), FileMode.Create));
+            TextWriter tw = new StreamWriter(new FileStream(
+                $"WorldCluster-Error-{Strings.Format(DateTime.Now, "yyyy-MMM-d-H-mm")}.log", FileMode.Create));
             tw.Write(ex.ToString());
             tw.Close();
         }

@@ -20,6 +20,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Threading;
 using Mangos.Cluster.Globals;
 using Mangos.Common.Enums.Chat;
@@ -281,12 +282,6 @@ namespace Mangos.Cluster.Network
 
         public void ClientTransfer(uint id, float posX, float posY, float posZ, float ori, uint map)
         {
-            if (map <= 0) throw new ArgumentOutOfRangeException(nameof(map));
-            if (id <= 0) throw new ArgumentOutOfRangeException(nameof(id));
-            if (posX <= 0) throw new ArgumentOutOfRangeException(nameof(posX));
-            if (posY <= 0) throw new ArgumentOutOfRangeException(nameof(posY));
-            if (posZ <= 0) throw new ArgumentOutOfRangeException(nameof(posZ));
-            if (ori <= 0) throw new ArgumentOutOfRangeException(nameof(ori));
             if (_clusterServiceLocator == null) return;
             if (_clusterServiceLocator.WorldCluster.ClienTs.ContainsKey(id))
             {
