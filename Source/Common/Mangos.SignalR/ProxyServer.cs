@@ -24,49 +24,86 @@ using Microsoft.AspNetCore.SignalR;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
+using static Microsoft.Extensions.Hosting.Host;
 
 namespace Mangos.SignalR
 {
     public class ProxyServer<T> : IDisposable where T : Hub
     {
-        private readonly IHost webhost;
+        private readonly IHost _webhost;
 
         public ProxyServer(IPAddress address, int port, T hub)
         {
-            var hostbuilder = Host.CreateDefaultBuilder();
-            hostbuilder.ConfigureWebHost(x => ConfigureWebHost(x, address, port, hub));
-            webhost = hostbuilder.Build();
-            webhost.Start();
+            if (address == null) throw new ArgumentNullException(nameof(address));
+            if (hub == null) throw new ArgumentNullException(nameof(hub));
+            var hostbuilder = CreateDefaultBuilder();
+            if (hostbuilder != null)
+            {
+                hostbuilder.ConfigureWebHost(x =>
+                {
+                    if (x == null) return;
+                    ConfigureWebHost(x, address, port, hub);
+                });
+                _webhost = hostbuilder.Build();
+            }
+
+            _webhost?.Start();
         }
 
         private void ConfigureWebHost(IWebHostBuilder webHostBuilder, IPAddress address, int port, T hub)
         {
-            webHostBuilder.UseKestrel(x => x.Listen(address, port));
-            webHostBuilder.ConfigureLogging(x => x.ClearProviders());
-            webHostBuilder.ConfigureServices(x => ConfigureServices(x, hub));
+            if (webHostBuilder == null) throw new ArgumentNullException(nameof(webHostBuilder));
+            if (address == null) throw new ArgumentNullException(nameof(address));
+            if (hub == null) throw new ArgumentNullException(nameof(hub));
+            webHostBuilder.UseKestrel(x =>
+            {
+                if (x == null) throw new ArgumentNullException(nameof(x));
+                x.Listen(address, port);
+            });
+            webHostBuilder.ConfigureLogging(x =>
+            {
+                if (x == null) throw new ArgumentNullException(nameof(x));
+                x.ClearProviders();
+            });
+            webHostBuilder.ConfigureServices(x =>
+            {
+                if (x == null) throw new ArgumentNullException(nameof(x));
+                if (x.Count == 0) throw new ArgumentException("Value cannot be an empty collection.", nameof(x));
+                ConfigureServices(x, hub);
+            });
             webHostBuilder.Configure(ConfigureApplication);
         }
 
         private void ConfigureServices(IServiceCollection serviceCollection, T hub)
         {
+            if (serviceCollection == null) throw new ArgumentNullException(nameof(serviceCollection));
+            if (hub == null) throw new ArgumentNullException(nameof(hub));
+            if (serviceCollection.Count == 0)
+                throw new ArgumentException("Value cannot be an empty collection.", nameof(serviceCollection));
             serviceCollection.AddSignalR(ConfigureSignalR);
             serviceCollection.AddSingleton(hub);
         }
 
-        private void ConfigureApplication(IApplicationBuilder applicationBuilder)
+        private static void ConfigureApplication(IApplicationBuilder applicationBuilder)
         {
+            if (applicationBuilder == null) throw new ArgumentNullException(nameof(applicationBuilder));
             applicationBuilder.UseRouting();
-            applicationBuilder.UseEndpoints(x => x.MapHub<T>(string.Empty));
+            applicationBuilder.UseEndpoints(x =>
+            {
+                if (x == null) throw new ArgumentNullException(nameof(x));
+                x.MapHub<T>(string.Empty);
+            });
         }
 
-        private void ConfigureSignalR(HubOptions hubOptions)
+        private static void ConfigureSignalR(HubOptions hubOptions)
         {
+            if (hubOptions == null) throw new ArgumentNullException(nameof(hubOptions));
             hubOptions.EnableDetailedErrors = true;
         }
 
         public void Dispose()
         {
-            webhost.Dispose();
+            _webhost?.Dispose();
         }
     }
 }

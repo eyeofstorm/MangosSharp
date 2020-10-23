@@ -23,43 +23,47 @@ using System.Threading;
 using System.Threading.Channels;
 using Mangos.Loggers;
 using Mangos.Network.Tcp.Extensions;
+using static System.Net.Sockets.AddressFamily;
+using static System.Net.Sockets.SocketFlags;
+using static System.Net.Sockets.SocketType;
 
 namespace Mangos.Network.Tcp
 {
     public class TcpServer
     {
-        private readonly ILogger logger;
-        private readonly ITcpClientFactory tcpClientFactory;
-        private readonly CancellationTokenSource cancellationTokenSource;
+        private readonly ILogger _logger;
+        private readonly ITcpClientFactory _tcpClientFactory;
+        private readonly CancellationTokenSource _cancellationTokenSource;
 
-        private Socket socket;
+        private Socket _socket;
 
         public TcpServer(ILogger logger, ITcpClientFactory tcpClientFactory)
         {
-            this.logger = logger;
-            this.tcpClientFactory = tcpClientFactory;
-
-            cancellationTokenSource = new CancellationTokenSource();
+            _logger = logger ?? throw new ArgumentNullException(nameof(logger));
+            _tcpClientFactory = tcpClientFactory ?? throw new ArgumentNullException(nameof(tcpClientFactory));
+            _cancellationTokenSource = new CancellationTokenSource();
         }
 
         public void Start(IPEndPoint endPoint, int backlog)
         {
-            if (socket != null)
+            if (endPoint == null) throw new ArgumentNullException(nameof(endPoint));
+            if (backlog <= 0) throw new ArgumentOutOfRangeException(nameof(backlog));
+            if (_socket != null)
             {
-                logger.Error("TcpServer already started");
+                _logger?.Error("TcpServer already started");
                 throw new Exception("TcpServer already started");
             }
             try
             {
-                socket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-                socket.Bind(endPoint);
-                socket.Listen(backlog);
+                _socket = new Socket(InterNetwork, Stream, ProtocolType.Tcp);
+                _socket.Bind(endPoint);
+                _socket.Listen(backlog);
                 StartAcceptLoop();
-                logger.Debug("TcpServer has been started");
+                _logger?.Debug("TcpServer has been started");
             }
             catch (Exception ex)
             {
-                logger.Error("TcpServer start execption", ex);
+                _logger?.Error("TcpServer start execption", ex);
                 throw;
             }
         }
@@ -68,47 +72,59 @@ namespace Mangos.Network.Tcp
         {
             try
             {
-                logger.Debug("Start accepting connections");
-                while (!cancellationTokenSource.IsCancellationRequested)
+                _logger?.Debug("Start accepting connections");
+                while (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
                 {
-                    OnAcceptAsync(await socket.AcceptAsync());
+                    if (_socket != null) OnAcceptAsync(await _socket.AcceptAsync());
                 }
             }
             catch (Exception ex)
             {
-                logger.Error("Error during accepting conenction", ex);
+                _logger?.Error("Error during accepting conenction", ex);
             }
         }
 
         private async void OnAcceptAsync(Socket clientSocket)
         {
+            if (clientSocket == null) throw new ArgumentNullException(nameof(clientSocket));
             try
             {
-                var tcpClient = await tcpClientFactory.CreateTcpClientAsync(clientSocket);
-                var recieveChannel = Channel.CreateUnbounded<byte>();
-                var sendChannel = Channel.CreateUnbounded<byte>();
+                var tcpClient = await _tcpClientFactory.CreateTcpClientAsync(clientSocket);
+                if (tcpClient == null) throw new ArgumentNullException(nameof(tcpClient));
+                var recieveChannel = Channel.CreateUnbounded<byte>() ?? throw new ArgumentNullException(nameof(Channel.CreateUnbounded));
+                var sendChannel = Channel.CreateUnbounded<byte>() ?? throw new ArgumentNullException(nameof(Channel.CreateUnbounded));
 
-                RecieveAsync(clientSocket, recieveChannel.Writer);
-                SendAsync(clientSocket, sendChannel.Reader);
-                tcpClient.HandleAsync(recieveChannel.Reader, sendChannel.Writer, cancellationTokenSource.Token);
+                if (recieveChannel.Writer != null)
+                {
+                    RecieveAsync(clientSocket, recieveChannel.Writer);
+                    if (sendChannel.Reader != null)
+                    {
+                        SendAsync(clientSocket, sendChannel.Reader);
+                        if (_cancellationTokenSource != null)
+                            tcpClient.HandleAsync(recieveChannel.Reader, sendChannel.Writer,
+                                _cancellationTokenSource.Token);
+                    }
+                }
 
-                logger.Debug("New Tcp conenction established");
+                _logger?.Debug("New Tcp conenction established");
             }
             catch (Exception ex)
             {
-                logger.Error("Error during accepting conenction handler", ex);
+                _logger?.Error("Error during accepting conenction handler", ex);
             }
         }
 
 
         private async void RecieveAsync(Socket client, ChannelWriter<byte> writer)
         {
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (writer == null) throw new ArgumentNullException(nameof(writer));
             try
             {
                 var buffer = new byte[client.ReceiveBufferSize];
-                while (!cancellationTokenSource.IsCancellationRequested)
+                while (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
                 {
-                    var bytesRead = await client.ReceiveAsync(buffer, SocketFlags.None);
+                    var bytesRead = await client.ReceiveAsync(buffer, None);
                     if (bytesRead == 0)
                     {
                         client.Dispose();
@@ -119,29 +135,35 @@ namespace Mangos.Network.Tcp
             }
             catch (Exception ex)
             {
-                logger.Error("Error during recieving data from socket", ex);
+                _logger?.Error("Error during recieving data from socket", ex);
             }
         }
 
         private async void SendAsync(Socket client, ChannelReader<byte> reader)
         {
+            if (client == null) throw new ArgumentNullException(nameof(client));
+            if (reader == null) throw new ArgumentNullException(nameof(reader));
             try
             {
                 var buffer = new byte[client.SendBufferSize];
-                while (!cancellationTokenSource.IsCancellationRequested)
+                while (_cancellationTokenSource != null && !_cancellationTokenSource.IsCancellationRequested)
                 {
                     await reader.WaitToReadAsync();
-                    int writeCount;
-                    for (writeCount = 0;
-                        writeCount < buffer.Length && reader.TryRead(out buffer[writeCount]);
-                        writeCount++) ;
+                    var writeCount = 0;
+                    if (buffer.Length > writeCount)
+                        for (writeCount = 0;
+                            writeCount < buffer.Length && reader.TryRead(out buffer[writeCount]);
+                            writeCount++)
+                        {
+                        }
+
                     var arraySegment = new ArraySegment<byte>(buffer, 0, writeCount);
-                    await client.SendAsync(arraySegment, SocketFlags.None);
+                    await client.SendAsync(arraySegment, None);
                 }
             }
             catch (Exception ex)
             {
-                logger.Error("Error during sending data to socket", ex);
+                _logger?.Error("Error during sending data to socket", ex);
             }
         }
     }

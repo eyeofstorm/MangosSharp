@@ -16,6 +16,7 @@
 //  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
 //
 
+using System;
 using System.Reflection;
 using Microsoft.AspNetCore.SignalR.Client;
 
@@ -23,27 +24,32 @@ namespace Mangos.SignalR
 {
     public class ProxyClient : DispatchProxy
     {
-        private HubConnection hubConnection;
+        private HubConnection _hubConnection;
 
         protected override object Invoke(MethodInfo targetMethod, object[] args)
         {
-            if (targetMethod.ReturnType.Name == "Void")
+            if (targetMethod == null) throw new ArgumentNullException(nameof(targetMethod));
+            if (args == null) throw new ArgumentNullException(nameof(args));
+            if (targetMethod.ReturnType.Name != "Void")
             {
-                hubConnection.InvokeCoreAsync(targetMethod.Name, args).Wait();
-                return null;
+                var result = _hubConnection?.InvokeCoreAsync(targetMethod.Name, targetMethod.ReturnType, args).Result;
+                if (result != null)
+                    return result;
             }
 
-            return hubConnection.InvokeCoreAsync(targetMethod.Name, targetMethod.ReturnType, args).Result;
+            _hubConnection?.InvokeCoreAsync(targetMethod.Name, args).Wait();
+            return null;
         }
 
         public static T Create<T>(string url)
         {
+            if (string.IsNullOrEmpty(url)) throw new ArgumentException("Value cannot be null or empty.", nameof(url));
             var hubConnectionBuilder = new HubConnectionBuilder();
             hubConnectionBuilder.WithUrl(url);
-            var hubConnection = hubConnectionBuilder.Build();
+            var hubConnection = hubConnectionBuilder.Build() ?? throw new ArgumentNullException(nameof(url));
             hubConnection.StartAsync().Wait();
-            var proxy = Create<T, ProxyClient>();
-            (proxy as ProxyClient).hubConnection = hubConnection;
+            var proxy = Create<T, ProxyClient>() ?? throw new ArgumentNullException(nameof(url));
+            (proxy as ProxyClient)._hubConnection = hubConnection;
             return proxy;
         }
     }
